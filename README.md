@@ -1,12 +1,12 @@
 # Clean Tablet &middot; [![](https://img.shields.io/badge/React-js-blue.svg?color=20232a&logo=React)](https://reactjs.org/) [![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/jamessouth/clean-tablet?logo=Go)](https://golang.org/) ![](https://img.shields.io/badge/awesome-yes-brightgreen.svg)
 
-### React, Go, Heroku, websockets
+### React, Go, websockets
 
 ### Play here:
 
-[![](https://img.shields.io/badge/heroku-deployed-purple.svg?color=430098&style=for-the-badge&logo=Heroku)](http://clean-tablet.herokuapp.com/)
+[ct.dsouth.org](https://ct.dsouth.org/)
 
-This is a clone of Blank Slate, a party game, which you can learn more about [here](https://theop.games/products/game/blank-slate/).  It is a simple and fun game and my family has several physical copies.  I played for the first time at Thanksgiving 2019 and thought it would make a good software project.  I built the front end with React and the back end with Go and I have deployed it on Heroku.  3 to 8 players.
+This is a clone of Blank Slate, a party game, which you can learn more about [here](https://theop.games/products/game/blank-slate/).  It is a simple and fun game and my family has several physical copies.  I played for the first time at Thanksgiving 2019 and thought it would make a good software project.  I built the front end with React and the back end with Go and I have deployed it on [back4app](https://www.back4app.com/).  3 to 8 players.
 
 Rebuilding on AWS [here](https://github.com/jamessouth/aws-clean-tablet).
 
