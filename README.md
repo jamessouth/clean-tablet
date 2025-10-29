@@ -1,4 +1,4 @@
-# Clean Tablet &middot; [![](https://img.shields.io/badge/React-js-blue.svg?color=20232a&logo=React)](https://reactjs.org/) [![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/jamessouth/clean-tablet?logo=Go)](https://golang.org/) ![](https://img.shields.io/badge/awesome-yes-brightgreen.svg)
+# Clean Tablet &middot; [![](https://img.shields.io/badge/React-js-blue.svg?color=20232a&logo=React)](https://reactjs.org/) [![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/jamessouth/clean-tablet?logo=Go&a=b)](https://golang.org/) ![](https://img.shields.io/badge/awesome-yes-brightgreen.svg)
 
 ### React, Go, websockets
 
