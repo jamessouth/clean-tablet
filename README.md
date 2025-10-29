@@ -2,13 +2,7 @@
 
 ### React, Go, websockets
 
-### Play here:
-
-[ct.dsouth.org](https://ct.dsouth.org/)
-
-This is a clone of Blank Slate, a party game, which you can learn more about [here](https://theop.games/products/game/blank-slate/).  It is a simple and fun game and my family has several physical copies.  I played for the first time at Thanksgiving 2019 and thought it would make a good software project.  I built the front end with React and the back end with Go and I have deployed it on [back4app](https://www.back4app.com/).  3 to 8 players.
-
-Rebuilding on AWS [here](https://github.com/jamessouth/aws-clean-tablet).
+This is a clone of Blank Slate, a party game, which you can learn more about [here](https://theop.games/products/game/blank-slate/).  It is a simple and fun game and my family has several physical copies.  I played for the first time at Thanksgiving 2019 and thought it would make a good software project.  I built the front-end with React and the back-end with Go. 3 to 8 players.
 
 --------------------------------------------------------------------------------------------------------------------------
 
