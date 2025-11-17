@@ -13,7 +13,7 @@ function Start({ gameHasBegun, onClick, players }) {
           {...(players.length < 3 ? { disabled: true } : {})}
         >
           {players.length < 3
-            ? 'Need ' + (3 - players.length) + ' more ' + ppl
+            ? 'Add ' + (3 - players.length) + ' more ' + ppl
             : 'Start Game'}
         </button>
       )}

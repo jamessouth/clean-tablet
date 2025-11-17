@@ -1,4 +1,4 @@
-import { useState, useEffect, useReducer } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import StateReducer from '../reducers/appState';
 
 const initialState = {

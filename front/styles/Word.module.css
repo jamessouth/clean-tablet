@@ -23,7 +23,7 @@ rect {
   stroke-dashoffset: 0;
   animation: change 35s linear forwards 1;
 }
-svg {
+svg[preserveAspectRatio] {
   overflow: visible;
   position: absolute;
   top: 0;

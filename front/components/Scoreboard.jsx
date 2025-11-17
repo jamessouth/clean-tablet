@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
 import { ul } from '../styles/Scoreboard.module.css';
-import playerSort from '../utils/playerSort';
 import mapFn from '../utils/mapFn';
+import playerSort from '../utils/playerSort';
 
 function Scoreboard({ playerName, players, showAnswers, winners, word }) {
   const [toggleFinalRoundAnswers, setToggleFinalRoundAnswers] = useState(false);
@@ -29,12 +29,7 @@ function Scoreboard({ playerName, players, showAnswers, winners, word }) {
     showAnswers || toggleFinalRoundAnswers ? word : `You're no. ${rank}!`;
 
   return (
-    <div
-      style={{
-        height: `calc(82px + (28px * ${players.length}))`,
-        width: '100%',
-      }}
-    >
+    <div style={{ width: '100%' }}>
       <h2 style={{ marginBottom: '1.25em' }}>
         {titleBegin}&nbsp;{titleEnd}
       </h2>
