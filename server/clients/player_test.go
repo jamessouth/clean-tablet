@@ -19,7 +19,7 @@ func TestInitPlayer(t *testing.T) {
 			got := InitPlayer(tc.name, tc.color)
 			diff := cmp.Diff(tc.want, got)
 			if diff != "" {
-				t.Fatalf(diff)
+				t.Fatalf("%s", diff)
 			}
 		})
 	}
@@ -41,7 +41,7 @@ func TestUpdatePlayerScore(t *testing.T) {
 			got := tc.pl.updatePlayerScore(tc.inc)
 			diff := cmp.Diff(tc.want, got)
 			if diff != "" {
-				t.Fatalf(diff)
+				t.Fatalf("%s", diff)
 			}
 		})
 	}
@@ -63,7 +63,7 @@ func TestUpdatePlayerAnswer(t *testing.T) {
 			got := tc.pl.UpdatePlayerAnswer(tc.ans)
 			diff := cmp.Diff(tc.want, got)
 			if diff != "" {
-				t.Fatalf(diff)
+				t.Fatalf("%s", diff)
 			}
 		})
 	}

@@ -34,7 +34,7 @@ func TestFormatWinners(t *testing.T) {
 			got := tc.pls.FormatWinners()
 			diff := cmp.Diff(tc.want, got)
 			if diff != "" {
-				t.Fatalf(diff)
+				t.Fatalf("%s", diff)
 			}
 		})
 	}
@@ -55,7 +55,7 @@ func TestGetPlayers(t *testing.T) {
 			got := tc.cl.GetPlayers()
 			diff := cmp.Diff(tc.want, got)
 			if diff != "" {
-				t.Fatalf(diff)
+				t.Fatalf("%s", diff)
 			}
 		})
 	}
@@ -80,7 +80,7 @@ func TestGetWinners(t *testing.T) {
 			got := tc.cl.GetWinners(25)
 			diff := cmp.Diff(tc.want, got)
 			if diff != "" {
-				t.Fatalf(diff)
+				t.Fatalf("%s", diff)
 			}
 		})
 	}
@@ -108,7 +108,7 @@ func TestScoreAnswers(t *testing.T) {
 			tc.cl.ScoreAnswers(tc.ans)
 			diff := cmp.Diff(tc.want, tc.cl)
 			if diff != "" {
-				t.Fatalf(diff)
+				t.Fatalf("%s", diff)
 			}
 		})
 	}
