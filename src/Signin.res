@@ -1,33 +1,30 @@
-let username_max_length = 10
-let password_max_length = 98
+// let username_max_length = 10
+let email_max_length = 99
 
 @react.component
-let make = (~userpool, ~setCognitoUser, ~setToken, ~cognitoUser, ~retrievedUsername) => {
-  let (username, setUsername) = React.Uncurried.useState(_ => retrievedUsername)
-  let (password, setPassword) = React.Uncurried.useState(_ => "")
+let make = () => {
+  let (email, setEmail) = React.Uncurried.useState(_ => "")
   let (validationError, setValidationError) = React.Uncurried.useState(_ => Some(
-    "USERNAME: 3-10 length; PASSWORD: 8-98 length; at least 1 symbol; at least 1 number; at least 1 uppercase letter; at least 1 lowercase letter; ",
+    "EMAIL: 5-99 length; enter a valid email address.",
   ))
-  let (cognitoError, setCognitoError) = React.Uncurried.useState(_ => None)
 
-  React.useEffect2(() => {
-    ErrorHook.useMultiError([(username, Username), (password, Password)], setValidationError)
+  React.useEffect1(() => {
+    ErrorHook.useError(email, Email, setValidationError)
     None
-  }, (username, password))
+  }, [email])
 
-  React.useEffect0(() => {
-    Js.log("signin use effect")
+  //   React.useEffect0(() => {
+  //     Js.log("signin use effect")
 
-    ImageLoad.import_("./ImageLoad.bs")
-    ->Promise.then(func => {
-      Promise.resolve(func["bghand"]())
-    })
-    ->ignore
+  //     ImageLoad.import_("./ImageLoad.bs")
+  //     ->Promise.then(func => {
+  //       Promise.resolve(func["bghand"](.))
+  //     })
+  //     ->ignore
 
-    None
-  })
+  //     None
+  //   })
 
-  open Cognito
   let on_Click = () => {
     switch validationError {
     | None => {

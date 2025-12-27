@@ -1,83 +1,45 @@
-type query =
-  | VerificationCode
-  | ForgotPassword
-  | ForgotUsername
-  | Other
-
 type authSubroute =
-  | Leaderboard
   | Lobby
   | Play({play: string})
-  | Other
+  | Unknown
 
 type t =
   | Home
+  | Leaderboard
   | SignIn
-  | SignUp
-  | GetInfo({search: query})
-  | Confirm({search: query})
   | Auth({subroute: authSubroute})
-  | Other
-
-let stringToGetInfo = s =>
-  switch s {
-  | "cd_un" => GetInfo({search: VerificationCode})
-  | "pw_un" => GetInfo({search: ForgotPassword})
-  | "un_em" => GetInfo({search: ForgotUsername})
-  | _ => Other
-  }
-
-let stringToConfirm = s =>
-  switch s {
-  | "cd_un" => Confirm({search: VerificationCode})
-  | "pw_un" => Confirm({search: ForgotPassword})
-  | _ => Other
-  }
+  | NotFound
 
 let stringToAuthSubroute = l =>
   switch l {
-  | list{"leaderboard"} => Auth({subroute: Leaderboard})
   | list{"lobby"} => Auth({subroute: Lobby})
   | list{"play", gameno} => Auth({subroute: Play({play: gameno})})
-  | _ => Auth({subroute: Other})
-  }
-
-let queryToString = q =>
-  switch q {
-  | VerificationCode => "cd_un"
-  | ForgotPassword => "pw_un"
-  | ForgotUsername => "un_em"
-  | Other => ""
+  | _ => Auth({subroute: Unknown})
   }
 
 let authSubrouteToString = a =>
   switch a {
-  | Leaderboard => "leaderboard"
   | Lobby => "lobby"
   | Play({play}) => `play/${play}`
-  | Other => ""
+  | Unknown => ""
   }
 
 let urlStringToType = (url: RescriptReactRouter.url) =>
   switch url.path {
   | list{} => Home
+  | list{"leaderboard"} => Leaderboard
   | list{"signin"} => SignIn
-  | list{"signup"} => SignUp
-  | list{"getinfo"} => stringToGetInfo(url.search)
-  | list{"confirm"} => stringToConfirm(url.search)
   | list{"auth", ...subroutes} => stringToAuthSubroute(subroutes)
-  | _ => Other
+  | _ => NotFound
   }
 
 let typeToUrlString = t =>
   switch t {
   | Home => "/"
+  | Leaderboard => "/leaderboard"
   | SignIn => "/signin"
-  | SignUp => "/signup"
-  | GetInfo({search}) => `/getinfo?${queryToString(search)}`
-  | Confirm({search}) => `/confirm?${queryToString(search)}`
   | Auth({subroute}) => `/auth/${authSubrouteToString(subroute)}`
-  | Other => ""
+  | NotFound => ""
   }
 
 let useRouter = () => urlStringToType(RescriptReactRouter.useUrl())

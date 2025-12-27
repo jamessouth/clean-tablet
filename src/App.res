@@ -15,16 +15,10 @@ module Link = {
 
 @react.component
 let make = () => {
-  let userpool = Cognito.userPoolConstructor({
-    userPoolId: upid,
-    clientId: cid,
-    advancedSecurityDataCollectionFlag: false,
-  })
-
   let route = Route.useRouter() //TODO don't pass down to auth
-  let (cognitoUser: Js.Nullable.t<Cognito.usr>, setCognitoUser) = React.Uncurried.useState(_ =>
-    Js.Nullable.null
-  )
+  //   let (cognitoUser: Js.Nullable.t<Cognito.usr>, setCognitoUser) = React.Uncurried.useState(_ =>
+  //     Js.Nullable.null
+  //   )
 
   let (token, setToken) = React.Uncurried.useState(_ => None)
   let (retrievedUsername, setRetrievedUsername) = React.Uncurried.useState(_ => "")
@@ -38,37 +32,19 @@ let make = () => {
     let make = React.lazy_(() => import(Signin.make))
   }
 
-  //   let signin = React.createElement(
-  //     Signin.lazy_(() =>
-  //       Signin.import_("./Signin.bs")->Promise.then(comp => {
+  //   let auth = React.createElement(
+  //     Auth.lazy_(() =>
+  //       Auth.import_("./Auth.bs")->Promise.then(comp => {
   //         Promise.resolve({"default": comp["make"]})
   //       })
   //     ),
-  //     Signin.makeProps(~userpool, ~setCognitoUser, ~setToken, ~cognitoUser, ~retrievedUsername, ()),
+  //     Auth.makeProps(~token, ~setToken, ~cognitoUser, ~setCognitoUser, ~setWsError, ~route, ()),
   //   )
-
-  let signup = React.createElement(
-    Signup.lazy_(() =>
-      Signup.import_("./Signup.bs")->Promise.then(comp => {
-        Promise.resolve({"default": comp["make"]})
-      })
-    ),
-    Signup.makeProps(~userpool, ~setCognitoUser, ()),
-  )
-
-  let auth = React.createElement(
-    Auth.lazy_(() =>
-      Auth.import_("./Auth.bs")->Promise.then(comp => {
-        Promise.resolve({"default": comp["make"]})
-      })
-    ),
-    Auth.makeProps(~token, ~setToken, ~cognitoUser, ~setCognitoUser, ~setWsError, ~route, ()),
-  )
 
   <>
     {switch route {
-    | Auth({subroute: Leaderboard}) => React.null
-    | Home | SignIn | SignUp | GetInfo(_) | Confirm(_) | Auth(_) | Other =>
+    | Leaderboard => React.null
+    | Home | SignIn | Auth(_) | NotFound =>
       switch token {
       | None =>
         <header className="mb-10 newgmimg:mb-12">
@@ -83,36 +59,18 @@ let make = () => {
     }}
     <main
       className={switch route {
-      | Auth({subroute: Leaderboard}) => ""
-      | Home | SignIn | SignUp | GetInfo(_) | Confirm(_) | Auth(_) | Other => "mb-14"
+      | Leaderboard => ""
+      | Home | SignIn | Auth(_) | NotFound => "mb-14"
       }}
     >
       {switch (route, token) {
       | (Home, None) => {
-          open Route
+          //   open Route
           Web.body(Web.document)->Web.setClassName("bodmob bodtab bodbig")
           <nav
             className="relative font-anon text-sm grid grid-cols-2 grid-rows-[16fr,10fr,16fr,10fr,8fr,4fr,6fr]"
           >
             <Link route=SignIn className=signInSignUpLinkStyles content="SIGN IN" />
-            <Link
-              route=SignUp className={signInSignUpLinkStyles ++ " row-start-3"} content="SIGN UP"
-            />
-            <Link
-              route=GetInfo({search: ForgotPassword})
-              className="text-stone-100 row-start-5 mr-6 justify-self-end"
-              content="forgot password?"
-            />
-            <Link
-              route=GetInfo({search: ForgotUsername})
-              className="text-stone-100 row-start-5 ml-6"
-              content="forgot username?"
-            />
-            <Link
-              route=GetInfo({search: VerificationCode})
-              className="text-stone-100 col-span-full justify-self-center row-start-7"
-              content="have code?"
-            />
             {switch wsError == "" {
             | true => React.null
             | false =>
@@ -125,7 +83,13 @@ let make = () => {
 
       | (SignIn, None) =>
         <React.Suspense fallback=React.null>
-          <LazySignin userpool setCognitoUser setToken cognitoUser retrievedUsername />
+          <LazySignin
+            //    userpool
+            //    setCognitoUser
+            setToken
+            //    cognitoUser
+            retrievedUsername
+          />
         </React.Suspense>
       | (SignUp, None) => <React.Suspense fallback=React.null> signup </React.Suspense>
 
@@ -180,7 +144,7 @@ let make = () => {
     | (Home, None) =>
       <footer>
         <a
-          href="https://github.com/jamessouth/aws-clean-tablet"
+          href="https://github.com/jamessouth/clean-tablet"
           className="w-7 h-7 block m-auto"
           rel="noopener noreferrer"
         >
@@ -195,7 +159,7 @@ let make = () => {
           </svg>
         </a>
       </footer>
-    | (SignIn | SignUp | GetInfo(_) | Confirm(_) | Auth(_) | Other, None | Some(_))
+    | (SignIn | Auth(_) | Other, None | Some(_))
     | (Home, Some(_)) => React.null
     }}
   </>
