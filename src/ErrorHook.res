@@ -55,23 +55,6 @@ let getFuncs = input =>
     ]
   }
 
-let useMultiError = (fields, setErrorFunc) => {
-  let errs = fields->Array.map(fld => {
-    let (val, prop) = fld
-    let error = getFuncs(prop)->Array.reduce((acc, f) => acc ++ f(val), "")
-    switch error == "" {
-    | true => ""
-    | false => fromTypeToString(prop) ++ ": " ++ error
-    }
-  })
-  let total = errs->Array.joinWith("")
-  let final = switch total == "" {
-  | true => None
-  | false => Some(total)
-  }
-  setErrorFunc(_ => final)
-}
-
 let useError = (value, propName, setErrorFunc) => {
   Console.log("Errorhook2")
 

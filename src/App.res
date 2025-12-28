@@ -16,13 +16,15 @@ module Link = {
 @react.component
 let make = () => {
   let route = Route.useRouter() //TODO don't pass down to auth
+
   //   let (cognitoUser: Js.Nullable.t<Cognito.usr>, setCognitoUser) = React.Uncurried.useState(_ =>
   //     Js.Nullable.null
   //   )
 
-  let (token, setToken) = React.Uncurried.useState(_ => None)
-  let (retrievedUsername, setRetrievedUsername) = React.Uncurried.useState(_ => "")
-  let (wsError, setWsError) = React.Uncurried.useState(_ => "")
+  let (token, _setToken) = React.Uncurried.useState(_ => None)
+  //   let (retrievedUsername, setRetrievedUsername) = React.Uncurried.useState(_ => "")
+  let (wsError, _setWsError) = React.Uncurried.useState(_ => "")
+  let (_leaderData, setLeaderData) = React.Uncurried.useState(_ => [])
 
   module LazyMessage = {
     let make = React.lazy_(() => import(Message.make))
@@ -30,6 +32,10 @@ let make = () => {
 
   module LazySignin = {
     let make = React.lazy_(() => import(Signin.make))
+  }
+
+  module LazyLeaderboard = {
+    let make = React.lazy_(() => import(Leaderboard.make))
   }
 
   //   let auth = React.createElement(
@@ -81,67 +87,36 @@ let make = () => {
           </nav>
         }
 
+      | (Leaderboard, _) =>
+        <React.Suspense fallback=React.null>
+          <LazyLeaderboard playerName="bill" setLeaderData />
+        </React.Suspense>
+
       | (SignIn, None) =>
         <React.Suspense fallback=React.null>
-          <LazySignin
-            //    userpool
-            //    setCognitoUser
-            setToken
-            //    cognitoUser
-            retrievedUsername
-          />
-        </React.Suspense>
-      | (SignUp, None) => <React.Suspense fallback=React.null> signup </React.Suspense>
-
-      | (GetInfo({search}), None) =>
-        <React.Suspense fallback=React.null>
-          {React.createElement(
-            GetInfo.lazy_(() =>
-              GetInfo.import_("./GetInfo.bs")->Promise.then(comp => {
-                Promise.resolve({"default": comp["make"]})
-              })
-            ),
-            GetInfo.makeProps(
-              ~userpool,
-              ~cognitoUser,
-              ~setCognitoUser,
-              ~setRetrievedUsername,
-              ~search,
-              (),
-            ),
-          )}
+          <LazySignin />
         </React.Suspense>
 
-      | (Confirm({search}), None) =>
-        <React.Suspense fallback=React.null>
-          {React.createElement(
-            Confirm.lazy_(() =>
-              Confirm.import_("./Confirm.bs")->Promise.then(comp => {
-                Promise.resolve({"default": comp["make"]})
-              })
-            ),
-            Confirm.makeProps(~cognitoUser, ~search, ()),
-          )}
-        </React.Suspense>
       | (Auth(_), None) => {
           Route.replace(Home)
           React.null
         }
 
-      | (Home | SignIn | SignUp | GetInfo(_) | Confirm(_), Some(_)) => {
+      | (Home | SignIn, Some(_)) => {
           Route.replace(Auth({subroute: Lobby}))
           React.null
         }
 
-      | (Auth(_), Some(_)) => <React.Suspense fallback=React.null> auth </React.Suspense>
-      | (Other, _) =>
+      | (Auth(_), Some(_)) => React.null
+      //   <React.Suspense fallback=React.null> auth </React.Suspense>
+      | (NotFound, _) =>
         <div className="text-center text-stone-100 text-4xl">
           {React.string("page not found")}
         </div>
       }}
     </main>
     {switch (route, token) {
-    | (Home, None) =>
+    | (Home, _) =>
       <footer>
         <a
           href="https://github.com/jamessouth/clean-tablet"
@@ -159,8 +134,7 @@ let make = () => {
           </svg>
         </a>
       </footer>
-    | (SignIn | Auth(_) | Other, None | Some(_))
-    | (Home, Some(_)) => React.null
+    | _ => React.null
     }}
   </>
 }

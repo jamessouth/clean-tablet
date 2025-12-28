@@ -2,7 +2,7 @@
 @import "tailwindcss";
 
 @theme {
-  --color-rescript-50: oklch(97% 0.02 27);
+  /* --color-rescript-50: oklch(97% 0.02 27);
   --color-rescript-100: oklch(93% 0.04 27);
   --color-rescript-200: oklch(87% 0.07 27);
   --color-rescript-300: oklch(79% 0.12 27);
@@ -12,11 +12,17 @@
   --color-rescript-700: oklch(47% 0.15 27);
   --color-rescript-800: oklch(39% 0.12 27);
   --color-rescript-900: oklch(31% 0.09 27);
-  --color-rescript-950: oklch(23% 0.06 27);
-  --font-inter: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --color-rescript-950: oklch(23% 0.06 27); */
+  --font-anon: Anonymous Pro, monospace;
+  --font-arch: Architects Daughter, cursive;
+  --font-flow: Indie Flower, cursive;
+  --font-fred: Fredericka the Great, cursive;
+  --font-luck: Luckiest Guy, cursive;
+  --font-over: Overpass, sans-serif;
+  --font-perm: Permanent Marker, cursive;
 }
 
-* {
+/* * {
   margin: 0;
   padding: 0;
   list-style-type: none;
@@ -25,25 +31,22 @@
   box-sizing: border-box;
   border-style: solid;
   border-width: 0;
-}
+} */
 
 .decay-mask {
-  -webkit-mask-image: url("../../assets/decaying.webp");
-  mask-image: url("../../assets/decaying.webp");
+  -webkit-mask-image: url("../assets/decaying.webp");
+  mask-image: url("../assets/decaying.webp");
 }
 
 .bodmob {
   background:
     -webkit-image-set(
-      url("../../assets/mob1x.webp") 1x,
-      url("../../assets/mob2x.webp") 2x
+      url("../assets/mob1x.webp") 1x,
+      url("../assets/mob2x.webp") 2x
     )
     no-repeat center / cover;
   background:
-    image-set(
-      url("../../assets/mob1x.webp") 1x,
-      url("../../assets/mob2x.webp") 2x
-    )
+    image-set(url("../assets/mob1x.webp") 1x, url("../assets/mob2x.webp") 2x)
     no-repeat center / cover;
 }
 
@@ -51,15 +54,12 @@
   .bodtab {
     background:
       -webkit-image-set(
-        url("../../assets/tab1x.webp") 1x,
-        url("../../assets/tab2x.webp") 2x
+        url("../assets/tab1x.webp") 1x,
+        url("../assets/tab2x.webp") 2x
       )
       no-repeat center / cover;
     background:
-      image-set(
-        url("../../assets/tab1x.webp") 1x,
-        url("../../assets/tab2x.webp") 2x
-      )
+      image-set(url("../assets/tab1x.webp") 1x, url("../assets/tab2x.webp") 2x)
       no-repeat center / cover;
   }
 }
@@ -68,15 +68,12 @@
   .bodbig {
     background:
       -webkit-image-set(
-        url("../../assets/big1x.webp") 1x,
-        url("../../assets/big2x.webp") 2x
+        url("../assets/big1x.webp") 1x,
+        url("../assets/big2x.webp") 2x
       )
       no-repeat center / cover;
     background:
-      image-set(
-        url("../../assets/big1x.webp") 1x,
-        url("../../assets/big2x.webp") 2x
-      )
+      image-set(url("../assets/big1x.webp") 1x, url("../assets/big2x.webp") 2x)
       no-repeat center / cover;
   }
 }
