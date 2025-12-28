@@ -1,4 +1,4 @@
-let signInSignUpLinkStyles = "w-3/5 border border-stone-100 bg-stone-800/40 text-center text-stone-100 decay-mask text-3xl p-2 max-w-80 font-fred col-span-full justify-self-center"
+let homeLinkStyles = "w-3/5 border border-stone-100 bg-stone-800/40 text-center text-stone-100 decay-mask p-2 max-w-80 font-fred "
 
 module Link = {
   open Route
@@ -66,17 +66,18 @@ let make = () => {
     <main
       className={switch route {
       | Leaderboard => ""
-      | Home | SignIn | Auth(_) | NotFound => "mb-14"
+      | Home | SignIn | Auth(_) | NotFound => "mb-10"
       }}
     >
       {switch (route, token) {
       | (Home, None) => {
           //   open Route
           Web.body(Web.document)->Web.setClassName("bodmob bodtab bodbig")
-          <nav
-            className="relative font-anon text-sm grid grid-cols-2 grid-rows-[16fr,10fr,16fr,10fr,8fr,4fr,6fr]"
-          >
-            <Link route=SignIn className=signInSignUpLinkStyles content="SIGN IN" />
+          <nav className="flex flex-col items-center h-[20vh] justify-around">
+            <Link route=SignIn className={homeLinkStyles ++ "text-3xl"} content="SIGN IN" />
+            <Link
+              route={Leaderboard} className={homeLinkStyles ++ "text-xl"} content="LEADERBOARD"
+            />
             {switch wsError == "" {
             | true => React.null
             | false =>
