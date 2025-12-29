@@ -9,7 +9,7 @@
     "res:clean": "rescript clean",
     "res:dev": "rescript watch",
     "dev": "vite",
-    "go": "go run backend/main.go",
+    "go": "go run server/main.go",
     "build": "vite build",
     "preview": "vite preview"
   },

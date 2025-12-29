@@ -23,16 +23,12 @@ let make = () => {
 
   let (token, _setToken) = React.Uncurried.useState(_ => None)
   //   let (retrievedUsername, setRetrievedUsername) = React.Uncurried.useState(_ => "")
-  let (wsError, _setWsError) = React.Uncurried.useState(_ => "")
+  let (_wsError, _setWsError) = React.Uncurried.useState(_ => "")
   let (_leaderData, setLeaderData) = React.Uncurried.useState(_ => [])
 
-  module LazyMessage = {
-    let make = React.lazy_(() => import(Message.make))
-  }
-
-  module LazySignin = {
-    let make = React.lazy_(() => import(Signin.make))
-  }
+  //   module LazyMessage = {
+  //     let make = React.lazy_(() => import(Message.make))
+  //   }
 
   module LazyLeaderboard = {
     let make = React.lazy_(() => import(Leaderboard.make))
@@ -66,26 +62,24 @@ let make = () => {
     <main
       className={switch route {
       | Leaderboard => ""
-      | Home | SignIn | Auth(_) | NotFound => "mb-10"
+      | Home | SignIn | Auth(_) | NotFound => "mb-12"
       }}
     >
       {switch (route, token) {
       | (Home, None) => {
           //   open Route
           Web.body(Web.document)->Web.setClassName("bodmob bodtab bodbig")
-          <nav className="flex flex-col items-center h-[20vh] justify-around">
-            <Link route=SignIn className={homeLinkStyles ++ "text-3xl"} content="SIGN IN" />
-            <Link
-              route={Leaderboard} className={homeLinkStyles ++ "text-xl"} content="LEADERBOARD"
-            />
-            {switch wsError == "" {
-            | true => React.null
-            | false =>
-              <React.Suspense fallback=React.null>
-                <LazyMessage msg=wsError />
-              </React.Suspense>
-            }}
-          </nav>
+          //   <nav className="flex flex-col items-center">
+          //     <Link route=SignIn className={homeLinkStyles ++ "text-3xl"} content="SIGN IN" />
+          //     {switch wsError == "" {
+          //     | true => React.null
+          //     | false =>
+          //       <React.Suspense fallback=React.null>
+          //         <LazyMessage msg=wsError />
+          //       </React.Suspense>
+          //     }}
+          //   </nav>
+          <Signin />
         }
 
       | (Leaderboard, _) =>
@@ -93,17 +87,17 @@ let make = () => {
           <LazyLeaderboard playerName="bill" setLeaderData />
         </React.Suspense>
 
-      | (SignIn, None) =>
-        <React.Suspense fallback=React.null>
-          <LazySignin />
-        </React.Suspense>
+      | (SignIn, _) =>
+        <div>
+          <p> {React.string("Click the link in your email.")} </p>
+        </div>
 
       | (Auth(_), None) => {
           Route.replace(Home)
           React.null
         }
 
-      | (Home | SignIn, Some(_)) => {
+      | (Home, Some(_)) => {
           Route.replace(Auth({subroute: Lobby}))
           React.null
         }
@@ -118,7 +112,7 @@ let make = () => {
     </main>
     {switch (route, token) {
     | (Home, _) =>
-      <footer>
+      <footer className="mb-2">
         <a
           href="https://github.com/jamessouth/clean-tablet"
           className="w-7 h-7 block m-auto"

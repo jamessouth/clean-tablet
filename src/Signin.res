@@ -27,6 +27,7 @@ let make = () => {
 
   let on_Click = () => {
     Console.log("submit clckd")
+    Route.push(SignIn)
   }
 
   <Form on_Click leg="Sign in" validationError>

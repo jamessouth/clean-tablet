@@ -1,12 +1,12 @@
 @react.component
-let make = (~ht="h-72", ~on_Click, ~leg, ~validationError, ~children) => {
+let make = (~ht="h-48", ~on_Click, ~leg, ~validationError, ~children) => {
   let (submitClicked, setSubmitClicked) = React.Uncurried.useState(_ => false)
 
   <form className="w-4/5 m-auto relative">
     <fieldset className={`flex flex-col items-center justify-around ${ht}`}>
       {switch String.length(leg) > 0 {
       | true =>
-        <legend className="text-stone-100 m-auto mb-6 text-3xl font-fred">
+        <legend className="text-stone-100 m-auto mb-6 text-4xl font-fred">
           {React.string(leg)}
         </legend>
 
@@ -30,7 +30,10 @@ let make = (~ht="h-72", ~on_Click, ~leg, ~validationError, ~children) => {
     <Button
       onClick={_ => {
         setSubmitClicked(_ => true)
-        on_Click()
+        switch validationError {
+        | Some(_) => ()
+        | None => on_Click()
+        }
       }}
     >
       {React.string("submit")}
