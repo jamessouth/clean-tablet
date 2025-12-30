@@ -89,7 +89,9 @@ let make = () => {
 
       | (SignIn, _) =>
         <div>
-          <p> {React.string("Click the link in your email.")} </p>
+          <p className="text-stone-100 text-center">
+            {React.string("Click the link sent to your email to login.")}
+          </p>
         </div>
 
       | (Auth(_), None) => {

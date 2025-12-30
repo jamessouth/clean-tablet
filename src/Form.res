@@ -9,7 +9,6 @@ let make = (~ht="h-48", ~on_Click, ~leg, ~validationError, ~children) => {
         <legend className="text-stone-100 m-auto mb-6 text-4xl font-fred">
           {React.string(leg)}
         </legend>
-
       | false => React.null
       }}
       {switch (submitClicked, validationError) {
@@ -18,15 +17,15 @@ let make = (~ht="h-48", ~on_Click, ~leg, ~validationError, ~children) => {
       }}
       {children}
     </fieldset>
-    {switch (submitClicked, leg == "Sign in", validationError) {
-    | (false, _, _)
-    | (true, false, _)
-    | (true, true, Some(_)) => React.null
-    | (true, true, None) =>
-      <div className="absolute left-1/2 transform -translate-x-2/4 bottom-10">
-        <Loading label="..." />
-      </div>
-    }}
+    // {switch (submitClicked, leg == "Sign in", validationError) {
+    // | (false, _, _)
+    // | (true, false, _)
+    // | (true, true, Some(_)) => React.null
+    // | (true, true, None) =>
+    //   <div className="absolute left-1/2 transform -translate-x-2/4 bottom-10">
+    //     <Loading label="..." />
+    //   </div>
+    // }}
     <Button
       onClick={_ => {
         setSubmitClicked(_ => true)

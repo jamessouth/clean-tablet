@@ -12,8 +12,8 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	c "github.com/jamessouth/clean-tablet/server/clients"
-	"github.com/jamessouth/clean-tablet/server/data"
+	c "github.com/jamessouth/clean-tablet/ws/clients"
+	"github.com/jamessouth/clean-tablet/ws/data"
 )
 
 // Init kicks off the app
