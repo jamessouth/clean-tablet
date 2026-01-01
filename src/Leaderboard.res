@@ -102,7 +102,7 @@ let make = (~playerName, ~setLeaderData) => {
           <Button
             onClick={_ => {
               setLeaderData(_ => [])
-              Route.push(Auth({subroute: Lobby}))
+              Route.push(Lobby)
             }}
             className="cursor-pointer font-over text-5xl bg-transparent absolute left-10"
           >

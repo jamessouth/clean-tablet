@@ -1,5 +1,5 @@
 @react.component
-let make = (~ht="h-48", ~on_Click, ~leg, ~validationError, ~children) => {
+let make = (~ht="h-48", ~on_Click, ~leg, ~validationError, ~children=React.null) => {
   let (submitClicked, setSubmitClicked) = React.Uncurried.useState(_ => false)
 
   <form className="w-4/5 m-auto relative">

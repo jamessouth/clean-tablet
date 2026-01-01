@@ -3,8 +3,8 @@ let email_max_length = 99
 
 @react.component
 let make = () => {
-  let (email, setEmail) = React.Uncurried.useState(_ => "")
-  let (validationError, setValidationError) = React.Uncurried.useState(_ => Some(
+  let (email, _setEmail) = React.Uncurried.useState(_ => "")
+  let (_validationError, setValidationError) = React.Uncurried.useState(_ => Some(
     "EMAIL: 5-99 length; enter a valid email address.",
   ))
 
@@ -29,8 +29,11 @@ let make = () => {
     Console.log("submit clckd")
     Route.push(SignIn)
   }
-
-  <Form on_Click leg="Sign in" validationError>
-    <Input value=email propName="email" inputMode="email" setFunc=setEmail />
-  </Form>
+  <>
+    <Header />
+    <Form on_Click leg="Sign in" validationError=None>
+      // <Input value=email propName="email" inputMode="email" setFunc=setEmail />
+    </Form>
+    <Footer />
+  </>
 }

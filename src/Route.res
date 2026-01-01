@@ -1,44 +1,34 @@
-type authSubroute =
-  | Lobby
-  | Play({play: string})
-  | Unknown
-
 type t =
+  // public
   | Home
-  | Leaderboard
   | SignIn
-  | Auth({subroute: authSubroute})
+  //   private
+  | Landing
+  | Leaderboard
+  | Lobby
+  | Play(string)
+  //   both
   | NotFound
-
-let stringToAuthSubroute = l =>
-  switch l {
-  | list{"lobby"} => Auth({subroute: Lobby})
-  | list{"play", gameno} => Auth({subroute: Play({play: gameno})})
-  | _ => Auth({subroute: Unknown})
-  }
-
-let authSubrouteToString = a =>
-  switch a {
-  | Lobby => "lobby"
-  | Play({play}) => `play/${play}`
-  | Unknown => ""
-  }
 
 let urlStringToType = (url: RescriptReactRouter.url) =>
   switch url.path {
   | list{} => Home
-  | list{"leaderboard"} => Leaderboard
   | list{"signin"} => SignIn
-  | list{"auth", ...subroutes} => stringToAuthSubroute(subroutes)
+  | list{"api", "landing"} => Landing
+  | list{"api", "leaderboard"} => Leaderboard
+  | list{"api", "lobby"} => Lobby
+  | list{"api", "play", game} => Play(game)
   | _ => NotFound
   }
 
 let typeToUrlString = t =>
   switch t {
   | Home => "/"
-  | Leaderboard => "/leaderboard"
   | SignIn => "/signin"
-  | Auth({subroute}) => `/auth/${authSubrouteToString(subroute)}`
+  | Landing => "/api/landing"
+  | Leaderboard => "/api/leaderboard"
+  | Lobby => "/api/lobby"
+  | Play(game) => `/api/play/${game}`
   | NotFound => ""
   }
 
