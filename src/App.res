@@ -63,7 +63,7 @@ let make = () => {
         //       </React.Suspense>
         //     }}
         //   </nav>
-        <Signin />
+        <Home />
       }
 
     // | (Leaderboard, _) =>
@@ -71,16 +71,7 @@ let make = () => {
     //     <LazyLeaderboard playerName="bill" setLeaderData />
     //   </React.Suspense>
 
-    | (SignIn, None) =>
-      <>
-        <Header />
-        <div>
-          <p className="text-stone-100 text-center">
-            {React.string("Click the link sent to your email to login.")}
-          </p>
-        </div>
-        <Footer />
-      </>
+    | (SignIn, None) => <SignIn />
 
     | (Landing | Leaderboard | Lobby | Play(_), None) => {
         Route.replace(Home)
