@@ -1,0 +1,131 @@
+package middleware
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"time"
+
+	"github.com/gorilla/sessions"
+)
+
+// ***************************
+// *  LIVE backend           *
+// ***************************
+// var (
+// 	buildenv   = os.Getenv("BUILDENV")
+// 	sessionKey = os.Getenv("SESSION_KEY")
+// 	sKey, _    = hex.DecodeString(sessionKey)
+// 	store      = sessions.NewCookieStore(sKey)
+// )
+
+// ************************************************
+// * uncomment this block and comment out the one *
+// * above to dev with the LOCAL backend          *
+// ************************************************
+var (
+	buildenv = os.Getenv("BUILDENV")
+	store    = sessions.NewCookieStore([]byte{95, 65, 12, 40})
+)
+
+func init() {
+	log.Println("init")
+	log.Println("mw init: ", buildenv)
+
+	// MaxAge=0 means no Max-Age attribute specified and the cookie will be
+	// deleted after the browser session ends.
+	// MaxAge<0 means delete cookie immediately.
+	// MaxAge>0 means Max-Age attribute present and given in seconds.
+
+	// ******************************
+	// * LIVE and LOCAL WEB backend *
+	// ******************************
+
+	store.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   0,
+		Secure:   true,
+		HttpOnly: true,
+	}
+
+	switch buildenv {
+	case "dev":
+		store.Options.SameSite = http.SameSiteNoneMode
+	case "prod":
+		store.Options.SameSite = http.SameSiteStrictMode
+	}
+
+}
+
+func Auth(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+	ctx := r.Context()
+
+	session, err := store.Get(r, sessionName)
+	if err != nil {
+		LogAndSendError(w, err, "Failed to get session", http.StatusInternalServerError)
+		return
+	}
+
+	// Check if user is authenticated
+	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
+		LogAndSendError(w, errors.New("unauthed"), "User not authenticated, redirecting", http.StatusUnauthorized)
+		return
+	}
+
+	// Get user ID from session
+	userID, ok := session.Values["user_id"].(int32)
+	if !ok {
+		LogAndSendError(w, errors.New("unauthed"), "User not authorized, redirecting", http.StatusUnauthorized)
+		return
+	}
+
+	ctx = context.WithValue(ctx, userKey, userID)
+	next(w, r.WithContext(ctx))
+}
+
+func CreateSession(w http.ResponseWriter, r *http.Request, userID int32) error {
+	session, err := store.Get(r, sessionName)
+	if err != nil {
+		log.Printf("ERROR: Failed to get session: %v", err)
+		return err
+	}
+
+	// Set session values
+	session.Values["authenticated"] = true
+	session.Values["user_id"] = userID
+	// session.Values["session_id"] = uuid.NewString()
+	session.Values["created_at"] = time.Now().Unix()
+	// session.Values["paseto_token"] = token
+
+	ss := *session
+	ff := *ss.Options
+	fmt.Println(ss, ff)
+	// Save session
+	err = session.Save(r, w)
+	if err != nil {
+		log.Printf("ERROR: Failed to save session: %v", err)
+		return err
+	}
+
+	return nil
+}
+
+// ClearSession removes the session for the current user
+// func ClearSession(w http.ResponseWriter, r *http.Request) error {
+// 	session, err := store.Get(r, sessionName)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	// Clear session values
+// 	session.Values = make(map[interface{}]interface{})
+
+// 	// Set MaxAge to -1 to delete the cookie
+// 	session.Options.MaxAge = -1
+
+// 	// Save session
+// 	return session.Save(r, w)
+// }

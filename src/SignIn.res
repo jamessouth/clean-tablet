@@ -3,17 +3,31 @@ let make = () => {
   let loginOnce = React.useRef(false)
 
   React.useEffect(() => {
-    // let login = async () => {
-    //     try {
-    //       let response = await api.loginWithMagicLink(token);
-    //       // Handle success (e.g., redirect or update user state)
-    //     } catch (err) {
-    //       // Handle error
-    //     }
-    //   };
+    let login = async data => {
+      open Fetch
+
+      let response = await fetch(
+        "http://localhost:8000/login",
+        {
+          method: #POST,
+          body: data->JSON.stringifyAny->Belt.Option.getExn->Body.string,
+          headers: Headers.fromObject({
+            "Content-Type": "application/json",
+          }),
+          credentials: #"include",
+        },
+      )
+
+      await response->Response.json
+    }
 
     switch loginOnce.current {
-    | true => Console.log("mimic sign in")
+    | true => {
+        Console.log("mimic sign in")
+        login({
+          "id": 753,
+        })->Console.log
+      }
     | false => loginOnce.current = true
     }
 
