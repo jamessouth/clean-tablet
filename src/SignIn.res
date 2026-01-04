@@ -5,11 +5,17 @@ type user = {
 
 type error = string
 
+type loginstage =
+  | Loading
+  | Error(error)
+  | Data(user)
+
 @scope("JSON") @val
-external parseLogin: string => user = "parse"
+external parseLogin: JSON.t => user = "parse"
 
 @react.component
-let make = (~setHasAuth) => {
+let make = (~hasAuth, ~setHasAuth, ~setUser) => {
+  let (loginstate, setLoginState) = React.useState(_ => Loading)
   let loginOnce = React.useRef(false)
 
   React.useEffect(() => {
@@ -32,36 +38,46 @@ let make = (~setHasAuth) => {
           let json = await response->Response.json
 
           try {
-            let resp = json->JSON.stringify->parseLogin
+            let resp = json->parseLogin
             switch resp.success {
-            | true => setHasAuth(_ => true)
-            | false => setHasAuth(_ => false)
+            | true => Ok(resp)
+            | false => Error("login fail")
             }
-            Ok(resp)
           } catch {
-          | JsExn(_) => {
-              setHasAuth(_ => false)
-              Error("error parsing json response")
-            }
+          | JsExn(_) => Error("error parsing json response")
           }
         }
       | false => {
           let error = await response->Fetch.Response.text
-          setHasAuth(_ => false)
           Error(error)
         }
       }
     }
 
-    switch loginOnce.current {
-    | true => {
-        Console.log("mimic sign in")
-        login({
-          "id": 753,
-        })->Console.log
+    let getLogin = async () => {
+      let res = await login({
+        "id": 753,
+      })
+
+      switch res {
+      | Ok(user) =>
+        setHasAuth(_ => true)
+        setUser(_ => Some(user))
+        setLoginState(_ => Data(user))
+      | Error(msg) =>
+        setHasAuth(_ => false)
+        setUser(_ => None)
+        setLoginState(_ => Error(msg))
       }
+    }
+
+    switch loginOnce.current {
+    | true =>
+      Console.log("mimic sign in")
+      getLogin()->Console.log
     | false => loginOnce.current = true
     }
+    Console.log(hasAuth)
 
     None
   }, [])
@@ -69,9 +85,16 @@ let make = (~setHasAuth) => {
   <>
     <Header />
     <div>
-      <p className="text-stone-100 text-center">
-        {React.string("Click the link sent to your email to login.")}
-      </p>
+      {switch loginstate {
+      | Loading => <Loading label="user" />
+      | Error(msg) => <p className="error"> {React.string(msg)} </p>
+      | Data(user) =>
+        <p className="text-stone-100 text-center">
+          {React.string(
+            "Hello " ++ Int.toString(user.userID) ++ "Click the link sent to your email to login.",
+          )}
+        </p>
+      }}
     </div>
     <Footer />
   </>

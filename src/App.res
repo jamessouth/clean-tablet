@@ -17,13 +17,10 @@ module Link = {
 let make = () => {
   let route = Route.useRouter() //TODO don't pass down to auth
 
-  //   let (cognitoUser: Js.Nullable.t<Cognito.usr>, setCognitoUser) = React.Uncurried.useState(_ =>
-  //     Js.Nullable.null
-  //   )
-
+  let (user, setUser) = React.useState(_ => None)
   let (hasAuth, setHasAuth) = React.useState(_ => false)
 
-  let (token, _setToken) = React.Uncurried.useState(_ => None)
+  //   let (token, _setToken) = React.Uncurried.useState(_ => None)
   //   let (retrievedUsername, setRetrievedUsername) = React.Uncurried.useState(_ => "")
   let (_wsError, _setWsError) = React.Uncurried.useState(_ => "")
   let (_leaderData, _setLeaderData) = React.Uncurried.useState(_ => [])
@@ -51,8 +48,8 @@ let make = () => {
     | _ => "mb-12"
     }}
   >
-    {switch (route, token) {
-    | (Home, None) => {
+    {switch (route, hasAuth) {
+    | (Home, false) => {
         //   open Route
         Web.body(Web.document)->Web.setClassName("bodmob bodtab bodbig")
         //   <nav className="flex flex-col items-center">
@@ -73,19 +70,19 @@ let make = () => {
     //     <LazyLeaderboard playerName="bill" setLeaderData />
     //   </React.Suspense>
 
-    | (SignIn, None) => <SignIn setHasAuth />
+    | (SignIn, false) => <SignIn hasAuth setHasAuth setUser />
 
-    | (Landing | Leaderboard | Lobby | Play(_), None) => {
+    | (Landing | Leaderboard | Lobby | Play(_), false) => {
         Route.replace(Home)
         React.null
       }
 
-    | (Home | SignIn, Some(_)) => {
+    | (Home | SignIn, true) => {
         Route.replace(Landing)
         React.null
       }
 
-    | (Landing | Leaderboard | Lobby | Play(_), Some(_)) => React.null
+    | (Landing | Leaderboard | Lobby | Play(_), true) => React.null
     //   <React.Suspense fallback=React.null> auth </React.Suspense>
     | (NotFound, _) =>
       <div className="text-center text-stone-100 text-4xl"> {React.string("page not found")} </div>

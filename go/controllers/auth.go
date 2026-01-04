@@ -38,7 +38,11 @@ func (h *DBHandler) Login(w http.ResponseWriter, r *http.Request) {
 	// 	logAndSendError(w, err, "Invalid password", http.StatusUnauthorized)
 	// 	return
 	// }
+	fmt.Println()
 	fmt.Println(req)
+	fmt.Println()
+	fmt.Println(w.Header())
+	fmt.Println()
 	// Create session cookie
 	err := middleware.CreateSession(w, r, req.Id)
 	if err != nil || req.Id != 888 {
