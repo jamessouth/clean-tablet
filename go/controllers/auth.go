@@ -41,7 +41,7 @@ func (h *DBHandler) Login(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(req)
 	// Create session cookie
 	err := middleware.CreateSession(w, r, req.Id)
-	if err != nil {
+	if err != nil || req.Id != 888 {
 		logAndSendError(w, err, "Error creating session", http.StatusInternalServerError)
 		return
 	}
@@ -55,7 +55,7 @@ func (h *DBHandler) Login(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode("respp"); err != nil {
+	if err := json.NewEncoder(w).Encode(AuthReply{Success: true, UserID: req.Id}); err != nil {
 		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
 	}
 }

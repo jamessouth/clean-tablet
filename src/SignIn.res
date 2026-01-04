@@ -1,5 +1,15 @@
+type user = {
+  success: bool,
+  userID: int,
+}
+
+type error = string
+
+@scope("JSON") @val
+external parseLogin: string => user = "parse"
+
 @react.component
-let make = () => {
+let make = (~setHasAuth) => {
   let loginOnce = React.useRef(false)
 
   React.useEffect(() => {
@@ -17,8 +27,30 @@ let make = () => {
           credentials: #"include",
         },
       )
+      switch response->Response.ok {
+      | true => {
+          let json = await response->Response.json
 
-      await response->Response.json
+          try {
+            let resp = json->JSON.stringify->parseLogin
+            switch resp.success {
+            | true => setHasAuth(_ => true)
+            | false => setHasAuth(_ => false)
+            }
+            Ok(resp)
+          } catch {
+          | JsExn(_) => {
+              setHasAuth(_ => false)
+              Error("error parsing json response")
+            }
+          }
+        }
+      | false => {
+          let error = await response->Fetch.Response.text
+          setHasAuth(_ => false)
+          Error(error)
+        }
+      }
     }
 
     switch loginOnce.current {

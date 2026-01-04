@@ -21,6 +21,8 @@ let make = () => {
   //     Js.Nullable.null
   //   )
 
+  let (hasAuth, setHasAuth) = React.useState(_ => false)
+
   let (token, _setToken) = React.Uncurried.useState(_ => None)
   //   let (retrievedUsername, setRetrievedUsername) = React.Uncurried.useState(_ => "")
   let (_wsError, _setWsError) = React.Uncurried.useState(_ => "")
@@ -71,7 +73,7 @@ let make = () => {
     //     <LazyLeaderboard playerName="bill" setLeaderData />
     //   </React.Suspense>
 
-    | (SignIn, None) => <SignIn />
+    | (SignIn, None) => <SignIn setHasAuth />
 
     | (Landing | Leaderboard | Lobby | Play(_), None) => {
         Route.replace(Home)

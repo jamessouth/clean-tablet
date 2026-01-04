@@ -60,6 +60,12 @@ type SignupRequest struct {
 	LastName  string `json:"last_name"`
 }
 
+// AuthReply is the login reply
+type AuthReply struct {
+	Success bool
+	UserID  int32 `json:"userID"`
+}
+
 // var errContext error = errors.New("error retrieving from context")
 // var errHeader error = errors.New("error retrieving from headers")
 
