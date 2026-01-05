@@ -3,7 +3,6 @@ package middleware
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -88,8 +87,13 @@ func Auth(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 
 func CreateSession(w http.ResponseWriter, r *http.Request, userID int32) error {
 	session, err := store.Get(r, sessionName)
+	if !session.IsNew {
+		ff := *session
+		log.Printf("Session is not new: %v,%v", ff, time.Now().Unix())
+	}
 	if err != nil {
-		log.Printf("ERROR: Failed to get session: %v", err)
+		log.Printf("ERROR: Failed to create session: %v", err)
+		session.Options.MaxAge = -1
 		return err
 	}
 
@@ -100,13 +104,11 @@ func CreateSession(w http.ResponseWriter, r *http.Request, userID int32) error {
 	session.Values["created_at"] = time.Now().Unix()
 	// session.Values["paseto_token"] = token
 
-	ss := *session
-	ff := *ss.Options
-	fmt.Println(ss, ff)
 	// Save session
 	err = session.Save(r, w)
 	if err != nil {
 		log.Printf("ERROR: Failed to save session: %v", err)
+		session.Options.MaxAge = -1
 		return err
 	}
 

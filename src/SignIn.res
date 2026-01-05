@@ -11,10 +11,10 @@ type loginstage =
   | Data(user)
 
 @scope("JSON") @val
-external parseLogin: JSON.t => user = "parse"
+external parseLogin: string => user = "parse"
 
 @react.component
-let make = (~hasAuth, ~setHasAuth, ~setUser) => {
+let make = (~hasAuth, ~setHasAuth, ~setUser, ~user) => {
   let (loginstate, setLoginState) = React.useState(_ => Loading)
   let loginOnce = React.useRef(false)
 
@@ -38,7 +38,7 @@ let make = (~hasAuth, ~setHasAuth, ~setUser) => {
           let json = await response->Response.json
 
           try {
-            let resp = json->parseLogin
+            let resp = json->JSON.stringify->parseLogin
             switch resp.success {
             | true => Ok(resp)
             | false => Error("login fail")
@@ -74,10 +74,10 @@ let make = (~hasAuth, ~setHasAuth, ~setUser) => {
     switch loginOnce.current {
     | true =>
       Console.log("mimic sign in")
-      getLogin()->Console.log
+      getLogin()->ignore
     | false => loginOnce.current = true
     }
-    Console.log(hasAuth)
+    Console.log2(hasAuth, user)
 
     None
   }, [])
@@ -87,7 +87,8 @@ let make = (~hasAuth, ~setHasAuth, ~setUser) => {
     <div>
       {switch loginstate {
       | Loading => <Loading label="user" />
-      | Error(msg) => <p className="error"> {React.string(msg)} </p>
+      | Error(msg) =>
+        <p className="text-stone-100 bg-red-600 w-2/5 m-auto text-center"> {React.string(msg)} </p>
       | Data(user) =>
         <p className="text-stone-100 text-center">
           {React.string(

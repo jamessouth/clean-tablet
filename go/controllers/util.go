@@ -62,7 +62,7 @@ type SignupRequest struct {
 
 // AuthReply is the login reply
 type AuthReply struct {
-	Success bool
+	Success bool  `json:"success"`
 	UserID  int32 `json:"userID"`
 }
 
