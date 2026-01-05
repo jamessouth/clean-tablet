@@ -1,18 +1,5 @@
 let homeLinkStyles = "w-3/5 border border-stone-100 bg-stone-800/40 text-center text-stone-100 decay-mask p-2 max-w-80 font-fred "
 
-module Link = {
-  open Route
-  @react.component
-  let make = (~route, ~className, ~content="") => {
-    let onClick = e => {
-      ReactEvent.Mouse.preventDefault(e)
-      push(route)
-    }
-
-    <a onClick className href={typeToUrlString(route)}> {React.string(content)} </a>
-  }
-}
-
 @react.component
 let make = () => {
   let route = Route.useRouter() //TODO don't pass down to auth
@@ -28,7 +15,7 @@ let make = () => {
   //   module LazyMessage = {
   //     let make = React.lazy_(() => import(Message.make))
   //   }
-  Console.log3("pp", hasAuth, user)
+  //   Console.log3("pp", hasAuth, user)
 
   module LazyLeaderboard = {
     let _make = React.lazy_(() => import(Leaderboard.make))
@@ -63,7 +50,8 @@ let make = () => {
         //       </React.Suspense>
         //     }}
         //   </nav>
-        <Home />
+        // <Home />
+        <Landing user="bill" />
       }
 
     // | (Leaderboard, _) =>
@@ -83,6 +71,7 @@ let make = () => {
         React.null
       }
 
+    // | (Landing, true) => <Landing />
     | (Landing | Leaderboard | Lobby | Play(_), true) => React.null
     //   <React.Suspense fallback=React.null> auth </React.Suspense>
     | (NotFound, _) =>
