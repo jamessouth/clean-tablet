@@ -18,38 +18,35 @@ let make = () => {
   let handleMenuClick = _ => {
     setMenuIsOpen(prev => !prev)
   }
-
-  <div
-    className={"flex flex-col h-[14vh] absolute top-1 left-1 font-anon justify-center items-center z-1 " ++
-    switch menuIsOpen {
-    | true => ""
-    | false => ""
-    }}
-  >
+  <>
     <button
       onClick={handleMenuClick}
-      className="flex flex-col absolute top-0 justify-evenly h-6 w-6 self-start "
+      className="flex flex-col absolute top-1 left-1 justify-evenly h-6 w-6 self-start "
     >
       <Line
         menuIsOpen
         trans="transform"
-        openTrue="origin-left rotate-[33deg]"
+        openTrue="origin-left rotate-[24deg] scale-x-133"
         openFalse="-translate-y-0.5"
       />
       <Line menuIsOpen trans="opacity" openTrue="opacity-0" openFalse="opacity-100" />
       <Line
         menuIsOpen
         trans="transform"
-        openTrue="origin-left -rotate-[33deg]"
+        openTrue="origin-left -rotate-[24deg] scale-x-133"
         openFalse="translate-y-0.5"
       />
     </button>
-    {switch menuIsOpen {
-    | true =>
+    <div
+      className={"flex flex-col top-12 left-1 absolute bg-stone-100/10 font-anon justify-around items-center z-1 " ++
+      switch menuIsOpen {
+      | true => "block"
+      | false => "hidden"
+      }}
+    >
       <button onClick={_ => Console.log("a")}>
         <img className="block" src="/src/assets/signout.png" />
       </button>
-    | false => React.null
-    }}
-  </div>
+    </div>
+  </>
 }
