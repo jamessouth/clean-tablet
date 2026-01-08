@@ -15,7 +15,7 @@ let make = () => {
   //   module LazyMessage = {
   //     let make = React.lazy_(() => import(Message.make))
   //   }
-  //   Console.log3("pp", hasAuth, user)
+  Console.log3("pp", hasAuth, user)
 
   module LazyLeaderboard = {
     let _make = React.lazy_(() => import(Leaderboard.make))
@@ -61,7 +61,9 @@ let make = () => {
 
     | (SignIn, false) => <SignIn hasAuth setHasAuth setUser user />
 
-    | (Landing | Leaderboard | Lobby | Play(_), false) => {
+    | (Lobby, false) => <Lobby />
+
+    | (Landing | Leaderboard | Play(_), false) => {
         Route.replace(Home)
         React.null
       }
