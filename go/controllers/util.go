@@ -129,3 +129,50 @@ func logAndSendError(w http.ResponseWriter, err error, msg string, statusCode in
 // k := paseto.NewV4SymmetricKey()
 // fmt.Println(k.ExportHex())
 // https://go.dev/play/p/bClzAlvZnnq
+
+// package main
+
+// import (
+// 	"crypto/rand"
+// 	"crypto/sha256"
+// 	"encoding/hex"
+// 	"fmt"
+// 	"log"
+// )
+
+// // GenerateMagicToken creates a raw token for the email and a hash for the DB
+// func GenerateMagicToken() (rawToken string, tokenHash string, err error) {
+// 	// 1. Generate 32 bytes of high-entropy randomness
+// 	b := make([]byte, 32)
+// 	if _, err := rand.Read(b); err != nil {
+// 		return "", "", err
+// 	}
+
+// 	// 2. Convert to a hex string (this is what the user gets in the email)
+// 	rawToken = hex.EncodeToString(b)
+
+// 	// 3. Create a SHA-256 hash of the raw token (this is what goes in the DB)
+// 	hash := sha256.Sum256([]byte(rawToken))
+// 	tokenHash = hex.EncodeToString(hash[:])
+
+// 	return rawToken, tokenHash, nil
+// }
+
+// func main() {
+// 	raw, hash, _ := GenerateMagicToken()
+
+// 	fmt.Printf("📧 SEND TO USER (Raw): %s\n", raw)
+// 	fmt.Printf("🗄️  STORE IN DB (Hash): %s\n", hash)
+// }
+
+// When the user clicks the link, your Go backend will receive the rawToken. You must hash it again to find the match in your database.
+
+// func VerifyToken(providedRawToken string) {
+//     // 1. Hash the token provided by the user's click
+//     hashBytes := sha256.Sum256([]byte(providedRawToken))
+//     providedHash := hex.EncodeToString(hashBytes[:])
+
+//     // 2. Query the database
+//     // SELECT player_id FROM auth_tokens WHERE token_hash = $1 AND expires_at > NOW()
+//     // (If a row exists, the user is logged in!)
+// }
