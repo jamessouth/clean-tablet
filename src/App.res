@@ -4,8 +4,8 @@ let homeLinkStyles = "w-3/5 border border-stone-100 bg-stone-800/40 text-center 
 let make = () => {
   let route = Route.useRouter() //TODO don't pass down to auth
 
-  let (user, setUser) = React.useState(_ => None)
-  let (hasAuth, setHasAuth) = React.useState(_ => false)
+  let (user, _setUser) = React.useState(_ => None)
+  let (hasAuth, _setHasAuth) = React.useState(_ => false)
 
   //   let (token, _setToken) = React.Uncurried.useState(_ => None)
   //   let (retrievedUsername, setRetrievedUsername) = React.Uncurried.useState(_ => "")
@@ -31,10 +31,10 @@ let make = () => {
   //   )
 
   <main
-    className={switch route {
-    | Leaderboard => ""
-    | _ => "mb-12"
-    }}
+  // className={switch route {
+  // | Leaderboard => ""
+  // | _ => "mb-12"
+  // }}
   >
     {switch (route, hasAuth) {
     | (Home, false) => {
@@ -51,7 +51,7 @@ let make = () => {
         //     }}
         //   </nav>
         // <Home />
-        <Landing user="bill" />
+        <Home />
       }
 
     // | (Leaderboard, _) =>
@@ -59,7 +59,8 @@ let make = () => {
     //     <LazyLeaderboard playerName="bill" setLeaderData />
     //   </React.Suspense>
 
-    | (SignIn, false) => <SignIn hasAuth setHasAuth setUser user />
+    // | (SignIn, false) => <SignIn hasAuth setHasAuth setUser user />
+    | (SignIn, false) => <div> {React.string("uuu")} </div>
 
     | (Lobby, false) => <Lobby />
 

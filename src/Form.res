@@ -2,7 +2,7 @@
 let make = (~ht="h-48", ~on_Click, ~leg, ~validationError, ~children=React.null) => {
   let (submitClicked, setSubmitClicked) = React.Uncurried.useState(_ => false)
 
-  <form className="w-4/5 m-auto relative">
+  <form className="w-4/5 m-auto relative mb-[5vh]">
     <fieldset className={`flex flex-col items-center justify-around ${ht}`}>
       {switch String.length(leg) > 0 {
       | true =>
@@ -31,7 +31,7 @@ let make = (~ht="h-48", ~on_Click, ~leg, ~validationError, ~children=React.null)
         setSubmitClicked(_ => true)
         switch validationError {
         | Some(_) => ()
-        | None => on_Click()
+        | None => on_Click()->Promise.ignore
         }
       }}
     >
