@@ -22,10 +22,11 @@ let client: Supabase.Client.t<unit> = Supabase.createClient(url, apikey, ~option
 
 @react.component
 let make = () => {
-  let (username, setUsername) = React.Uncurried.useState(_ => "")
-  let (email, setEmail) = React.Uncurried.useState(_ => "")
-  let (authError, setAuthError) = React.Uncurried.useState(_ => None)
-  let (_validationError, setValidationError) = React.Uncurried.useState(_ => Some(
+  let (username, setUsername) = React.useState(_ => "")
+  let (email, setEmail) = React.useState(_ => "")
+  let (hasNameCookie, setHasNameCookie) = React.useState(_ => false)
+  let (authError, setAuthError) = React.useState(_ => None)
+  let (_validationError, setValidationError) = React.useState(_ => Some(
     "USERNAME: 3-10 length; EMAIL: 5-99 length; enter a valid email address.",
   ))
 
@@ -33,6 +34,27 @@ let make = () => {
     ErrorHook.useMultiError([(username, Username), (email, Email)], setValidationError)
     None
   }, (username, email))
+
+  React.useEffect(() => {
+    switch name_cookie_key->Cookie.getCookieValue {
+    | Some(v) =>
+      switch v->String.split("=")->Array.get(1) {
+      | Some(c) =>
+        setUsername(_ => c)
+        setHasNameCookie(_ => true)
+      | None => ()
+      }
+    | None => ()
+    }
+
+    // if (isCookieSet(nameCookieKey)) {
+    //   console.log('cookie');
+    //   setPlayerName(getCookieValue(nameCookieKey));
+    // } else {
+    //   console.log('no cookie');
+    // }
+    None
+  }, [])
 
   //   React.useEffect0(() => {
   //     Js.log("signin use effect")
@@ -67,8 +89,13 @@ let make = () => {
   }
   <>
     <Header />
-    <Form ht="h-[35vh]" on_Click leg="Sign in" validationError=None>
-      <Input value=username propName="username" setFunc=setUsername />
+    // ht="h-[35vh]"
+    <Form on_Click leg="Sign in" validationError=None>
+      {switch hasNameCookie {
+      | true => React.null
+      | false => <Input value=username propName="username" setFunc=setUsername />
+      }}
+
       <Input value=email propName="email" inputMode="email" setFunc=setEmail />
     </Form>
     <Footer />

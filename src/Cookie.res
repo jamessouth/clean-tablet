@@ -1,30 +1,19 @@
-
+@val external document: Dom.document = "document"
 @scope("document") @val external cookie: string = "cookie"
+@set external setCookie: (Dom.document, string) => unit = "cookie"
+@send external setTime: (Date.t, Date.msSinceEpoch) => Date.t = "setTime"
+
+let yearsMillis = Float.parseFloat("31536000000")
 
 let getCookieValue = key => {
-  let val = cookie->String.split(";")->Array.find((k) => k->String.trim->String.startsWith(key))
-
-// switch val {
-// | Some(v) => switch v->String.split("=")->Array.get(1){
-//     |Some(c) => c
-//     |None => ""
-// }
-// | None => ""
-// }
-  
-  
-  
-  
+  cookie->String.split(";")->Array.find(k => k->String.trim->String.startsWith(key))
 }
 
+let setCookie = (name, value) => {
+  let now = Date.make()
+  let inAYear = Date.getTime(now) + yearsMillis
+  let _ = now->setTime(inAYear)
+  let expiry = now->Date.toUTCString
 
-
-let setCookie = (name, value, expiryInDays ) => {
-  const date = new Date();
-  date.setTime(date.getTime() + expiryInDays * 24 * 60 * 60 * 1000);
-  const expires = `expires=${date.toUTCString()}`;
-  document.cookie = `${name}${value};${expires};path=/;SameSite=Strict`;
+  document->setCookie(`${name}${value};expires=${expiry};path=/;SameSite=Strict`)
 }
-
-
-
