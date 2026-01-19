@@ -123,10 +123,25 @@ let make = () => {
     // }
   }
   <>
-    <Header />
+    {switch hasNameCookie {
+    | true =>
+      <p
+        className="font-flow text-stone-100 text-3xl tracking-wide absolute top-0 left-1/2 -translate-x-1/2 font-bold "
+      >
+        {React.string(`Hello, ${username}!`)}
+      </p>
+    | false => React.null
+    }}
+
+    <Header
+      mgt={switch hasNameCookie {
+      | true => "mt-20"
+      | false => "mt-17"
+      }}
+    />
     <Form
       ht={switch hasNameCookie {
-      | true => "h-48"
+      | true => "h-46"
       | false => "h-54"
       }}
       on_Click

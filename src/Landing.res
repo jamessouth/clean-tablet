@@ -9,7 +9,7 @@ let make = (~user) => {
     >
       {React.string(user)}
     </p>
-    <Header />
+    <Header mgt="mt-17" />
     <nav className="flex flex-col items-center h-[30vh] justify-around">
       <Link route=Lobby className={landingLinkStyles ++ "text-4xl"} content="LOBBY" />
       <Link route=Leaderboard className={landingLinkStyles ++ "text-3xl"} content="LEADERBOARD" />

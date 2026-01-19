@@ -83,7 +83,7 @@ let make = (~hasAuth, ~setHasAuth, ~setUser, ~user) => {
   }, [])
 
   <>
-    <Header />
+    <Header mgt="mt-17" />
     <div>
       {switch loginstate {
       | Loading => <Loading label="user" />
