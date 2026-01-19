@@ -1,5 +1,3 @@
-let className = "font-arch bg-transparent text-stone-100 text-2xl absolute right-0 top-0 cursor-pointer"
-
 @react.component
 let make = (
   ~value,
@@ -8,16 +6,12 @@ let make = (
   ~inputMode="text",
   ~onKeyPress=_e => (),
   ~setFunc,
+  ~submitClicked,
+  ~valdnError,
 ) => {
-  let (showPassword, setShowPassword) = React.Uncurried.useState(_ => false)
+  let onChange = e => setFunc(_ => ReactEvent.Form.target(e)["value"])
 
-  let onChange = e => setFunc(._ => ReactEvent.Form.target(e)["value"])
-
-  <div
-    className={switch propName == "password" {
-    | true => "max-w-xs lg:max-w-sm w-full relative"
-    | false => "max-w-xs lg:max-w-sm w-full"
-    }}>
+  <div className="max-w-xs lg:max-w-sm w-full">
     <label className="text-2xl font-flow text-stone-100" htmlFor=autoComplete>
       {React.string(propName)}
     </label>
@@ -30,21 +24,15 @@ let make = (
       onChange
       onKeyPress
       spellCheck=false
-      type_={switch propName == "username" || propName == "answer" || showPassword {
+      type_={switch propName == "username" || propName == "answer" {
       | true => "text"
       | false => propName
       }}
       value
     />
-    {switch propName == "password" {
-    | true =>
-      <Button onClick={_ => setShowPassword(.prev => !prev)} className>
-        {switch showPassword {
-        | true => React.string("hide")
-        | false => React.string("show")
-        }}
-      </Button>
-    | false => React.null
+    {switch (submitClicked, valdnError) {
+    | (false, _) | (true, None) => React.null
+    | (true, Some(error)) => <Message msg=error />
     }}
   </div>
 }

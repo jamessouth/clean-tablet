@@ -29,7 +29,7 @@ let checkExclusion = (re, msg, str) =>
 let getFuncs = input =>
   switch input {
   | Username => [
-      s => checkLength(3, 10, s),
+      s => checkLength(3, 10, s), //^\w{3,10}$
       s =>
         checkExclusion(
           /\W/,
@@ -38,7 +38,7 @@ let getFuncs = input =>
         ),
     ]
   | Email => [
-      s => checkLength(5, 99, s),
+      s => checkLength(5, 99, s), //^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
       s =>
         checkInclusion(
           /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
@@ -51,26 +51,26 @@ let getFuncs = input =>
       s => checkInclusion(/[a-z ]/i, "letters and spaces only; ", s),
       s => checkExclusion(/\d/, "no numbers; ", s),
       s => checkExclusion(/[!-/:-@\[-`{-~]/, "no symbols; ", s),
-      s => checkExclusion(/^\s|\s$/, "must begin and end with letters; ", s),
+      s => checkExclusion(/^\s|\s$/, "must begin and end with letters; ", s), //^[a-zA-Z][a-zA-Z ]{0,10}[a-zA-Z]$
     ]
   }
 
-let useMultiError = (fields, setErrorFunc) => {
-  let errs = fields->Array.map(fld => {
-    let (val, prop) = fld
-    let error = getFuncs(prop)->Array.reduce("", (acc, f) => acc ++ f(val))
-    switch error == "" {
-    | true => ""
-    | false => fromTypeToString(prop) ++ ": " ++ error
-    }
-  })
-  let total = errs->Array.join("")
-  let final = switch total == "" {
-  | true => None
-  | false => Some(total)
-  }
-  setErrorFunc(_ => final)
-}
+// let useMultiError = (fields, setErrorFunc) => {
+//   let errs = fields->Array.map(fld => {
+//     let (val, prop) = fld
+//     let error = getFuncs(prop)->Array.reduce("", (acc, f) => acc ++ f(val))
+//     switch error == "" {
+//     | true => ""
+//     | false => fromTypeToString(prop) ++ ": " ++ error
+//     }
+//   })
+//   let total = errs->Array.join("")
+//   let final = switch total == "" {
+//   | true => None
+//   | false => Some(total)
+//   }
+//   setErrorFunc(_ => final)
+// }
 
 let useError = (value, propName, setErrorFunc) => {
   Console.log("Errorhook2")

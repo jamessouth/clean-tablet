@@ -1,7 +1,12 @@
 @react.component
-let make = (~ht="h-48", ~on_Click, ~leg, ~validationError, ~children=React.null) => {
-  let (submitClicked, setSubmitClicked) = React.Uncurried.useState(_ => false)
-
+let make = (
+  ~ht="h-48",
+  ~on_Click,
+  ~leg,
+  ~validationError,
+  ~setSubmitClicked,
+  ~children=React.null,
+) => {
   <form className="w-4/5 m-auto relative mb-[5vh]">
     <fieldset className={`flex flex-col items-center justify-around ${ht}`}>
       {switch String.length(leg) > 0 {
@@ -11,10 +16,7 @@ let make = (~ht="h-48", ~on_Click, ~leg, ~validationError, ~children=React.null)
         </legend>
       | false => React.null
       }}
-      {switch (submitClicked, validationError) {
-      | (false, _) | (true, None) => React.null
-      | (true, Some(error)) => <Message msg=error />
-      }}
+
       {children}
     </fieldset>
     // {switch (submitClicked, leg == "Sign in", validationError) {
@@ -30,8 +32,8 @@ let make = (~ht="h-48", ~on_Click, ~leg, ~validationError, ~children=React.null)
       onClick={_ => {
         setSubmitClicked(_ => true)
         switch validationError {
-        | Some(_) => ()
-        | None => on_Click()->Promise.ignore
+        | true => ()
+        | false => on_Click()->Promise.ignore
         }
       }}
     >
