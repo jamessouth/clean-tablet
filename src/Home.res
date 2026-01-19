@@ -1,8 +1,9 @@
-let username_max_length = 10
-let email_max_length = 99
+// let username_max_length = 10
+// let email_max_length = 99
 let name_cookie_key = "clean_tablet_username="
 
 let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+let unameRegex = /^\w{3,10}$/
 
 @val @scope(("import", "meta", "env"))
 external apikey: string = "VITE_SB_PUB_APIKEY"
@@ -26,7 +27,7 @@ let client: Supabase.Client.t<unit> = Supabase.createClient(url, apikey, ~option
 let make = () => {
   let (username, setUsername) = React.useState(_ => "")
   let (email, setEmail) = React.useState(_ => "")
-  let (_hasNameCookie, setHasNameCookie) = React.useState(_ => false)
+  let (hasNameCookie, setHasNameCookie) = React.useState(_ => false)
   let (_authError, _setAuthError) = React.useState(_ => None)
   let (submitClicked, setSubmitClicked) = React.Uncurried.useState(_ => false)
 
@@ -36,10 +37,9 @@ let make = () => {
     "enter a valid email address",
   ))
 
-  //   let (_validationError, setValidationError) = React.Uncurried.useState(_ => Some(
-  //     "EMAIL: 5-99 length; enter a valid email address.",
-  //     "USERNAME: 3-10 length; EMAIL: 5-99 length; enter a valid email address.",
-  //   ))
+  let (unameValdnError, setUnameValdnError) = React.useState(_ => Some(
+    "3-10 letters, numbers, and _ only",
+  ))
 
   React.useEffect(() => {
     switch String.match(email, emailRegex) {
@@ -50,12 +50,20 @@ let make = () => {
   }, [email])
 
   React.useEffect(() => {
-    switch emailValdnError {
-    | Some(_) => setValidationError(_ => true)
-    | None => setValidationError(_ => false)
+    switch String.match(username, unameRegex) {
+    | None => setUnameValdnError(_ => Some("3-10 letters, numbers, and _ only"))
+    | Some(_) => setUnameValdnError(_ => None)
     }
     None
-  }, [emailValdnError])
+  }, [username])
+
+  React.useEffect(() => {
+    switch (emailValdnError, unameValdnError) {
+    | (None, None) => setValidationError(_ => false)
+    | _ => setValidationError(_ => true)
+    }
+    None
+  }, (emailValdnError, unameValdnError))
 
   React.useEffect(() => {
     switch name_cookie_key->Cookie.getCookieValue {
@@ -91,7 +99,12 @@ let make = () => {
   //   })
 
   let on_Click = async () => {
-    Console.log("submit clckd")
+    Console.log3("submit clckd", username, email)
+    switch hasNameCookie {
+    | true => ()
+    | false => name_cookie_key->Cookie.setCookie(username)
+    }
+
     // Route.push(SignIn)
     // let {error} = await client
     // ->Supabase.Client.auth
@@ -111,12 +124,28 @@ let make = () => {
   }
   <>
     <Header />
-    // ht="h-[35vh]"
-    <Form on_Click leg="Sign in" validationError setSubmitClicked>
-      //   {switch hasNameCookie {
-      //   | true => React.null
-      //   | false => <Input value=username propName="username" setFunc=setUsername />
-      //   }}
+    <Form
+      ht={switch hasNameCookie {
+      | true => "h-48"
+      | false => "h-54"
+      }}
+      on_Click
+      leg="Sign in"
+      validationError
+      setSubmitClicked
+    >
+      {switch hasNameCookie {
+      | true => React.null
+      | false =>
+        <Input
+          value=username
+          propName="username"
+          inputMode="username"
+          setFunc=setUsername
+          submitClicked
+          valdnError=unameValdnError
+        />
+      }}
 
       <Input
         value=email
