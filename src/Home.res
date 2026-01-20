@@ -10,6 +10,11 @@ external apikey: string = "VITE_SB_PUB_APIKEY"
 @val @scope(("import", "meta", "env"))
 external url: string = "VITE_SB_URL"
 
+type loginstate =
+  | Loading
+  | Error(Supabase.Auth.error)
+  | Success
+
 let options: Supabase.Options.t = {
   auth: {
     autoRefreshToken: true,
@@ -25,10 +30,13 @@ let client: Supabase.Client.t<unit> = Supabase.createClient(url, apikey, ~option
 
 @react.component
 let make = () => {
+  let (loginstate, setLoginState) = React.useState(_ => Loading)
+  let (showLoginStatus, setShowLoginStatus) = React.Uncurried.useState(_ => false)
+
   let (username, setUsername) = React.useState(_ => "")
   let (email, setEmail) = React.useState(_ => "")
   let (hasNameCookie, setHasNameCookie) = React.useState(_ => false)
-  let (authError, setAuthError) = React.useState(_ => None)
+  //   let (authError, setAuthError) = React.useState(_ => None)
   let (submitClicked, setSubmitClicked) = React.Uncurried.useState(_ => false)
 
   let (validationError, setValidationError) = React.useState(_ => true)
@@ -97,7 +105,7 @@ let make = () => {
     | true => ()
     | false => name_cookie_key->Cookie.setCookie(username)
     }
-
+    setShowLoginStatus(_ => true)
     // Route.push(SignIn)
     let {error} = await client
     ->Supabase.Client.auth
@@ -105,16 +113,18 @@ let make = () => {
       email,
       options: {
         emailRedirectTo: "http://localhost:5173/api/landing",
-        shouldCreateUser: false,
+        shouldCreateUser: true,
         data: JSON.Encode.object(dict{"name": JSON.Encode.string(username)}),
       },
     })
     switch Nullable.toOption(error) {
     | Some(err) =>
       Console.error(err)
-      setAuthError(_ => Some("Auth error: " ++ err.message ++ ". Please try again."))
+      setLoginState(_ => Error(err))
 
-    | None => Console.log("Check your email for the login link!")
+    | None =>
+      Console.log("Check your email for the login link!")
+      setLoginState(_ => Success)
     }
   }
   <>
@@ -134,43 +144,55 @@ let make = () => {
       | false => "mt-17"
       }}
     />
-    {switch authError {
-    | Some(msg) =>
-      <Message msg css="absolute z-1 -translate-x-1/2 top-[20%] left-1/2 w-[50vw] p-2" />
-    | None => React.null
-    }}
-    <Form
-      ht={switch hasNameCookie {
-      | true => "h-46"
-      | false => "h-54"
-      }}
-      on_Click
-      leg="Sign in"
-      validationError
-      setSubmitClicked
-    >
-      {switch hasNameCookie {
-      | true => React.null
-      | false =>
-        <Input
-          value=username
-          propName="username"
-          inputMode="username"
-          setFunc=setUsername
-          submitClicked
-          valdnError=unameValdnError
-        />
-      }}
 
-      <Input
-        value=email
-        propName="email"
-        inputMode="email"
-        setFunc=setEmail
-        submitClicked
-        valdnError=emailValdnError
-      />
-    </Form>
+    {switch showLoginStatus {
+    | true =>
+      switch loginstate {
+      | Loading => <Loading />
+      | Error(err) =>
+        <p className="text-stone-100 bg-red-600 font-anon w-2/5 mx-auto text-center p-2 mb-[5vh]">
+          {React.string("Auth error: " ++ err.message ++ ". Please try again.")}
+        </p>
+      | Success =>
+        <p className="text-stone-100 mx-auto font-anon w-4/5 text-center mb-[5vh]">
+          {React.string("Click the link we sent to your email to login!")}
+        </p>
+      }
+    | false =>
+      <Form
+        ht={switch hasNameCookie {
+        | true => "h-46"
+        | false => "h-54"
+        }}
+        on_Click
+        leg="Sign in"
+        validationError
+        setSubmitClicked
+      >
+        {switch hasNameCookie {
+        | true => React.null
+        | false =>
+          <Input
+            value=username
+            propName="username"
+            inputMode="username"
+            setFunc=setUsername
+            submitClicked
+            valdnError=unameValdnError
+          />
+        }}
+
+        <Input
+          value=email
+          propName="email"
+          inputMode="email"
+          setFunc=setEmail
+          submitClicked
+          valdnError=emailValdnError
+        />
+      </Form>
+    }}
+
     <Footer />
   </>
 }
