@@ -28,7 +28,7 @@ let make = () => {
   let (username, setUsername) = React.useState(_ => "")
   let (email, setEmail) = React.useState(_ => "")
   let (hasNameCookie, setHasNameCookie) = React.useState(_ => false)
-  let (_authError, _setAuthError) = React.useState(_ => None)
+  let (authError, setAuthError) = React.useState(_ => None)
   let (submitClicked, setSubmitClicked) = React.Uncurried.useState(_ => false)
 
   let (validationError, setValidationError) = React.useState(_ => true)
@@ -76,13 +76,6 @@ let make = () => {
       }
     | None => ()
     }
-
-    // if (isCookieSet(nameCookieKey)) {
-    //   console.log('cookie');
-    //   setPlayerName(getCookieValue(nameCookieKey));
-    // } else {
-    //   console.log('no cookie');
-    // }
     None
   }, [])
 
@@ -106,21 +99,23 @@ let make = () => {
     }
 
     // Route.push(SignIn)
-    // let {error} = await client
-    // ->Supabase.Client.auth
-    // ->Supabase.Auth.signInWithOtp({
-    //   email,
-    //   options: {
-    //     emailRedirectTo: "http://localhost:5173/api/landing",
-    //     shouldCreateUser: false,
-    //     data: JSON.Encode.object(dict{"name": JSON.Encode.string(username)}),
-    //   },
-    // })
-    // switch Nullable.toOption(error) {
-    // | Some(err) => Console.error(err)
+    let {error} = await client
+    ->Supabase.Client.auth
+    ->Supabase.Auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: "http://localhost:5173/api/landing",
+        shouldCreateUser: false,
+        data: JSON.Encode.object(dict{"name": JSON.Encode.string(username)}),
+      },
+    })
+    switch Nullable.toOption(error) {
+    | Some(err) =>
+      Console.error(err)
+      setAuthError(_ => Some("Auth error: " ++ err.message ++ ". Please try again."))
 
-    // | None => Console.log("Check your email for the login link!")
-    // }
+    | None => Console.log("Check your email for the login link!")
+    }
   }
   <>
     {switch hasNameCookie {
@@ -139,6 +134,11 @@ let make = () => {
       | false => "mt-17"
       }}
     />
+    {switch authError {
+    | Some(msg) =>
+      <Message msg css="absolute z-1 -translate-x-1/2 top-[20%] left-1/2 w-[50vw] p-2" />
+    | None => React.null
+    }}
     <Form
       ht={switch hasNameCookie {
       | true => "h-46"

@@ -32,7 +32,7 @@ let make = (
     />
     {switch (submitClicked, valdnError) {
     | (false, _) | (true, None) => React.null
-    | (true, Some(error)) => <Message msg=error />
+    | (true, Some(error)) => <Message msg=error css="" />
     }}
   </div>
 }
