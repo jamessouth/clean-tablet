@@ -64,10 +64,8 @@ let make = () => {
 
     | (Lobby, false) => <Lobby />
 
-    | (Landing | Leaderboard | Play(_), false) => {
-        Route.replace(Home)
-        React.null
-      }
+    | (Landing | Leaderboard | Play(_), false) => // Route.replace(Home)
+      React.null
 
     | (Home | SignIn, true) => {
         Route.replace(Landing)

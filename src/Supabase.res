@@ -8,22 +8,30 @@ module Auth = {
     aud: string,
     role: string,
     email: option<string>,
-    phone: option<string>,
     created_at: string,
     // Add other user fields as needed (app_metadata, user_metadata, etc.)
   }
+
+  type tokenType = [
+    | #bearer
+  ]
 
   type session = {
     access_token: string,
     refresh_token: string,
     expires_in: int,
-    token_type: string,
+    token_type: tokenType,
     user: user,
   }
 
   type error = {
     message: string,
     status: option<int>,
+  }
+
+  type authResp = {
+    user: Nullable.t<user>,
+    session: Nullable.t<session>,
   }
 
   type authOtpResp = {
@@ -36,6 +44,16 @@ module Auth = {
   type response<'data> = {
     data: 'data,
     error: Nullable.t<error>,
+  }
+
+  // 1. Types for OTP Verification
+  type verifyOtpType = [
+    | #magiclink
+  ]
+
+  type verifyOtpParams = {
+    @as("type") type_: verifyOtpType,
+    token_hash: string,
   }
 
   // ---------------------------------------------------------
@@ -111,6 +129,9 @@ module Auth = {
   @send
   external onAuthStateChange: (t, (event, option<session>) => unit) => authStateChangeResponse =
     "onAuthStateChange"
+
+  @send
+  external verifyOtp: (t, verifyOtpParams) => Promise.t<response<authResp>> = "verifyOtp"
 }
 
 module Realtime = {
@@ -260,11 +281,14 @@ module Options = {
 
   type global = {headers?: Dict.t<string>}
 
+  type flowType = | @as("implicit") Implicit | @as("pkce") PKCE
+
   type t = {
     auth?: auth,
     realtime?: JSON.t, // Binding as generic JSON for now
     storage?: JSON.t, // Binding as generic JSON for now
     global?: global,
+    flowType?: flowType,
   }
 }
 
