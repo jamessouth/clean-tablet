@@ -76,7 +76,19 @@ let make = () => {
     | (Landing | Leaderboard | Lobby | Play(_), true) => React.null
     //   <React.Suspense fallback=React.null> auth </React.Suspense>
     | (NotFound, _) =>
-      <div className="text-center text-stone-100 text-4xl"> {React.string("page not found")} </div>
+      <div>
+        <Header />
+        <p className="text-center font-anon mt-12 mx-4 text-stone-100 text-4xl">
+          {React.string("page not found")}
+        </p>
+        <Button
+          onClick={_ => {
+            Route.push(Home)
+          }}
+        >
+          {React.string("home")}
+        </Button>
+      </div>
     }}
   </main>
 }
