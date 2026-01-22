@@ -54,6 +54,13 @@ let make = () => {
         <Home />
       }
 
+    | (Auth_Confirm(qs), false) => {
+        Console.log2("qs", qs)
+        React.null
+      }
+
+    | (Auth_Confirm(_), true) => <p> {React.string("great")} </p>
+
     // | (Leaderboard, _) =>
     //   <React.Suspense fallback=React.null>
     //     <LazyLeaderboard playerName="bill" setLeaderData />

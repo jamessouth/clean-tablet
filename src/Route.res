@@ -2,6 +2,7 @@ type t =
   // public
   | Home
   | SignIn
+  | Auth_Confirm(string)
   //   private
   | Landing
   | Leaderboard
@@ -14,6 +15,7 @@ let urlStringToType = (url: RescriptReactRouter.url) =>
   switch url.path {
   | list{} => Home
   | list{"signin"} => SignIn
+  | list{"auth", "confirm"} => Auth_Confirm(url.search)
   | list{"api", "landing"} => Landing
   | list{"api", "leaderboard"} => Leaderboard
   | list{"api", "lobby"} => Lobby
@@ -29,7 +31,7 @@ let typeToUrlString = t =>
   | Leaderboard => "/api/leaderboard"
   | Lobby => "/api/lobby"
   | Play(game) => `/api/play/${game}`
-  | NotFound => ""
+  | Auth_Confirm(_) | NotFound => ""
   }
 
 let useRouter = () => urlStringToType(RescriptReactRouter.useUrl())
