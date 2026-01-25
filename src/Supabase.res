@@ -30,8 +30,8 @@ module Auth = {
   }
 
   type authResp = {
-    user: Nullable.t<user>,
-    session: Nullable.t<session>,
+    user: Null.t<user>,
+    session: Null.t<session>,
   }
 
   type authOtpResp = {
@@ -40,15 +40,10 @@ module Auth = {
     messageId: Null.t<option<string>>,
   }
 
-  // Response wrapper for most Auth methods
-  type response<'data> = {
-    data: 'data,
-    error: Nullable.t<error>,
-  }
-
-  // 1. Types for OTP Verification
   type verifyOtpType = [
     | #magiclink
+    | #email
+    | #other
   ]
 
   type verifyOtpParams = {
@@ -71,6 +66,11 @@ module Auth = {
     email: string,
     options?: signInWithOtpOptions,
   }
+
+  type loginstate =
+    | Loading
+    | Error(error)
+    | Success
 
   // ---------------------------------------------------------
   // Event Types
@@ -104,18 +104,18 @@ module Auth = {
   // 1. Get Session
   // ----------------------------
   @send
-  external getSession: t => Promise.t<response<option<session>>> = "getSession"
+  external getSession: t => Promise.t<Result.t<option<session>, error>> = "getSession"
 
   // 2. Get User (fetches fresh data from DB, unlike getSession which is local)
   // ----------------------------
   @send
-  external getUser: t => Promise.t<response<option<user>>> = "getUser"
+  external getUser: t => Promise.t<Result.t<option<user>, error>> = "getUser"
 
   // 3. Sign In (Magic Link)
   // ----------------------------
   // Returns session: null because the session isn't ready until they click the link
   @send
-  external signInWithOtp: (t, signInWithOtpCredentials) => Promise.t<response<authOtpResp>> =
+  external signInWithOtp: (t, signInWithOtpCredentials) => Promise.t<Result.t<authOtpResp, error>> =
     "signInWithOtp"
 
   // 4. Sign Out
@@ -131,7 +131,7 @@ module Auth = {
     "onAuthStateChange"
 
   @send
-  external verifyOtp: (t, verifyOtpParams) => Promise.t<response<authResp>> = "verifyOtp"
+  external verifyOtp: (t, verifyOtpParams) => Promise.t<Result.t<authResp, error>> = "verifyOtp"
 }
 
 module Realtime = {

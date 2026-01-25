@@ -1,11 +1,30 @@
 let homeLinkStyles = "w-3/5 border border-stone-100 bg-stone-800/40 text-center text-stone-100 decay-mask p-2 max-w-80 font-fred "
 
+@val @scope(("import", "meta", "env"))
+external apikey: string = "VITE_SB_PUB_APIKEY"
+@val @scope(("import", "meta", "env"))
+external url: string = "VITE_SB_URL"
+
+let options: Supabase.Options.t = {
+  auth: {
+    autoRefreshToken: true,
+    storageKey: "my-custom-storage-key",
+    persistSession: true,
+    detectSessionInUrl: true,
+  },
+  flowType: PKCE,
+  // global: {
+  //   headers: Dict.fromArray([("x-my-custom-header", "my-app-v1")]),
+  // },
+}
+let client: Supabase.Client.t<unit> = Supabase.createClient(url, apikey, ~options)
+
 @react.component
 let make = () => {
   let route = Route.useRouter() //TODO don't pass down to auth
 
-  let (user, _setUser) = React.useState(_ => None)
-  let (hasAuth, _setHasAuth) = React.useState(_ => false)
+  let (user, setUser) = React.useState(_ => None)
+  let (hasAuth, setHasAuth) = React.useState(_ => false)
 
   //   let (token, _setToken) = React.Uncurried.useState(_ => None)
   //   let (retrievedUsername, setRetrievedUsername) = React.Uncurried.useState(_ => "")
@@ -51,13 +70,10 @@ let make = () => {
         //     }}
         //   </nav>
         // <Home />
-        <Home />
+        <Home client />
       }
 
-    | (Auth_Confirm(qs), false) => {
-        Console.log2("qs", qs)
-        React.null
-      }
+    | (Auth_Confirm(qs), false) => <SignIn hasAuth setHasAuth user setUser client votp />
 
     | (Auth_Confirm(_), true) => <p> {React.string("great")} </p>
 

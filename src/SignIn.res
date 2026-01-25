@@ -1,41 +1,52 @@
-type loginstage =
-  | Loading
-  | Error(Supabase.Auth.error)
-  | Data(Supabase.Auth.authResp)
-
 @react.component
-let make = (~hasAuth, ~setHasAuth, ~setUser, ~user) => {
-  let (loginstate, setLoginState) = React.useState(_ => Loading)
+let make = (~hasAuth, ~setHasAuth, ~user, ~setUser, ~client, ~votp) => {
+  let (loginstate, setLoginState) = React.useState(_ => Supabase.Auth.Loading)
   let loginOnce = React.useRef(false)
 
-  React.useEffect(() => {
+  let myfunc = async () => {
+    Console.log("in func")
+    let res = await client
+    ->Supabase.Client.auth
+    ->Supabase.Auth.verifyOtp(votp)
+
+    Console.log(res)
+    res
+  }
+
+  let funfun = async () => {
+    let res = await myfunc()
+
     switch res {
-    | Ok(user) =>
+    | Ok({user, _}) =>
       setHasAuth(_ => true)
       setUser(_ => Some(user))
-      setLoginState(_ => Data(user))
+      setLoginState(_ => Success)
     | Error(msg) =>
       setHasAuth(_ => false)
       setUser(_ => None)
       setLoginState(_ => Error(msg))
     }
 
-    switch loginOnce.current {
-    | true =>
-      Console.log("mimic sign in")
-      getLogin()->ignore
-    | false => loginOnce.current = true
-    }
     Console.log2(hasAuth, user)
+  }
 
-    None
+  React.useEffect(() => {
+    Console.log("in eff")
+    switch loginOnce.current {
+    | true => Console.log("remount nologin path")
+    | false =>
+      Console.log("mimic sign in")
+      funfun()->ignore
+    }
+
+    Some(() => loginOnce.current = true)
   }, [])
 
   <>
     <Header />
     <div>
       {switch loginstate {
-      | Loading => <Loading label="user" />
+      | Loading => <Loading label="session" />
       | Error(msg) =>
         <p className="text-stone-100 bg-red-600 w-2/5 m-auto text-center"> {React.string(msg)} </p>
       | Data(userAndSession) =>

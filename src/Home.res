@@ -5,33 +5,9 @@ let name_cookie_key = "clean_tablet_username="
 let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 let unameRegex = /^\w{3,10}$/
 
-@val @scope(("import", "meta", "env"))
-external apikey: string = "VITE_SB_PUB_APIKEY"
-@val @scope(("import", "meta", "env"))
-external url: string = "VITE_SB_URL"
-
-type loginstate =
-  | Loading
-  | Error(Supabase.Auth.error)
-  | Success
-
-let options: Supabase.Options.t = {
-  auth: {
-    autoRefreshToken: true,
-    storageKey: "my-custom-storage-key",
-    persistSession: true,
-    detectSessionInUrl: true,
-  },
-  flowType: PKCE,
-  // global: {
-  //   headers: Dict.fromArray([("x-my-custom-header", "my-app-v1")]),
-  // },
-}
-let client: Supabase.Client.t<unit> = Supabase.createClient(url, apikey, ~options)
-
 @react.component
-let make = () => {
-  let (loginstate, setLoginState) = React.useState(_ => Loading)
+let make = (~client) => {
+  let (loginstate, setLoginState) = React.useState(_ => Supabase.Auth.Loading)
   let (showLoginStatus, setShowLoginStatus) = React.Uncurried.useState(_ => false)
 
   let (username, setUsername) = React.useState(_ => "")
@@ -108,22 +84,22 @@ let make = () => {
     }
     setShowLoginStatus(_ => true)
     // Route.push(SignIn)
-    let {error} = await client
+    let res = await client
     ->Supabase.Client.auth
     ->Supabase.Auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: "http://localhost:5173/api/landing",
+        // emailRedirectTo: "http://localhost:5173/api/landing",
         shouldCreateUser: true,
         data: JSON.Encode.object(dict{"name": JSON.Encode.string(username)}),
       },
     })
-    switch Nullable.toOption(error) {
-    | Some(err) =>
+    switch res {
+    | Error(err) =>
       Console.error(err)
       setLoginState(_ => Error(err))
 
-    | None =>
+    | Ok(_) =>
       Console.log("Check your email for the login link!")
       setLoginState(_ => Success)
     }

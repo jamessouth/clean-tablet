@@ -1,21 +1,43 @@
+type votp = Supabase.Auth.verifyOtpParams
+
 type t =
-  // public
-  | Home
+  | Home // public ↓
   | SignIn
-  | Auth_Confirm(string)
-  //   private
-  | Landing
+  | Auth_Confirm(votp)
+  | Landing //   private ↓
   | Leaderboard
   | Lobby
   | Play(string)
-  //   both
-  | NotFound
+  | NotFound //   both
 
 let urlStringToType = (url: RescriptReactRouter.url) =>
   switch url.path {
   | list{} => Home
   | list{"signin"} => SignIn
-  | list{"auth", "confirm"} => Auth_Confirm(url.search)
+  | list{"auth", "confirm"} =>
+    switch String.split(url.search, "&") {
+    | [h, t] =>
+      let vals = [h, t]->Array.map(s =>
+        switch String.split(s, "=") {
+        | [_, val] => val
+        | _ => "x"
+        }
+      )
+      let votparam: votp = {
+        token_hash: vals->Array.getUnsafe(0),
+        type_: switch vals->Array.getUnsafe(1) {
+        | "magiclink" => #magiclink
+        | "email" => #email
+        | _ => #other
+        },
+      }
+      Auth_Confirm(votparam)
+    | _ =>
+      Auth_Confirm({
+        token_hash: "y",
+        type_: #other,
+      })
+    }
   | list{"api", "landing"} => Landing
   | list{"api", "leaderboard"} => Leaderboard
   | list{"api", "lobby"} => Lobby
