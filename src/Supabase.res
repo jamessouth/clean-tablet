@@ -26,7 +26,9 @@ module Auth = {
 
   type error = {
     message: string,
-    status: option<int>,
+    name: string,
+    code: Nullable.t<string>,
+    status: Nullable.t<int>,
   }
 
   type authResp = {
@@ -38,6 +40,11 @@ module Auth = {
     user: Null.t<string>,
     session: Null.t<string>,
     messageId: Null.t<option<string>>,
+  }
+
+  type response<'data> = {
+    data: Nullable.t<'data>,
+    error: Nullable.t<error>,
   }
 
   type verifyOtpType = [
@@ -70,7 +77,6 @@ module Auth = {
   type loginstate =
     | Loading
     | Error(error)
-    | Success
 
   // ---------------------------------------------------------
   // Event Types
@@ -104,18 +110,18 @@ module Auth = {
   // 1. Get Session
   // ----------------------------
   @send
-  external getSession: t => Promise.t<Result.t<option<session>, error>> = "getSession"
+  external getSession: t => Promise.t<response<option<session>>> = "getSession"
 
   // 2. Get User (fetches fresh data from DB, unlike getSession which is local)
   // ----------------------------
   @send
-  external getUser: t => Promise.t<Result.t<option<user>, error>> = "getUser"
+  external getUser: t => Promise.t<response<option<user>>> = "getUser"
 
   // 3. Sign In (Magic Link)
   // ----------------------------
   // Returns session: null because the session isn't ready until they click the link
   @send
-  external signInWithOtp: (t, signInWithOtpCredentials) => Promise.t<Result.t<authOtpResp, error>> =
+  external signInWithOtp: (t, signInWithOtpCredentials) => Promise.t<response<authOtpResp>> =
     "signInWithOtp"
 
   // 4. Sign Out
@@ -131,7 +137,7 @@ module Auth = {
     "onAuthStateChange"
 
   @send
-  external verifyOtp: (t, verifyOtpParams) => Promise.t<Result.t<authResp, error>> = "verifyOtp"
+  external verifyOtp: (t, verifyOtpParams) => Promise.t<response<authResp>> = "verifyOtp"
 }
 
 module Realtime = {

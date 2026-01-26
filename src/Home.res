@@ -5,9 +5,13 @@ let name_cookie_key = "clean_tablet_username="
 let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 let unameRegex = /^\w{3,10}$/
 
+type loginstate =
+  | ...Supabase.Auth.loginstate
+  | Success
+
 @react.component
 let make = (~client) => {
-  let (loginstate, setLoginState) = React.useState(_ => Supabase.Auth.Loading)
+  let (loginstate, setLoginState) = React.useState(_ => Loading)
   let (showLoginStatus, setShowLoginStatus) = React.Uncurried.useState(_ => false)
 
   let (username, setUsername) = React.useState(_ => "")
@@ -84,22 +88,22 @@ let make = (~client) => {
     }
     setShowLoginStatus(_ => true)
     // Route.push(SignIn)
-    let res = await client
+    let {error} = await client
     ->Supabase.Client.auth
     ->Supabase.Auth.signInWithOtp({
       email,
       options: {
         // emailRedirectTo: "http://localhost:5173/api/landing",
-        shouldCreateUser: true,
+        shouldCreateUser: false,
         data: JSON.Encode.object(dict{"name": JSON.Encode.string(username)}),
       },
     })
-    switch res {
-    | Error(err) =>
-      Console.error(err)
+    switch Nullable.toOption(error) {
+    | Some(err) =>
+      Console.log2("err", err)
       setLoginState(_ => Error(err))
 
-    | Ok(_) =>
+    | None =>
       Console.log("Check your email for the login link!")
       setLoginState(_ => Success)
     }

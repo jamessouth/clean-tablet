@@ -73,7 +73,7 @@ let make = () => {
         <Home client />
       }
 
-    | (Auth_Confirm(qs), false) => <SignIn hasAuth setHasAuth user setUser client votp />
+    | (Auth_Confirm(votp), false) => <SignIn hasAuth setHasAuth user setUser client votp />
 
     | (Auth_Confirm(_), true) => <p> {React.string("great")} </p>
 
