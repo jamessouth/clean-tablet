@@ -138,6 +138,24 @@ module Auth = {
 
   @send
   external verifyOtp: (t, verifyOtpParams) => Promise.t<response<authResp>> = "verifyOtp"
+
+  let getResult = (rspn: response<'data>): result<'data, error> => {
+    open Nullable
+    switch rspn.error->toOption {
+    | Some(er) => Error(er)
+    | None =>
+      switch rspn.data->toOption {
+      | Some(d) => Ok(d)
+      | None =>
+        Error({
+          name: "ResultError",
+          status: make(0),
+          code: make("invalid_state"),
+          message: "both data and error are null",
+        })
+      }
+    }
+  }
 }
 
 module Realtime = {

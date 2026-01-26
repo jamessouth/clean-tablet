@@ -130,10 +130,7 @@ let make = (~client) => {
     | true =>
       switch loginstate {
       | Loading => <Loading />
-      | Error(err) =>
-        <p className="text-stone-100 bg-red-600 font-anon w-2/5 mx-auto text-center p-2 mb-[5vh]">
-          {React.string("Auth error: " ++ err.message ++ " Please try again.")}
-        </p>
+      | Error(err) => <SupaErr err />
       | Success =>
         <p className="text-stone-100 mx-auto font-anon w-4/5 text-center mb-[5vh]">
           {React.string("Click the link we sent to your email to login!")}
