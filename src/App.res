@@ -70,7 +70,8 @@ let make = () => {
         //     }}
         //   </nav>
         // <Home />
-        <Home client />
+        // <Home client />
+        <Landing user="pok" client setHasAuth setUser />
       }
 
     | (Auth_Confirm(votp), _) => <SignIn setHasAuth setUser client votp />
@@ -93,7 +94,7 @@ let make = () => {
         React.null
       }
 
-    | (Landing, true) => <Landing user="pok" />
+    | (Landing, true) => <Landing user="pok" client setHasAuth setUser />
     | (Leaderboard | Lobby | Play(_), true) => React.null
     //   <React.Suspense fallback=React.null> auth </React.Suspense>
     | (NotFound, _) =>

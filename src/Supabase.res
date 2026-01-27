@@ -128,7 +128,7 @@ module Auth = {
   // 4. Sign Out
   // ----------------------------
   @send
-  external signOut: t => Promise.t<option<error>> = "signOut"
+  external signOut: t => Promise.t<Nullable.t<error>> = "signOut"
 
   // 5. Auth State Listener
   // ----------------------------

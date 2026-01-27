@@ -12,7 +12,7 @@ module Line = {
 }
 
 @react.component
-let make = () => {
+let make = (~onSignOutClick) => {
   let (menuIsOpen, setMenuIsOpen) = React.useState(_ => false)
 
   let handleMenuClick = _ => {
@@ -44,7 +44,7 @@ let make = () => {
       | false => "hidden"
       }}
     >
-      <button className="cursor-pointer" onClick={_ => Console.log("a")}>
+      <button className="cursor-pointer" onClick={_ => onSignOutClick()->Promise.ignore}>
         <img className="block" src="/src/assets/signout.png" />
       </button>
     </div>
