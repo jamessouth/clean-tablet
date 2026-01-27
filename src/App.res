@@ -11,8 +11,8 @@ let options: Supabase.Options.t = {
     storageKey: "my-custom-storage-key",
     persistSession: true,
     detectSessionInUrl: true,
+    // flowType: PKCE,
   },
-  flowType: PKCE,
   // global: {
   //   headers: Dict.fromArray([("x-my-custom-header", "my-app-v1")]),
   // },

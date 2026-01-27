@@ -48,8 +48,8 @@ module Auth = {
   }
 
   type verifyOtpType = [
-    | #magiclink
     | #email
+    | #signup
     | #other
   ]
 
@@ -296,23 +296,22 @@ module Client = {
 }
 
 module Options = {
+  type flowType = | @as("implicit") Implicit | @as("pkce") PKCE
   type auth = {
     autoRefreshToken?: bool,
     storageKey?: string,
     persistSession?: bool,
     detectSessionInUrl?: bool, // Note: TS allows a function here too, binding to bool for simplicity
+    flowType?: flowType,
   }
 
   type global = {headers?: Dict.t<string>}
-
-  type flowType = | @as("implicit") Implicit | @as("pkce") PKCE
 
   type t = {
     auth?: auth,
     realtime?: JSON.t, // Binding as generic JSON for now
     storage?: JSON.t, // Binding as generic JSON for now
     global?: global,
-    flowType?: flowType,
   }
 }
 

@@ -26,8 +26,8 @@ let urlStringToType = (url: RescriptReactRouter.url) =>
       let votparam: votp = {
         token_hash: vals->Array.getUnsafe(0),
         type_: switch vals->Array.getUnsafe(1) {
-        | "magiclink" => #magiclink
         | "email" => #email
+        | "signup" => #signup
         | _ => #other
         },
       }

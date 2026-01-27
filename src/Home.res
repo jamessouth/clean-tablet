@@ -94,7 +94,7 @@ let make = (~client) => {
       email,
       options: {
         // emailRedirectTo: "http://localhost:5173/api/landing",
-        shouldCreateUser: false,
+        shouldCreateUser: true,
         data: JSON.Encode.object(dict{"name": JSON.Encode.string(username)}),
       },
     })
@@ -132,7 +132,8 @@ let make = (~client) => {
       | Loading => <Loading />
       | Error(err) => <SupaErr err />
       | Success =>
-        <p className="text-stone-100 mx-auto font-anon w-4/5 text-center mb-[5vh]">
+        Console.log(client)
+        <p className="text-stone-100 mx-auto text-xl font-anon w-4/5 text-center mb-[5vh]">
           {React.string("Click the link we sent to your email to login!")}
         </p>
       }
