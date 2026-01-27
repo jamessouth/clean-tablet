@@ -7,7 +7,7 @@ let getError = (e: Supabase.Auth.error) => {
   | Some(s) => Int.toString(s)
   | None => "none"
   }
-  `Name: ${e.name})^*Message: ${e.message})^*Code: ${code})^*Status: ${status})^*Please try again`->String.split(
+  `Name: ${e.name})^*Message: ${e.message})^*Code: ${code})^*Status: ${status})^*Please wait a minute and try again`->String.split(
     ")^*",
   )
 }

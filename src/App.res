@@ -73,9 +73,7 @@ let make = () => {
         <Home client />
       }
 
-    | (Auth_Confirm(votp), false) => <SignIn hasAuth setHasAuth user setUser client votp />
-
-    | (Auth_Confirm(_), true) => <p> {React.string("great")} </p>
+    | (Auth_Confirm(votp), _) => <SignIn setHasAuth setUser client votp />
 
     // | (Leaderboard, _) =>
     //   <React.Suspense fallback=React.null>
@@ -95,8 +93,8 @@ let make = () => {
         React.null
       }
 
-    // | (Landing, true) => <Landing />
-    | (Landing | Leaderboard | Lobby | Play(_), true) => React.null
+    | (Landing, true) => <Landing user="pok" />
+    | (Leaderboard | Lobby | Play(_), true) => React.null
     //   <React.Suspense fallback=React.null> auth </React.Suspense>
     | (NotFound, _) =>
       <div>

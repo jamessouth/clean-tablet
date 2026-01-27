@@ -5,13 +5,9 @@ let name_cookie_key = "clean_tablet_username="
 let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 let unameRegex = /^\w{3,10}$/
 
-type loginstate =
-  | ...Supabase.Auth.loginstate
-  | Success
-
 @react.component
 let make = (~client) => {
-  let (loginstate, setLoginState) = React.useState(_ => Loading)
+  let (loginstate, setLoginState) = React.useState(_ => Supabase.Auth.Loading)
   let (showLoginStatus, setShowLoginStatus) = React.Uncurried.useState(_ => false)
 
   let (username, setUsername) = React.useState(_ => "")
@@ -132,9 +128,8 @@ let make = (~client) => {
       | Loading => <Loading />
       | Error(err) => <SupaErr err />
       | Success =>
-        Console.log(client)
         <p className="text-stone-100 mx-auto text-xl font-anon w-4/5 text-center mb-[5vh]">
-          {React.string("Click the link we sent to your email to login!")}
+          {React.string("Click the link in your email to login!")}
         </p>
       }
     | false =>

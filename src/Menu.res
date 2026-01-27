@@ -21,7 +21,7 @@ let make = () => {
   <>
     <button
       onClick={handleMenuClick}
-      className="flex flex-col absolute top-1 left-1 justify-evenly h-6 w-6 self-start "
+      className="flex flex-col absolute top-1 left-1 justify-evenly h-6 w-6 self-start cursor-pointer "
     >
       <Line
         menuIsOpen
@@ -44,7 +44,7 @@ let make = () => {
       | false => "hidden"
       }}
     >
-      <button onClick={_ => Console.log("a")}>
+      <button className="cursor-pointer" onClick={_ => Console.log("a")}>
         <img className="block" src="/src/assets/signout.png" />
       </button>
     </div>

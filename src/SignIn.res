@@ -1,10 +1,6 @@
-type loginstate =
-  | ...Supabase.Auth.loginstate
-  | Data(Supabase.Auth.authResp)
-
 @react.component
-let make = (~hasAuth, ~setHasAuth, ~user, ~setUser, ~client, ~votp) => {
-  let (loginstate, setLoginState) = React.useState(_ => Loading)
+let make = (~setHasAuth, ~setUser, ~client, ~votp) => {
+  let (loginstate, setLoginState) = React.useState(_ => Supabase.Auth.Loading)
   let loginOnce = React.useRef(false)
 
   let myfunc = async () => {
@@ -15,7 +11,6 @@ let make = (~hasAuth, ~setHasAuth, ~user, ~setUser, ~client, ~votp) => {
     ->Auth.verifyOtp(votp)
 
     Console.log2("votp", resp)
-    // data,error
     resp->Auth.getResult
   }
 
@@ -24,14 +19,13 @@ let make = (~hasAuth, ~setHasAuth, ~user, ~setUser, ~client, ~votp) => {
     | Ok(resp) =>
       setHasAuth(_ => true)
       setUser(_ => Some(resp.user))
-      setLoginState(_ => Data(resp))
+      setLoginState(_ => Success)
+      Route.push(Landing)
     | Error(msg) =>
       setHasAuth(_ => false)
       setUser(_ => None)
       setLoginState(_ => Error(msg))
     }
-
-    Console.log2(hasAuth, user)
   }
 
   React.useEffect(() => {
@@ -52,9 +46,7 @@ let make = (~hasAuth, ~setHasAuth, ~user, ~setUser, ~client, ~votp) => {
       {switch loginstate {
       | Loading => <Loading label="session" />
       | Error(err) => <SupaErr err />
-      | Data(userAndSession) =>
-        Console.log(userAndSession)
-        <p className="text-stone-100 text-center"> {React.string("Hello ")} </p>
+      | Success => React.null
       }}
     </div>
     <Footer />

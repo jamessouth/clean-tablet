@@ -77,6 +77,7 @@ module Auth = {
   type loginstate =
     | Loading
     | Error(error)
+    | Success
 
   // ---------------------------------------------------------
   // Event Types
