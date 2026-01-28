@@ -1,7 +1,11 @@
 let landingLinkStyles = "w-5/6 border border-stone-100 bg-stone-800/40 text-center text-stone-100 decay-mask p-2 max-w-80 font-fred "
 
+type field = Name | Email | None
+
 @react.component
 let make = (~user, ~client, ~setHasAuth, ~setUser) => {
+  let (showForm, setShowForm) = React.useState(_ => None)
+
   let onSignOutClick = async () => {
     Console.log("sinout clckd")
 
@@ -30,9 +34,17 @@ let make = (~user, ~client, ~setHasAuth, ~setUser) => {
   let onEmailChangeClick = async () => {
     Console.log("ch email clckd")
   }
+  let onShowNameFormClick = async () => {
+    Console.log("ch name form clckd")
+    setShowForm(_ => Name)
+  }
+  let onShowEmailFormClick = async () => {
+    Console.log("ch email form clckd")
+    setShowForm(_ => Email)
+  }
 
   <>
-    <Menu onSignOutClick onNameChangeClick onEmailChangeClick />
+    <Menu onSignOutClick onShowNameFormClick onShowEmailFormClick />
     <p
       className="font-flow text-stone-100 text-3xl tracking-wide absolute top-0 left-1/2 -translate-x-1/2 font-bold "
     >
@@ -43,5 +55,32 @@ let make = (~user, ~client, ~setHasAuth, ~setUser) => {
       <Link route=Lobby className={landingLinkStyles ++ "text-4xl"} content="LOBBY" />
       <Link route=Leaderboard className={landingLinkStyles ++ "text-3xl"} content="LEADERBOARD" />
     </nav>
+    {switch showForm {
+    | Name =>
+      <Form ht="h-46" on_Click=onNameChangeClick leg="Update name" validationError setSubmitClicked>
+        <Input
+          value=email
+          propName="email"
+          inputMode="email"
+          setFunc=setEmail
+          submitClicked
+          valdnError=emailValdnError
+        />
+      </Form>
+    | Email =>
+      <Form
+        ht="h-46" on_Click=onEmailChangeClick leg="Update email" validationError setSubmitClicked
+      >
+        <Input
+          value=email
+          propName="email"
+          inputMode="email"
+          setFunc=setEmail
+          submitClicked
+          valdnError=emailValdnError
+        />
+      </Form>
+    | None => React.null
+    }}
   </>
 }

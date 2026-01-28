@@ -33,6 +33,10 @@
   border-width: 0;
 } */
 
+.menubg {
+  background: url("../assets/menubg.webp") no-repeat;
+}
+
 .decay-mask {
   -webkit-mask-image: url("../assets/decaying.webp");
   mask-image: url("../assets/decaying.webp");
