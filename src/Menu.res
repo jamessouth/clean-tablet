@@ -12,7 +12,7 @@ module Line = {
 }
 
 @react.component
-let make = (~onSignOutClick) => {
+let make = (~onSignOutClick, ~onNameChangeClick, ~onEmailChangeClick) => {
   let (menuIsOpen, setMenuIsOpen) = React.useState(_ => false)
 
   let handleMenuClick = _ => {
@@ -38,7 +38,7 @@ let make = (~onSignOutClick) => {
       />
     </button>
     <div
-      className={"flex flex-col top-12 left-1 absolute bg-stone-100/10 font-anon justify-around items-center z-1 " ++
+      className={"flex flex-col top-12 left-1 absolute bg-stone-600/80 justify-around items-center z-1 h-32 " ++
       switch menuIsOpen {
       | true => "block"
       | false => "hidden"
@@ -46,6 +46,14 @@ let make = (~onSignOutClick) => {
     >
       <button className="cursor-pointer" onClick={_ => onSignOutClick()->Promise.ignore}>
         <img className="block" src="/src/assets/signout.png" />
+      </button>
+
+      <button className="cursor-pointer" onClick={_ => onNameChangeClick()->Promise.ignore}>
+        <img className="block" src="/src/assets/name.png" />
+      </button>
+
+      <button className="cursor-pointer" onClick={_ => onEmailChangeClick()->Promise.ignore}>
+        <img className="block" src="/src/assets/email.png" />
       </button>
     </div>
   </>

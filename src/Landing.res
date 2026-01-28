@@ -23,9 +23,16 @@ let make = (~user, ~client, ~setHasAuth, ~setUser) => {
     //   setLoginState(_ => Success)
     // }
   }
+  let onNameChangeClick = async () => {
+    Console.log("ch name clckd")
+  }
+
+  let onEmailChangeClick = async () => {
+    Console.log("ch email clckd")
+  }
 
   <>
-    <Menu onSignOutClick />
+    <Menu onSignOutClick onNameChangeClick onEmailChangeClick />
     <p
       className="font-flow text-stone-100 text-3xl tracking-wide absolute top-0 left-1/2 -translate-x-1/2 font-bold "
     >
