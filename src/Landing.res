@@ -4,8 +4,6 @@ type field = Name | Email | None
 
 @react.component
 let make = (~user, ~client, ~setHasAuth, ~setUser) => {
-  let (showForm, setShowForm) = React.useState(_ => None)
-
   let onSignOutClick = async () => {
     Console.log("sinout clckd")
 
@@ -27,20 +25,38 @@ let make = (~user, ~client, ~setHasAuth, ~setUser) => {
     //   setLoginState(_ => Success)
     // }
   }
-  let onNameChangeClick = async () => {
-    Console.log("ch name clckd")
-  }
+  //   let onNameChangeClick = async () => {
+  //     Console.log("ch name clckd")
+  //   }
 
-  let onEmailChangeClick = async () => {
-    Console.log("ch email clckd")
-  }
+    let onEmailChangeClick = async () => {
+      Console.log("ch email clckd")
+
+open Supabase
+    Console.log("in func")
+    let resp = await client
+    ->Client.auth
+    ->Auth.updateUser(votp)
+
+    Console.log2("upd user", resp)
+    resp->Auth.getResult
+
+switch await resp->Auth.getResult {
+    | Ok(resp) =>
+  
+    | Error(msg) =>
+  
+    }
+
+
+    }
   let onShowNameFormClick = async () => {
     Console.log("ch name form clckd")
-    setShowForm(_ => Name)
+    // setShowForm(_ => Name)
   }
   let onShowEmailFormClick = async () => {
     Console.log("ch email form clckd")
-    setShowForm(_ => Email)
+    // setShowForm(_ => Email)
   }
 
   <>
@@ -55,32 +71,32 @@ let make = (~user, ~client, ~setHasAuth, ~setUser) => {
       <Link route=Lobby className={landingLinkStyles ++ "text-4xl"} content="LOBBY" />
       <Link route=Leaderboard className={landingLinkStyles ++ "text-3xl"} content="LEADERBOARD" />
     </nav>
-    {switch showForm {
-    | Name =>
-      <Form ht="h-46" on_Click=onNameChangeClick leg="Update name" validationError setSubmitClicked>
-        <Input
-          value=email
-          propName="email"
-          inputMode="email"
-          setFunc=setEmail
-          submitClicked
-          valdnError=emailValdnError
-        />
-      </Form>
-    | Email =>
-      <Form
-        ht="h-46" on_Click=onEmailChangeClick leg="Update email" validationError setSubmitClicked
-      >
-        <Input
-          value=email
-          propName="email"
-          inputMode="email"
-          setFunc=setEmail
-          submitClicked
-          valdnError=emailValdnError
-        />
-      </Form>
-    | None => React.null
-    }}
+    // {switch showForm {
+    // | Name =>
+    //   <Form ht="h-46" on_Click=onNameChangeClick leg="Update name" validationError setSubmitClicked>
+    //     <Input
+    //       value=email
+    //       propName="email"
+    //       inputMode="email"
+    //       setFunc=setEmail
+    //       submitClicked
+    //       valdnError=emailValdnError
+    //     />
+    //   </Form>
+    // | Email =>
+    //   <Form
+    //     ht="h-46" on_Click=onEmailChangeClick leg="Update email" validationError setSubmitClicked
+    //   >
+    //     <Input
+    //       value=email
+    //       propName="email"
+    //       inputMode="email"
+    //       setFunc=setEmail
+    //       submitClicked
+    //       valdnError=emailValdnError
+    //     />
+    //   </Form>
+    // | None => React.null
+    // }}
   </>
 }

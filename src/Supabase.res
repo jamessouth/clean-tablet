@@ -62,6 +62,15 @@ module Auth = {
   // Sign In Types
   // ---------------------------------------------------------
 
+  let getMetadata = p1 => {
+    JSON.Encode.object(dict{"username": JSON.Encode.string(p1)})
+  }
+
+  type userAttributes = {
+    email?: string,
+    data?: JSON.t,
+  }
+
   type signInWithOtpOptions = {
     emailRedirectTo?: string, // Vital for Magic Links
     shouldCreateUser?: bool,
@@ -139,6 +148,9 @@ module Auth = {
 
   @send
   external verifyOtp: (t, verifyOtpParams) => Promise.t<response<authResp>> = "verifyOtp"
+
+  @send
+  external updateUser: (t, userAttributes) => Promise.t<response<user>> = "updateUser"
 
   let getResult = (rspn: response<'data>): result<'data, error> => {
     open Nullable

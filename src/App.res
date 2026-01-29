@@ -69,9 +69,8 @@ let make = () => {
         //       </React.Suspense>
         //     }}
         //   </nav>
-        // <Home />
-        // <Home client />
-        <Landing user="pok" client setHasAuth setUser />
+        <Home client />
+        // <Landing user="pok" client setHasAuth setUser />
       }
 
     | (Auth_Confirm(votp), _) => <SignIn setHasAuth setUser client votp />

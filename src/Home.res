@@ -77,6 +77,7 @@ let make = (~client) => {
   //   })
 
   let on_Click = async () => {
+    open Supabase
     Console.log3("submit clckd", username, email)
     switch hasNameCookie {
     | true => ()
@@ -85,13 +86,12 @@ let make = (~client) => {
     setShowLoginStatus(_ => true)
     // Route.push(SignIn)
     let {error} = await client
-    ->Supabase.Client.auth
-    ->Supabase.Auth.signInWithOtp({
+    ->Client.auth
+    ->Auth.signInWithOtp({
       email,
       options: {
-        // emailRedirectTo: "http://localhost:5173/api/landing",
         shouldCreateUser: true,
-        data: JSON.Encode.object(dict{"name": JSON.Encode.string(username)}),
+        data: Auth.getMetadata(username),
       },
     })
     switch Nullable.toOption(error) {
@@ -133,38 +133,8 @@ let make = (~client) => {
         </p>
       }
     | false =>
-      <Form
-        ht={switch hasNameCookie {
-        | true => "h-46"
-        | false => "h-54"
-        }}
-        on_Click
-        leg="Sign in"
-        validationError
-        setSubmitClicked
-      >
-        {switch hasNameCookie {
-        | true => React.null
-        | false =>
-          <Input
-            value=username
-            propName="username"
-            inputMode="username"
-            setFunc=setUsername
-            submitClicked
-            valdnError=unameValdnError
-          />
-        }}
-
-        <Input
-          value=email
-          propName="email"
-          inputMode="email"
-          setFunc=setEmail
-          submitClicked
-          valdnError=emailValdnError
-        />
-      </Form>
+     
+     
     }}
 
     <Footer />
