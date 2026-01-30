@@ -1,9 +1,11 @@
 let landingLinkStyles = "w-5/6 border border-stone-100 bg-stone-800/40 text-center text-stone-100 decay-mask p-2 max-w-80 font-fred "
 
-type field = Name | Email | None
+type formstate = Loading | Name | Email | Error(Supabase.Auth.error) | None
 
 @react.component
 let make = (~user, ~client, ~setHasAuth, ~setUser) => {
+  let (showForm, setShowForm) = React.useState(_ => None)
+
   let onSignOutClick = async () => {
     Console.log("sinout clckd")
 
@@ -29,34 +31,33 @@ let make = (~user, ~client, ~setHasAuth, ~setUser) => {
   //     Console.log("ch name clckd")
   //   }
 
-    let onEmailChangeClick = async () => {
-      Console.log("ch email clckd")
+  let onEmailChangeClick = async () => {
+    Console.log("ch email clckd")
 
-open Supabase
-    Console.log("in func")
+    setShowForm(_ => Loading)
+    open Supabase
+    Console.log("in email chng func")
     let resp = await client
     ->Client.auth
-    ->Auth.updateUser(votp)
+    ->Auth.updateUser({email})
 
-    Console.log2("upd user", resp)
-    resp->Auth.getResult
+    Console.log2("upd user email", resp)
+    // resp->Auth.getResult
 
-switch await resp->Auth.getResult {
-    | Ok(resp) =>
-  
-    | Error(msg) =>
-  
+    switch await resp->Auth.getResult {
+    | Ok(_) => setShowForm(_ => None)
+    // show toast
+
+    | Error(msg) => setShowForm(_ => Error(msg))
     }
-
-
-    }
+  }
   let onShowNameFormClick = async () => {
     Console.log("ch name form clckd")
-    // setShowForm(_ => Name)
+    setShowForm(_ => Name)
   }
   let onShowEmailFormClick = async () => {
     Console.log("ch email form clckd")
-    // setShowForm(_ => Email)
+    setShowForm(_ => Email)
   }
 
   <>

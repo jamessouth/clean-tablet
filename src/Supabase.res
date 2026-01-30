@@ -62,14 +62,7 @@ module Auth = {
   // Sign In Types
   // ---------------------------------------------------------
 
-  let getMetadata = p1 => {
-    JSON.Encode.object(dict{"username": JSON.Encode.string(p1)})
-  }
-
-  type userAttributes = {
-    email?: string,
-    data?: JSON.t,
-  }
+  type userAttributes = {email: string}
 
   type signInWithOtpOptions = {
     emailRedirectTo?: string, // Vital for Magic Links
@@ -83,7 +76,7 @@ module Auth = {
     options?: signInWithOtpOptions,
   }
 
-  type loginstate =
+  type supastate =
     | Loading
     | Error(error)
     | Success
@@ -268,6 +261,49 @@ module Realtime = {
 
 // Client-Side Filtering: Use the event key to distinguish between different types of messages (e.g., "CHAT_MSG" vs "USER_TYPING") within the same channel.
 
+module DB = {
+  type queryBuilder<'row>
+
+  type error = {
+    message: string,
+    name: string,
+    details: string,
+    hint: string,
+    code: string,
+  }
+
+  // The response type from any DB call
+  type response<'data> = {
+    status: int,
+    statusText: string,
+    data: Nullable.t<'data>,
+    error: Nullable.t<error>,
+    count: Nullable.t<int>,
+  }
+
+  // 1. Core Query Methods
+  @send external select: (queryBuilder<'row>, string) => queryBuilder<'row> = "select"
+  @send external insert: (queryBuilder<'row>, 'payload) => queryBuilder<'row> = "insert"
+  @send external update: (queryBuilder<'row>, 'payload) => queryBuilder<'row> = "update"
+  @send external delete: queryBuilder<'row> => queryBuilder<'row> = "delete"
+
+  // 2. Filters
+  @send external eq: (queryBuilder<'row>, string, 'value) => queryBuilder<'row> = "eq"
+  @send external gt: (queryBuilder<'row>, string, 'value) => queryBuilder<'row> = "gt"
+  @send external lt: (queryBuilder<'row>, string, 'value) => queryBuilder<'row> = "lt"
+  @send
+  external order: (queryBuilder<'row>, string, {"ascending": bool}) => queryBuilder<'row> = "order"
+  @send external limit: (queryBuilder<'row>, int) => queryBuilder<'row> = "limit"
+
+  // 3. Execution
+  // In Supabase JS, the query builder is a "Thenable", so we treat it like a promise
+  external exec: queryBuilder<'row> => Promise.t<response<array<'row>>> = "unsafe_cast"
+  @send
+  external single: queryBuilder<'row> => Promise.t<response<'row>> = "single"
+  @send
+  external maybeSingle: queryBuilder<'row> => Promise.t<response<'row>> = "maybeSingle"
+}
+
 module Client = {
   // We use a phantom type 'db to allow you to pass your Database definition later
   // if you want to implement strict typing for tables.
@@ -306,6 +342,8 @@ module Client = {
    */
   @send
   external removeAllChannels: t<'db> => Promise.t<array<Realtime.sendStatus>> = "removeAllChannels"
+
+  @send external from: (t<'db>, string) => DB.queryBuilder<'row> = "from"
 }
 
 module Options = {

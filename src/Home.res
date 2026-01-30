@@ -91,7 +91,8 @@ let make = (~client) => {
       email,
       options: {
         shouldCreateUser: true,
-        data: Auth.getMetadata(username),
+        data: JSON.Encode.object(dict{"username": JSON.Encode.string(username)}),
+        
       },
     })
     switch Nullable.toOption(error) {
