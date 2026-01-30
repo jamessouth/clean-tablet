@@ -2,6 +2,8 @@ let landingLinkStyles = "w-5/6 border border-stone-100 bg-stone-800/40 text-cent
 
 type formstate = Loading | Name | Email | Error(Supabase.Auth.error) | None
 
+type namePayload = {username: string}
+
 @react.component
 let make = (~user, ~client, ~setHasAuth, ~setUser) => {
   let (showForm, setShowForm) = React.useState(_ => None)
@@ -27,16 +29,33 @@ let make = (~user, ~client, ~setHasAuth, ~setUser) => {
     //   setLoginState(_ => Success)
     // }
   }
-  //   let onNameChangeClick = async () => {
-  //     Console.log("ch name clckd")
-  //   }
+
+  let onNameChangeClick = async () => {
+    Console.log("ch name clckd")
+    setShowForm(_ => Loading)
+    open Supabase
+    let resp = await client
+    ->Client.from("profiles")
+    ->DB.update({username})
+    ->DB.eq("id", id)
+    ->DB.single
+
+    Console.log2("upd user name", resp)
+    // resp->Auth.getResult
+
+    switch await resp->Auth.getResult {
+    | Ok(_) => setShowForm(_ => None)
+    // show toast
+
+    | Error(msg) => setShowForm(_ => Error(msg))
+    }
+  }
 
   let onEmailChangeClick = async () => {
     Console.log("ch email clckd")
 
     setShowForm(_ => Loading)
     open Supabase
-    Console.log("in email chng func")
     let resp = await client
     ->Client.auth
     ->Auth.updateUser({email})

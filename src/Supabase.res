@@ -284,7 +284,9 @@ module DB = {
   // 1. Core Query Methods
   @send external select: (queryBuilder<'row>, string) => queryBuilder<'row> = "select"
   @send external insert: (queryBuilder<'row>, 'payload) => queryBuilder<'row> = "insert"
+
   @send external update: (queryBuilder<'row>, 'payload) => queryBuilder<'row> = "update"
+
   @send external delete: queryBuilder<'row> => queryBuilder<'row> = "delete"
 
   // 2. Filters
