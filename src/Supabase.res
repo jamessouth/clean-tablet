@@ -3,13 +3,15 @@ module Auth = {
   // Types
   // ---------------------------------------------------------
 
+  type userMetadata = {username: string}
+
   type user = {
     id: string,
-    aud: string,
-    role: string,
+    // aud: string,
+    // role: string,
     email: option<string>,
-    created_at: string,
-    // Add other user fields as needed (app_metadata, user_metadata, etc.)
+    // created_at: string,
+    user_metadata: userMetadata,
   }
 
   type tokenType = [

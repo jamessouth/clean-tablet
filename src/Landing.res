@@ -2,10 +2,28 @@ let landingLinkStyles = "w-5/6 border border-stone-100 bg-stone-800/40 text-cent
 
 type formstate = Loading | Name | Email | Error(Supabase.Auth.error) | None
 
-type namePayload = {username: string}
+type namePayload = {uname: string}
 
 @react.component
-let make = (~user, ~client, ~setHasAuth, ~setUser) => {
+let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
+  let {
+    username,
+    setUsername,
+    email,
+    setEmail,
+    submitClicked,
+    setSubmitClicked,
+    validationError,
+    setValidationError,
+    emailValdnError,
+    setEmailValdnError,
+    unameValdnError,
+    setUnameValdnError,
+  } = FormHook.useForm()
+
+  let {id} = user
+  //   let {username} = user.user_metadata
+
   let (showForm, setShowForm) = React.useState(_ => None)
 
   let onSignOutClick = async () => {
@@ -36,7 +54,7 @@ let make = (~user, ~client, ~setHasAuth, ~setUser) => {
     open Supabase
     let resp = await client
     ->Client.from("profiles")
-    ->DB.update({username})
+    ->DB.update({uname: username})
     ->DB.eq("id", id)
     ->DB.single
 

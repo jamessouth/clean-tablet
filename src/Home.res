@@ -2,53 +2,25 @@
 // let email_max_length = 99
 let name_cookie_key = "clean_tablet_username="
 
-let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-let unameRegex = /^\w{3,10}$/
-
 @react.component
 let make = (~client) => {
+  let {
+    username,
+    setUsername,
+    email,
+    setEmail,
+    submitClicked,
+    setSubmitClicked,
+    validationError,
+    emailValdnError,
+    unameValdnError,
+  } = FormHook.useForm()
+
   let (loginstate, setLoginState) = React.useState(_ => Supabase.Auth.Loading)
   let (showLoginStatus, setShowLoginStatus) = React.Uncurried.useState(_ => false)
 
-  let (username, setUsername) = React.useState(_ => "")
-  let (email, setEmail) = React.useState(_ => "")
   let (hasNameCookie, setHasNameCookie) = React.useState(_ => false)
   //   let (authError, setAuthError) = React.useState(_ => None)
-  let (submitClicked, setSubmitClicked) = React.Uncurried.useState(_ => false)
-
-  let (validationError, setValidationError) = React.useState(_ => true)
-
-  let (emailValdnError, setEmailValdnError) = React.useState(_ => Some(
-    "enter a valid email address",
-  ))
-
-  let (unameValdnError, setUnameValdnError) = React.useState(_ => Some(
-    "3-10 letters, numbers, and _ only",
-  ))
-
-  React.useEffect(() => {
-    switch String.match(email, emailRegex) {
-    | None => setEmailValdnError(_ => Some("enter a valid email address"))
-    | Some(_) => setEmailValdnError(_ => None)
-    }
-    None
-  }, [email])
-
-  React.useEffect(() => {
-    switch String.match(username, unameRegex) {
-    | None => setUnameValdnError(_ => Some("3-10 letters, numbers, and _ only"))
-    | Some(_) => setUnameValdnError(_ => None)
-    }
-    None
-  }, [username])
-
-  React.useEffect(() => {
-    switch (emailValdnError, unameValdnError) {
-    | (None, None) => setValidationError(_ => false)
-    | _ => setValidationError(_ => true)
-    }
-    None
-  }, (emailValdnError, unameValdnError))
 
   React.useEffect(() => {
     switch name_cookie_key->Cookie.getCookieValue {
@@ -92,7 +64,6 @@ let make = (~client) => {
       options: {
         shouldCreateUser: true,
         data: JSON.Encode.object(dict{"username": JSON.Encode.string(username)}),
-        
       },
     })
     switch Nullable.toOption(error) {
@@ -134,8 +105,38 @@ let make = (~client) => {
         </p>
       }
     | false =>
-     
-     
+      <Form
+        ht={switch hasNameCookie {
+        | true => "h-46"
+        | false => "h-54"
+        }}
+        on_Click
+        leg="Sign in"
+        validationError
+        setSubmitClicked
+      >
+        {switch hasNameCookie {
+        | true => React.null
+        | false =>
+          <Input
+            value=username
+            propName="username"
+            inputMode="username"
+            setFunc=setUsername
+            submitClicked
+            valdnError=unameValdnError
+          />
+        }}
+
+        <Input
+          value=email
+          propName="email"
+          inputMode="email"
+          setFunc=setEmail
+          submitClicked
+          valdnError=emailValdnError
+        />
+      </Form>
     }}
 
     <Footer />
