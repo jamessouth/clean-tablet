@@ -255,13 +255,12 @@ module Realtime = {
     {"event": string},
     broadcastResponse<'payload> => unit,
   ) => channel = "on"
+  // Channel Name: Use a unique string (e.g., "room_1") for the topic.
+
+  // Payload Types: Since ReScript is strictly typed, ensure the 'a in broadcastResponse<'a> matches the type you sent.
+
+  // Client-Side Filtering: Use the event key to distinguish between different types of messages (e.g., "CHAT_MSG" vs "USER_TYPING") within the same channel.
 }
-
-// Channel Name: Use a unique string (e.g., "room_1") for the topic.
-
-// Payload Types: Since ReScript is strictly typed, ensure the 'a in broadcastResponse<'a> matches the type you sent.
-
-// Client-Side Filtering: Use the event key to distinguish between different types of messages (e.g., "CHAT_MSG" vs "USER_TYPING") within the same channel.
 
 module DB = {
   type queryBuilder<'row>
@@ -281,6 +280,24 @@ module DB = {
     data: Nullable.t<'data>,
     error: Nullable.t<error>,
     count: Nullable.t<int>,
+  }
+
+  let getResult = (rspn: response<'data>): result<'data, error> => {
+    open Nullable
+    switch rspn.error->toOption {
+    | Some(er) => Error(er)
+    | None =>
+      switch rspn.data->toOption {
+      | Some(d) => Ok(d)
+      | None =>
+        Error({
+          name: "ResultError",
+          status: make(0),
+          code: make("invalid_state"),
+          message: "both data and error are null",
+        })
+      }
+    }
   }
 
   // 1. Core Query Methods
@@ -373,3 +390,23 @@ module Options = {
 // Main createClient binding
 @module("@supabase/supabase-js")
 external createClient: (string, string, ~options: Options.t=?) => Client.t<'db> = "createClient"
+
+module Error = {
+  // type t =
+  //   | Auth(Auth.error)
+  //   | Db(DB.error)
+
+  let getError = (e: Supabase.Auth.error) => {
+    let code = switch Nullable.toOption(e.code) {
+    | Some(s) => s
+    | None => "none"
+    }
+    let status = switch Nullable.toOption(e.status) {
+    | Some(s) => Int.toString(s)
+    | None => "none"
+    }
+    `Name: ${e.name})^*Message: ${e.message})^*Code: ${code})^*Status: ${status})^*Please wait a minute and try again`->String.split(
+      ")^*",
+    )
+  }
+}

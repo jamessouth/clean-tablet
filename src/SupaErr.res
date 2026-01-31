@@ -1,17 +1,3 @@
-let getError = (e: Supabase.Auth.error) => {
-  let code = switch Nullable.toOption(e.code) {
-  | Some(s) => s
-  | None => "none"
-  }
-  let status = switch Nullable.toOption(e.status) {
-  | Some(s) => Int.toString(s)
-  | None => "none"
-  }
-  `Name: ${e.name})^*Message: ${e.message})^*Code: ${code})^*Status: ${status})^*Please wait a minute and try again`->String.split(
-    ")^*",
-  )
-}
-
 @react.component
 let make = (~err) => {
   let arr = getError(err)
