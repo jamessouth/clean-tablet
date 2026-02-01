@@ -16,7 +16,7 @@ let make = (~client) => {
     unameValdnError,
   } = FormHook.useForm()
 
-  let (loginstate, setLoginState) = React.useState(_ => Supabase.Auth.Loading)
+  let (loginstate, setLoginState) = React.useState(_ => Supabase.Global.Loading)
   let (showLoginStatus, setShowLoginStatus) = React.Uncurried.useState(_ => false)
 
   let (hasNameCookie, setHasNameCookie) = React.useState(_ => false)
@@ -69,7 +69,7 @@ let make = (~client) => {
     switch Nullable.toOption(error) {
     | Some(err) =>
       Console.log2("err", err)
-      setLoginState(_ => Error(err))
+      setLoginState(_ => Supabase.Error.Auth(err)->Error)
 
     | None =>
       Console.log("Check your email for the login link!")
@@ -77,28 +77,19 @@ let make = (~client) => {
     }
   }
   <>
-    {switch hasNameCookie {
-    | true =>
-      <p
-        className="font-flow text-stone-100 text-3xl tracking-wide absolute top-0 left-1/2 -translate-x-1/2 font-bold "
-      >
-        {React.string(`Hello, ${username}!`)}
-      </p>
-    | false => React.null
-    }}
-
     <Header
       mgt={switch hasNameCookie {
       | true => "mt-20"
       | false => "mt-17"
       }}
+      username
     />
 
     {switch showLoginStatus {
     | true =>
       switch loginstate {
       | Loading => <Loading />
-      | Error(err) => <SupaErr err />
+      | Error(err) => <SupaErrToast err />
       | Success =>
         <p className="text-stone-100 mx-auto text-xl font-anon w-4/5 text-center mb-[5vh]">
           {React.string("Click the link in your email to login!")}

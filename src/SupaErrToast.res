@@ -1,7 +1,7 @@
 @react.component
 let make = (~err) => {
-  let arr = getError(err)
-  let len = 5
+  let arr = Supabase.Error.getError(err)
+  let len = Array.length(arr)
   arr
   ->Array.mapWithIndex((x, i) => {
     let first = switch i == 0 {

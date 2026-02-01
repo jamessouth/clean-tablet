@@ -17,7 +17,7 @@ let options: Supabase.Options.t = {
   //   headers: Dict.fromArray([("x-my-custom-header", "my-app-v1")]),
   // },
 }
-let client: Supabase.Client.t<unit> = Supabase.createClient(url, apikey, ~options)
+let client: Supabase.Client.t<unit> = Supabase.Global.createClient(url, apikey, ~options)
 
 @react.component
 let make = () => {
@@ -93,7 +93,12 @@ let make = () => {
         React.null
       }
 
-    | (Landing, true) => <Landing user="pok" client setHasAuth setUser />
+    | (Landing, true) =>
+      switch user {
+      | Some(u) => <Landing user=u client setHasAuth setUser />
+      | None => <p className="font-flow text-stone-100 text-3xl "> {React.string("TODO")} </p>
+      }
+
     | (Leaderboard | Lobby | Play(_), true) => React.null
     //   <React.Suspense fallback=React.null> auth </React.Suspense>
     | (NotFound, _) =>

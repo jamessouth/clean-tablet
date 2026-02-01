@@ -1,24 +1,24 @@
 let landingLinkStyles = "w-5/6 border border-stone-100 bg-stone-800/40 text-center text-stone-100 decay-mask p-2 max-w-80 font-fred "
 
-type formstate = Loading | Name | Email | Error(Supabase.Auth.error) | None
+type formstate = Loading | Name | Email | Error(Supabase.Error.t) | None
 
 type namePayload = {uname: string}
 
 @react.component
-let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
+let make = (~user: Supabase.Auth.user, ~client, ~_setHasAuth, ~_setUser) => {
   let {
     username,
-    setUsername,
+    // setUsername,
     email,
-    setEmail,
-    submitClicked,
-    setSubmitClicked,
-    validationError,
-    setValidationError,
-    emailValdnError,
-    setEmailValdnError,
-    unameValdnError,
-    setUnameValdnError,
+    // setEmail,
+    // submitClicked,
+    // setSubmitClicked,
+    // validationError,
+    // setValidationError,
+    // emailValdnError,
+    // setEmailValdnError,
+    // unameValdnError,
+    // setUnameValdnError,
   } = FormHook.useForm()
 
   let {id} = user
@@ -61,11 +61,11 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
     Console.log2("upd user name", resp)
     // resp->Auth.getResult
 
-    switch await resp->Auth.getResult {
+    switch resp->DB.getResult {
     | Ok(_) => setShowForm(_ => None)
     // show toast
 
-    | Error(msg) => setShowForm(_ => Error(msg))
+    | Error(err) => setShowForm(_ => Supabase.Error.Db(err)->Error)
     }
   }
 
@@ -76,16 +76,16 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
     open Supabase
     let resp = await client
     ->Client.auth
-    ->Auth.updateUser({email})
+    ->Auth.updateUser({email: email})
 
     Console.log2("upd user email", resp)
     // resp->Auth.getResult
 
-    switch await resp->Auth.getResult {
+    switch resp->Auth.getResult {
     | Ok(_) => setShowForm(_ => None)
     // show toast
 
-    | Error(msg) => setShowForm(_ => Error(msg))
+    | Error(err) => setShowForm(_ => Supabase.Error.Auth(err)->Error)
     }
   }
   let onShowNameFormClick = async () => {
@@ -99,11 +99,7 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
 
   <>
     <Menu onSignOutClick onShowNameFormClick onShowEmailFormClick />
-    <p
-      className="font-flow text-stone-100 text-3xl tracking-wide absolute top-0 left-1/2 -translate-x-1/2 font-bold "
-    >
-      {React.string(user)}
-    </p>
+
     <Header mgt="mt-17" />
     <nav className="flex flex-col items-center h-[30vh] justify-around">
       <Link route=Lobby className={landingLinkStyles ++ "text-4xl"} content="LOBBY" />

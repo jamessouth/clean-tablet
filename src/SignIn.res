@@ -1,6 +1,6 @@
 @react.component
 let make = (~setHasAuth, ~setUser, ~client, ~votp) => {
-  let (loginstate, setLoginState) = React.useState(_ => Supabase.Auth.Loading)
+  let (loginstate, setLoginState) = React.useState(_ => Supabase.Global.Loading)
   let loginOnce = React.useRef(false)
 
   let myfunc = async () => {
@@ -21,10 +21,10 @@ let make = (~setHasAuth, ~setUser, ~client, ~votp) => {
       setUser(_ => Some(resp.user))
       setLoginState(_ => Success)
       Route.push(Landing)
-    | Error(msg) =>
+    | Error(err) =>
       setHasAuth(_ => false)
       setUser(_ => None)
-      setLoginState(_ => Error(msg))
+      setLoginState(_ => Supabase.Error.Auth(err)->Error)
     }
   }
 
@@ -45,7 +45,7 @@ let make = (~setHasAuth, ~setUser, ~client, ~votp) => {
     <div>
       {switch loginstate {
       | Loading => <Loading label="session" />
-      | Error(err) => <SupaErr err />
+      | Error(err) => <SupaErrToast err />
       | Success => React.null
       }}
     </div>

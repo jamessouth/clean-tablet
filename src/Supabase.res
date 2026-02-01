@@ -1,8 +1,4 @@
 module Auth = {
-  // ---------------------------------------------------------
-  // Types
-  // ---------------------------------------------------------
-
   type userMetadata = {username: string}
 
   type user = {
@@ -34,7 +30,8 @@ module Auth = {
   }
 
   type authResp = {
-    user: Null.t<user>,
+    // @return(nullable)
+    user: user,
     session: Null.t<session>,
   }
 
@@ -60,10 +57,6 @@ module Auth = {
     token_hash: string,
   }
 
-  // ---------------------------------------------------------
-  // Sign In Types
-  // ---------------------------------------------------------
-
   type userAttributes = {email: string}
 
   type signInWithOtpOptions = {
@@ -77,15 +70,6 @@ module Auth = {
     email: string,
     options?: signInWithOtpOptions,
   }
-
-  type supastate =
-    | Loading
-    | Error(error)
-    | Success
-
-  // ---------------------------------------------------------
-  // Event Types
-  // ---------------------------------------------------------
 
   // Poly-variants for Auth Events (safer than raw strings)
   type event = [
@@ -107,35 +91,21 @@ module Auth = {
 
   type authStateChangeResponse = {subscription: subscription}
 
-  // ---------------------------------------------------------
-  // The Auth Client Interface
-  // ---------------------------------------------------------
   type t
 
-  // 1. Get Session
-  // ----------------------------
   @send
   external getSession: t => Promise.t<response<option<session>>> = "getSession"
 
-  // 2. Get User (fetches fresh data from DB, unlike getSession which is local)
-  // ----------------------------
   @send
   external getUser: t => Promise.t<response<option<user>>> = "getUser"
 
-  // 3. Sign In (Magic Link)
-  // ----------------------------
-  // Returns session: null because the session isn't ready until they click the link
   @send
   external signInWithOtp: (t, signInWithOtpCredentials) => Promise.t<response<authOtpResp>> =
     "signInWithOtp"
 
-  // 4. Sign Out
-  // ----------------------------
   @send
   external signOut: t => Promise.t<Nullable.t<error>> = "signOut"
 
-  // 5. Auth State Listener
-  // ----------------------------
   // Note: The callback receives the event (mapped to poly-variant) and the session (nullable)
   @send
   external onAuthStateChange: (t, (event, option<session>) => unit) => authStateChangeResponse =
@@ -148,6 +118,7 @@ module Auth = {
   external updateUser: (t, userAttributes) => Promise.t<response<user>> = "updateUser"
 
   let getResult = (rspn: response<'data>): result<'data, error> => {
+    Console.log2("auth getres", rspn)
     open Nullable
     switch rspn.error->toOption {
     | Some(er) => Error(er)
@@ -283,6 +254,7 @@ module DB = {
   }
 
   let getResult = (rspn: response<'data>): result<'data, error> => {
+    Console.log2("db getres", rspn)
     open Nullable
     switch rspn.error->toOption {
     | Some(er) => Error(er)
@@ -291,10 +263,11 @@ module DB = {
       | Some(d) => Ok(d)
       | None =>
         Error({
+          message: "invalid state",
           name: "ResultError",
-          status: make(0),
-          code: make("invalid_state"),
-          message: "both data and error are null",
+          details: "both data and error are null",
+          hint: "bad response",
+          code: "520",
         })
       }
     }
@@ -387,26 +360,39 @@ module Options = {
   }
 }
 
-// Main createClient binding
-@module("@supabase/supabase-js")
-external createClient: (string, string, ~options: Options.t=?) => Client.t<'db> = "createClient"
-
 module Error = {
-  // type t =
-  //   | Auth(Auth.error)
-  //   | Db(DB.error)
+  type t =
+    | Auth(Auth.error)
+    | Db(DB.error)
 
-  let getError = (e: Supabase.Auth.error) => {
-    let code = switch Nullable.toOption(e.code) {
-    | Some(s) => s
-    | None => "none"
+  let getError = (e: t) => {
+    switch e {
+    | Auth(err) =>
+      let code = switch Nullable.toOption(err.code) {
+      | Some(s) => s
+      | None => "none"
+      }
+      let status = switch Nullable.toOption(err.status) {
+      | Some(s) => Int.toString(s)
+      | None => "none"
+      }
+      `Name: ${err.name})^*Message: ${err.message})^*Code: ${code})^*Status: ${status})^*Please wait a minute and try again`->String.split(
+        ")^*",
+      )
+    | Db(err) =>
+      `Name: ${err.name})^*Message: ${err.message})^*Details: ${err.details})^*Code: ${err.code})^*Hint: ${err.hint})^*Please wait a minute and try again`->String.split(
+        ")^*",
+      )
     }
-    let status = switch Nullable.toOption(e.status) {
-    | Some(s) => Int.toString(s)
-    | None => "none"
-    }
-    `Name: ${e.name})^*Message: ${e.message})^*Code: ${code})^*Status: ${status})^*Please wait a minute and try again`->String.split(
-      ")^*",
-    )
   }
+}
+
+module Global = {
+  @module("@supabase/supabase-js")
+  external createClient: (string, string, ~options: Options.t=?) => Client.t<'db> = "createClient"
+
+  type supastate =
+    | Loading
+    | Error(Error.t)
+    | Success
 }
