@@ -95,7 +95,7 @@ let make = () => {
 
     | (Landing, true) =>
       switch user {
-      | Some(u) => <Landing user=u client setHasAuth setUser />
+      | Some(user) => <Landing user client setHasAuth setUser />
       | None => <p className="font-flow text-stone-100 text-3xl "> {React.string("TODO")} </p>
       }
 

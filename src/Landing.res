@@ -1,23 +1,28 @@
 let landingLinkStyles = "w-5/6 border border-stone-100 bg-stone-800/40 text-center text-stone-100 decay-mask p-2 max-w-80 font-fred "
 
-type formstate = Loading | Name | Email | Error(Supabase.Error.t) | None
+type formstate = Name | Email | Loading | Error(Supabase.Error.t) | None
 
 type namePayload = {uname: string}
 
 @react.component
-let make = (~user: Supabase.Auth.user, ~client, ~_setHasAuth, ~_setUser) => {
+let make = (
+  ~user: Supabase.Auth.user,
+  ~client,
+  ~setHasAuth,
+  ~setUser: (option<Supabase.Auth.user> => option<Supabase.Auth.user>) => unit,
+) => {
   let {
     username,
-    // setUsername,
+    setUsername,
     email,
-    // setEmail,
-    // submitClicked,
-    // setSubmitClicked,
-    // validationError,
+    setEmail,
+    submitClicked,
+    setSubmitClicked,
+    validationError,
     // setValidationError,
-    // emailValdnError,
+    emailValdnError,
     // setEmailValdnError,
-    // unameValdnError,
+    unameValdnError,
     // setUnameValdnError,
   } = FormHook.useForm()
 
@@ -29,23 +34,25 @@ let make = (~user: Supabase.Auth.user, ~client, ~_setHasAuth, ~_setUser) => {
   let onSignOutClick = async () => {
     Console.log("sinout clckd")
 
-    // setHasAuth(_ => false)
-    // setUser(_ => None)
-    // // Route.push(SignIn)
+    setHasAuth(_ => false)
+    setUser(_ => None)
+    // Route.push(SignIn)
 
-    // let error = await client
-    // ->Supabase.Client.auth
-    // ->Supabase.Auth.signOut()
+    open Supabase
+    let error = await client
+    ->Client.auth
+    ->Auth.signOut
 
-    // switch Nullable.toOption(error) {
-    // | Some(err) =>
-    //   Console.log2("err", err)
-    //   setLoginState(_ => Error(err))
+    switch Nullable.toOption(error) {
+    | Some(err) =>
+      Console.log2("err", err)
+      setShowForm(_ => Supabase.Error.Auth(err)->Error)
 
-    // | None =>
-    //   Console.log("Check your email for the login link!")
-    //   setLoginState(_ => Success)
-    // }
+    | None =>
+      Console.log("Check your email for the login link!")
+      setShowForm(_ => None)
+    //redirect
+    }
   }
 
   let onNameChangeClick = async () => {
@@ -105,32 +112,53 @@ let make = (~user: Supabase.Auth.user, ~client, ~_setHasAuth, ~_setUser) => {
       <Link route=Lobby className={landingLinkStyles ++ "text-4xl"} content="LOBBY" />
       <Link route=Leaderboard className={landingLinkStyles ++ "text-3xl"} content="LEADERBOARD" />
     </nav>
-    // {switch showForm {
-    // | Name =>
-    //   <Form ht="h-46" on_Click=onNameChangeClick leg="Update name" validationError setSubmitClicked>
-    //     <Input
-    //       value=email
-    //       propName="email"
-    //       inputMode="email"
-    //       setFunc=setEmail
-    //       submitClicked
-    //       valdnError=emailValdnError
-    //     />
-    //   </Form>
-    // | Email =>
-    //   <Form
-    //     ht="h-46" on_Click=onEmailChangeClick leg="Update email" validationError setSubmitClicked
-    //   >
-    //     <Input
-    //       value=email
-    //       propName="email"
-    //       inputMode="email"
-    //       setFunc=setEmail
-    //       submitClicked
-    //       valdnError=emailValdnError
-    //     />
-    //   </Form>
-    // | None => React.null
-    // }}
+
+    {switch showForm {
+    | Name | Email =>
+      <Form
+        ht="h-46"
+        on_Click={switch showForm {
+        | Name => onNameChangeClick
+        | Email => onEmailChangeClick
+        | _ =>
+          async () => {
+            ()
+          }
+        }}
+        leg={switch showForm {
+        | Name => "Update name"
+        | Email => "Update email"
+        | _ => ""
+        }}
+        validationError
+        setSubmitClicked
+      >
+        {switch showForm {
+        | Name =>
+          <Input
+            value=username
+            propName="username"
+            inputMode="username"
+            setFunc=setUsername
+            submitClicked
+            valdnError=unameValdnError
+          />
+        | Email =>
+          <Input
+            value=email
+            propName="email"
+            inputMode="email"
+            setFunc=setEmail
+            submitClicked
+            valdnError=emailValdnError
+          />
+        | _ => React.null
+        }}
+      </Form>
+
+    | Error(err) => <SupaErrToast err />
+    | Loading => <Loading />
+    | None => React.null
+    }}
   </>
 }
