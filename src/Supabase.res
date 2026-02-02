@@ -115,25 +115,6 @@ module Auth = {
 
   @send
   external updateUser: (t, userAttributes) => Promise.t<response<user>> = "updateUser"
-
-  // let getResult = (rspn: response<'data>): result<'data, error> => {
-  //   Console.log2("auth getres", rspn)
-  //   open Nullable
-  //   switch rspn.error->toOption {
-  //   | Some(er) => Error(er)
-  //   | None =>
-  //     switch rspn.data->toOption {
-  //     | Some(d) => Ok(d)
-  //     | None =>
-  //       Error({
-  //         name: "ResultError",
-  //         status: make(0),
-  //         code: make("invalid_state"),
-  //         message: "both data and error are null",
-  //       })
-  //     }
-  //   }
-  // }
 }
 
 module Realtime = {
@@ -252,26 +233,6 @@ module DB = {
     count: Nullable.t<int>,
   }
 
-  // let getResult = (rspn: response<'data>): result<'data, error> => {
-  //   Console.log2("db getres", rspn)
-  //   open Nullable
-  //   switch rspn.error->toOption {
-  //   | Some(er) => Error(er)
-  //   | None =>
-  //     switch rspn.data->toOption {
-  //     | Some(d) => Ok(d)
-  //     | None =>
-  //       Error({
-  //         message: "invalid state",
-  //         name: "ResultError",
-  //         details: "both data and error are null",
-  //         hint: "bad response",
-  //         code: "520",
-  //       })
-  //     }
-  //   }
-  // }
-
   // 1. Core Query Methods
   @send external select: (queryBuilder<'row>, string) => queryBuilder<'row> = "select"
   @send external insert: (queryBuilder<'row>, 'payload) => queryBuilder<'row> = "insert"
@@ -359,7 +320,7 @@ module Options = {
   }
 }
 
-module Error = {
+module SupaError = {
   type t =
     | Auth(Auth.error)
     | Db(DB.error)
@@ -392,6 +353,6 @@ module Global = {
 
   type supastate =
     | Loading
-    | Error(Error.t)
+    | Error(SupaError.t)
     | Success
 }

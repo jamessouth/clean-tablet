@@ -3,24 +3,20 @@ let make = (~setHasAuth, ~setUser, ~client, ~votp) => {
   let (loginstate, setLoginState) = React.useState(_ => Supabase.Global.Loading)
   let loginOnce = React.useRef(false)
 
-  let myfunc = async () => {
+  let funfun = async () => {
     open Supabase
     Console.log("in func")
-    let resp = await client
+    let {error, data} = await client
     ->Client.auth
     ->Auth.verifyOtp(votp)
 
-    Console.log2("votp", resp)
-    resp
-  }
+    Console.log3("votp", error, data)
 
-  let funfun = async () => {
-    let {error, data} = await myfunc()
     switch (error, data) {
     | (Value(err), _) =>
       setHasAuth(_ => false)
       setUser(_ => None)
-      setLoginState(_ => Supabase.Error.Auth(err)->Error)
+      setLoginState(_ => SupaError.Auth(err)->Error)
     | (_, Value({user: Value(user)})) =>
       setHasAuth(_ => true)
       setUser(_ => Some(user))
@@ -30,7 +26,7 @@ let make = (~setHasAuth, ~setUser, ~client, ~votp) => {
       setHasAuth(_ => false)
       setUser(_ => None)
       setLoginState(_ =>
-        Supabase.Error.Auth({
+        SupaError.Auth({
           name: "VerifyOTPError",
           status: Nullable.make(0),
           code: Nullable.make("invalid_state"),

@@ -1,6 +1,6 @@
 @react.component
 let make = (~err) => {
-  let arr = Supabase.Error.getError(err)
+  let arr = Supabase.SupaError.getError(err)
   let len = Array.length(arr)
   arr
   ->Array.mapWithIndex((x, i) => {

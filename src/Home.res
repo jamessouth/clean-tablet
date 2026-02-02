@@ -62,14 +62,14 @@ let make = (~client) => {
     ->Auth.signInWithOtp({
       email,
       options: {
-        shouldCreateUser: true,
+        shouldCreateUser: false,
         data: JSON.Encode.object(dict{"username": JSON.Encode.string(username)}),
       },
     })
     switch Nullable.toOption(error) {
     | Some(err) =>
       Console.log2("err", err)
-      setLoginState(_ => Supabase.Error.Auth(err)->Error)
+      setLoginState(_ => SupaError.Auth(err)->Error)
 
     | None =>
       Console.log("Check your email for the login link!")

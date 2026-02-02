@@ -1,6 +1,6 @@
 let landingLinkStyles = "w-5/6 border border-stone-100 bg-stone-800/40 text-center text-stone-100 decay-mask p-2 max-w-80 font-fred "
 
-type formstate = Name | Email | Loading | Error(Supabase.Error.t) | Dontshow
+type formstate = Name | Email | Loading | Error(Supabase.SupaError.t) | Dontshow
 
 type namePayload = {uname: string}
 
@@ -34,7 +34,7 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
     switch error {
     | Value(err) =>
       Console.log2("sinout err", err)
-      setShowForm(_ => Supabase.Error.Auth(err)->Error)
+      setShowForm(_ => SupaError.Auth(err)->Error)
 
     | _ =>
       Console.log("logged out")
@@ -60,12 +60,12 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
     // resp->Auth.getResult
 
     switch (error, data, count, status, statusText) {
-    | (Value(err), _, _, _, _) => setShowForm(_ => Supabase.Error.Db(err)->Error)
+    | (Value(err), _, _, _, _) => setShowForm(_ => SupaError.Db(err)->Error)
     | (_, Value(_data), _, _, _) => setShowForm(_ => Dontshow)
     // show toast
     | (_, _, _, _, _) =>
       setShowForm(_ =>
-        Supabase.Error.Db({
+        SupaError.Db({
           message: "invalid state",
           name: "UpdateError",
           details: "both data and error are null",
@@ -88,12 +88,12 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
     Console.log3("upd user email", error, data)
 
     switch (error, data) {
-    | (Value(err), _) => setShowForm(_ => Supabase.Error.Auth(err)->Error)
+    | (Value(err), _) => setShowForm(_ => SupaError.Auth(err)->Error)
     | (_, Value(_user)) => setShowForm(_ => Dontshow)
     // show toast
     | (_, _) =>
       setShowForm(_ =>
-        Supabase.Error.Auth({
+        SupaError.Auth({
           name: "UpdateUserError",
           status: Nullable.make(0),
           code: Nullable.make("invalid_state"),
