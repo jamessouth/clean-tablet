@@ -1,16 +1,11 @@
 let landingLinkStyles = "w-5/6 border border-stone-100 bg-stone-800/40 text-center text-stone-100 decay-mask p-2 max-w-80 font-fred "
 
-type formstate = Name | Email | Loading | Error(Supabase.Error.t) | None
+type formstate = Name | Email | Loading | Error(Supabase.Error.t) | Dontshow
 
 type namePayload = {uname: string}
 
 @react.component
-let make = (
-  ~user: Supabase.Auth.user,
-  ~client,
-  ~setHasAuth,
-  ~setUser: (option<Supabase.Auth.user> => option<Supabase.Auth.user>) => unit,
-) => {
+let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
   let {
     username,
     setUsername,
@@ -19,38 +14,34 @@ let make = (
     submitClicked,
     setSubmitClicked,
     validationError,
-    // setValidationError,
     emailValdnError,
-    // setEmailValdnError,
     unameValdnError,
-    // setUnameValdnError,
   } = FormHook.useForm()
 
   let {id} = user
   //   let {username} = user.user_metadata
 
-  let (showForm, setShowForm) = React.useState(_ => None)
+  let (showForm, setShowForm) = React.useState(_ => Dontshow)
 
   let onSignOutClick = async () => {
     Console.log("sinout clckd")
-
-    setHasAuth(_ => false)
-    setUser(_ => None)
-    // Route.push(SignIn)
 
     open Supabase
     let error = await client
     ->Client.auth
     ->Auth.signOut
 
-    switch Nullable.toOption(error) {
-    | Some(err) =>
-      Console.log2("err", err)
+    switch error {
+    | Value(err) =>
+      Console.log2("sinout err", err)
       setShowForm(_ => Supabase.Error.Auth(err)->Error)
 
-    | None =>
-      Console.log("Check your email for the login link!")
-      setShowForm(_ => None)
+    | _ =>
+      Console.log("logged out")
+      setShowForm(_ => Dontshow)
+      setHasAuth(_ => false)
+      setUser(_ => None)
+    // Route.push(SignIn)
     //redirect
     }
   }
@@ -59,20 +50,29 @@ let make = (
     Console.log("ch name clckd")
     setShowForm(_ => Loading)
     open Supabase
-    let resp = await client
+    let {status, statusText, data, error, count} = await client
     ->Client.from("profiles")
     ->DB.update({uname: username})
     ->DB.eq("id", id)
     ->DB.single
 
-    Console.log2("upd user name", resp)
+    Console.log6("upd user name", status, statusText, data, error, count)
     // resp->Auth.getResult
 
-    switch resp->DB.getResult {
-    | Ok(_) => setShowForm(_ => None)
+    switch (error, data, count, status, statusText) {
+    | (Value(err), _, _, _, _) => setShowForm(_ => Supabase.Error.Db(err)->Error)
+    | (_, Value(_data), _, _, _) => setShowForm(_ => Dontshow)
     // show toast
-
-    | Error(err) => setShowForm(_ => Supabase.Error.Db(err)->Error)
+    | (_, _, _, _, _) =>
+      setShowForm(_ =>
+        Supabase.Error.Db({
+          message: "invalid state",
+          name: "UpdateError",
+          details: "both data and error are null",
+          hint: "bad response",
+          code: "520",
+        })->Error
+      )
     }
   }
 
@@ -81,20 +81,28 @@ let make = (
 
     setShowForm(_ => Loading)
     open Supabase
-    let resp = await client
+    let {error, data} = await client
     ->Client.auth
     ->Auth.updateUser({email: email})
 
-    Console.log2("upd user email", resp)
-    // resp->Auth.getResult
+    Console.log3("upd user email", error, data)
 
-    switch resp->Auth.getResult {
-    | Ok(_) => setShowForm(_ => None)
+    switch (error, data) {
+    | (Value(err), _) => setShowForm(_ => Supabase.Error.Auth(err)->Error)
+    | (_, Value(_user)) => setShowForm(_ => Dontshow)
     // show toast
-
-    | Error(err) => setShowForm(_ => Supabase.Error.Auth(err)->Error)
+    | (_, _) =>
+      setShowForm(_ =>
+        Supabase.Error.Auth({
+          name: "UpdateUserError",
+          status: Nullable.make(0),
+          code: Nullable.make("invalid_state"),
+          message: "both data and error are null",
+        })->Error
+      )
     }
   }
+
   let onShowNameFormClick = async () => {
     Console.log("ch name form clckd")
     setShowForm(_ => Name)
@@ -158,7 +166,7 @@ let make = (
 
     | Error(err) => <SupaErrToast err />
     | Loading => <Loading />
-    | None => React.null
+    | Dontshow => React.null
     }}
   </>
 }

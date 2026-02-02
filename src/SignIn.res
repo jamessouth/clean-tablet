@@ -11,20 +11,32 @@ let make = (~setHasAuth, ~setUser, ~client, ~votp) => {
     ->Auth.verifyOtp(votp)
 
     Console.log2("votp", resp)
-    resp->Auth.getResult
+    resp
   }
 
   let funfun = async () => {
-    switch await myfunc() {
-    | Ok(resp) =>
-      setHasAuth(_ => true)
-      setUser(_ => Some(resp.user))
-      setLoginState(_ => Success)
-      Route.push(Landing)
-    | Error(err) =>
+    let {error, data} = await myfunc()
+    switch (error, data) {
+    | (Value(err), _) =>
       setHasAuth(_ => false)
       setUser(_ => None)
       setLoginState(_ => Supabase.Error.Auth(err)->Error)
+    | (_, Value({user: Value(user)})) =>
+      setHasAuth(_ => true)
+      setUser(_ => Some(user))
+      setLoginState(_ => Success)
+      Route.push(Landing)
+    | (_, _) =>
+      setHasAuth(_ => false)
+      setUser(_ => None)
+      setLoginState(_ =>
+        Supabase.Error.Auth({
+          name: "VerifyOTPError",
+          status: Nullable.make(0),
+          code: Nullable.make("invalid_state"),
+          message: "both data and error are null",
+        })->Error
+      )
     }
   }
 
