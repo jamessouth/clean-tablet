@@ -1,6 +1,6 @@
 @react.component
 let make = (
-  ~ht="h-54",
+  ~ht="h-46",
   ~on_Click,
   ~leg,
   ~validationError,

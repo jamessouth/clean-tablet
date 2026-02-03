@@ -62,7 +62,7 @@ let make = (~client) => {
     ->Auth.signInWithOtp({
       email,
       options: {
-        shouldCreateUser: false,
+        shouldCreateUser: true,
         data: JSON.Encode.object(dict{"username": JSON.Encode.string(username)}),
       },
     })
@@ -82,7 +82,10 @@ let make = (~client) => {
       | true => "mt-20"
       | false => "mt-17"
       }}
-      username
+      username={switch hasNameCookie {
+      | true => username
+      | false => ""
+      }}
     />
 
     {switch showLoginStatus {

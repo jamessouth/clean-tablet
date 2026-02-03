@@ -31,6 +31,8 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
     ->Client.auth
     ->Auth.signOut
 
+    Console.log2("ee", error)
+
     switch error {
     | Value(err) =>
       Console.log2("sinout err", err)
@@ -124,7 +126,6 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
     {switch showForm {
     | Name | Email =>
       <Form
-        ht="h-46"
         on_Click={switch showForm {
         | Name => onNameChangeClick
         | Email => onEmailChangeClick

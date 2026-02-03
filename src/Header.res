@@ -1,6 +1,6 @@
 @react.component
 let make = (~mgt="mt-17", ~username="") => {
-  <>
+  <header className={`mb-10 ${mgt} newgmimg:mb-12`}>
     {switch username {
     | "" => React.null
     | _ =>
@@ -10,11 +10,8 @@ let make = (~mgt="mt-17", ~username="") => {
         {React.string(username)}
       </p>
     }}
-
-    <header className={`mb-10 ${mgt} newgmimg:mb-12`}>
-      <h1 className="text-6xl mx-auto px-6 text-center font-arch decay-mask text-stone-100">
-        {React.string("CLEAN TABLET")}
-      </h1>
-    </header>
-  </>
+    <h1 className="text-6xl mx-auto px-6 text-center font-arch decay-mask text-stone-100">
+      {React.string("CLEAN TABLET")}
+    </h1>
+  </header>
 }
