@@ -45,12 +45,15 @@
 .bodmob {
   background:
     -webkit-image-set(
-      url("../assets/mob1x.webp") 1x,
-      url("../assets/mob2x.webp") 2x
+      url("../assets/home/mob1x.webp") 1x,
+      url("../assets/home/mob2x.webp") 2x
     )
     no-repeat center / cover;
   background:
-    image-set(url("../assets/mob1x.webp") 1x, url("../assets/mob2x.webp") 2x)
+    image-set(
+      url("../assets/home/mob1x.webp") 1x,
+      url("../assets/home/mob2x.webp") 2x
+    )
     no-repeat center / cover;
 }
 
@@ -58,12 +61,15 @@
   .bodtab {
     background:
       -webkit-image-set(
-        url("../assets/tab1x.webp") 1x,
-        url("../assets/tab2x.webp") 2x
+        url("../assets/home/tab1x.webp") 1x,
+        url("../assets/home/tab2x.webp") 2x
       )
       no-repeat center / cover;
     background:
-      image-set(url("../assets/tab1x.webp") 1x, url("../assets/tab2x.webp") 2x)
+      image-set(
+        url("../assets/home/tab1x.webp") 1x,
+        url("../assets/home/tab2x.webp") 2x
+      )
       no-repeat center / cover;
   }
 }
@@ -72,12 +78,15 @@
   .bodbig {
     background:
       -webkit-image-set(
-        url("../assets/big1x.webp") 1x,
-        url("../assets/big2x.webp") 2x
+        url("../assets/home/big1x.webp") 1x,
+        url("../assets/home/big2x.webp") 2x
       )
       no-repeat center / cover;
     background:
-      image-set(url("../assets/big1x.webp") 1x, url("../assets/big2x.webp") 2x)
+      image-set(
+        url("../assets/home/big1x.webp") 1x,
+        url("../assets/home/big2x.webp") 2x
+      )
       no-repeat center / cover;
   }
 }
