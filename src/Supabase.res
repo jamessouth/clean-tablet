@@ -29,12 +29,12 @@ module Auth = {
     status: Nullable.t<int>,
   }
 
-  type authResp = {
+  type verifyOtpResp = {
     user: Nullable.t<user>,
     session: Nullable.t<session>,
   }
 
-  type authOtpResp = {
+  type signInWithOtpResp = {
     user: Null.t<user>,
     session: Null.t<session>,
     messageId: Null.t<option<string>>,
@@ -44,6 +44,8 @@ module Auth = {
     data: Nullable.t<'data>,
     error: Nullable.t<error>,
   }
+
+  type signOutResp = {error: Nullable.t<error>}
 
   type verifyOtpType = [
     | #email
@@ -99,11 +101,11 @@ module Auth = {
   external getUser: t => Promise.t<response<option<user>>> = "getUser"
 
   @send
-  external signInWithOtp: (t, signInWithOtpCredentials) => Promise.t<response<authOtpResp>> =
+  external signInWithOtp: (t, signInWithOtpCredentials) => Promise.t<response<signInWithOtpResp>> =
     "signInWithOtp"
 
   @send
-  external signOut: t => Promise.t<Nullable.t<error>> = "signOut"
+  external signOut: t => Promise.t<signOutResp> = "signOut"
 
   // Note: The callback receives the event (mapped to poly-variant) and the session (nullable)
   @send
@@ -111,7 +113,7 @@ module Auth = {
     "onAuthStateChange"
 
   @send
-  external verifyOtp: (t, verifyOtpParams) => Promise.t<response<authResp>> = "verifyOtp"
+  external verifyOtp: (t, verifyOtpParams) => Promise.t<response<verifyOtpResp>> = "verifyOtp"
 
   @send
   external updateUser: (t, userAttributes) => Promise.t<response<user>> = "updateUser"

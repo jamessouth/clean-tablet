@@ -27,7 +27,7 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
     Console.log("sinout clckd")
 
     open Supabase
-    let error = await client
+    let {error} = await client
     ->Client.auth
     ->Auth.signOut
 
