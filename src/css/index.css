@@ -22,33 +22,15 @@
   --font-perm: Permanent Marker, cursive;
 }
 
-/* * {
-  margin: 0;
-  padding: 0;
-  list-style-type: none;
-  outline: none;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  border-style: solid;
-  border-width: 0;
-} */
-
 .menubg {
   background: url("../assets/menubg.webp") no-repeat;
 }
 
 .decay-mask {
-  -webkit-mask-image: url("../assets/decaying.webp");
   mask-image: url("../assets/decaying.webp");
 }
 
 .bodmob {
-  background:
-    -webkit-image-set(
-      url("../assets/home/mob1x.webp") 1x,
-      url("../assets/home/mob2x.webp") 2x
-    )
-    no-repeat center / cover;
   background:
     image-set(
       url("../assets/home/mob1x.webp") 1x,
@@ -60,12 +42,6 @@
 @media screen and (min-width: 768px) {
   .bodtab {
     background:
-      -webkit-image-set(
-        url("../assets/home/tab1x.webp") 1x,
-        url("../assets/home/tab2x.webp") 2x
-      )
-      no-repeat center / cover;
-    background:
       image-set(
         url("../assets/home/tab1x.webp") 1x,
         url("../assets/home/tab2x.webp") 2x
@@ -76,12 +52,6 @@
 
 @media screen and (min-width: 1440px) {
   .bodbig {
-    background:
-      -webkit-image-set(
-        url("../assets/home/big1x.webp") 1x,
-        url("../assets/home/big2x.webp") 2x
-      )
-      no-repeat center / cover;
     background:
       image-set(
         url("../assets/home/big1x.webp") 1x,
