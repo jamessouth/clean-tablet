@@ -1,5 +1,3 @@
-let landingLinkStyles = "w-5/6 border border-stone-100 bg-stone-800/40 text-center text-stone-100 decay-mask p-2 max-w-80 font-fred "
-
 type formstate = Name | Email | Loading | Error(Supabase.SupaError.t) | Dontshow
 
 type namePayload = {uname: string}
@@ -43,6 +41,9 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
       setShowForm(_ => Dontshow)
       setHasAuth(_ => false)
       setUser(_ => None)
+      Web.body(Web.document)
+      ->Web.classList
+      ->Web.removeClassList3("landingmob", "landingtab", "landingbig")
     // Route.push(SignIn)
     //redirect
     }
@@ -119,8 +120,8 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
 
     <Header mgt="mt-17" />
     <nav className="flex flex-col items-center h-[30vh] justify-around">
-      <Link route=Lobby className={landingLinkStyles ++ "text-4xl"} content="LOBBY" />
-      <Link route=Leaderboard className={landingLinkStyles ++ "text-3xl"} content="LEADERBOARD" />
+      <Link route=Lobby textsize="text-4xl" content="LOBBY" />
+      <Link route=Leaderboard textsize="text-3xl" content="LEADERBOARD" />
     </nav>
 
     {switch showForm {

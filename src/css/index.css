@@ -48,6 +48,15 @@
     no-repeat center / cover;
 }
 
+.lobbymob {
+  background:
+    image-set(
+      url("../assets/lobby/mob1x.webp") 1x,
+      url("../assets/lobby/mob2x.webp") 2x
+    )
+    top / cover;
+}
+
 @media screen and (min-width: 768px) {
   .hometab {
     background:
@@ -64,6 +73,14 @@
         url("../assets/landing/tab2x.webp") 2x
       )
       no-repeat center / cover;
+  }
+  .lobbytab {
+    background:
+      image-set(
+        url("../assets/lobby/tab1x.webp") 1x,
+        url("../assets/lobby/tab2x.webp") 2x
+      )
+      top / cover;
   }
 }
 
@@ -83,5 +100,13 @@
         url("../assets/landing/big2x.webp") 2x
       )
       no-repeat center / cover;
+  }
+  .lobbybig {
+    background:
+      image-set(
+        url("../assets/lobby/big1x.webp") 1x,
+        url("../assets/lobby/big2x.webp") 2x
+      )
+      top / cover;
   }
 }

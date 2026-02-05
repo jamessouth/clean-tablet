@@ -14,7 +14,7 @@
   content: "↑";
 }
 
-.leadermobbg {
+.leadermob {
   background:
     image-set(
       url("/assets/leaderboard/mob1x.webp") 1x,
@@ -28,7 +28,7 @@
 }
 
 @media screen and (min-width: 768px) {
-  .leadertabbg {
+  .leadertab {
     background:
       image-set(
         url("/assets/leaderboard/tab1x.webp") 1x,
@@ -43,7 +43,7 @@
 }
 
 @media screen and (min-width: 1440px) {
-  .leaderbigbg {
+  .leaderbig {
     background:
       image-set(
         url("/assets/leaderboard/big1x.webp") 1x,

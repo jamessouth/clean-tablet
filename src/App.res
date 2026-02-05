@@ -19,11 +19,19 @@ let options: Supabase.Options.t = {
 }
 let client: Supabase.Client.t<unit> = Supabase.Global.createClient(url, apikey, ~options)
 
+let mockuser: Supabase.Auth.user = {
+  id: "12345",
+  email: "a@aol.com",
+  user_metadata: {
+    username: "bill",
+  },
+}
+
 @react.component
 let make = () => {
   let route = Route.useRouter() //TODO don't pass down to auth
 
-  let (user, setUser) = React.useState(_ => None)
+  let (user, setUser) = React.useState(_ => Some(mockuser))
   let (hasAuth, setHasAuth) = React.useState(_ => false)
 
   //   let (token, _setToken) = React.Uncurried.useState(_ => None)
@@ -56,28 +64,35 @@ let make = () => {
   // }}
   >
     {switch (route, hasAuth) {
-    | (Home, false) => {
-        //   open Route
-        // Web.body(Web.document)->Web.setClassName("bodmob bodtab bodbig")
+    | (Home, false) =>
+      //   open Route
+      Web.body(Web.document)->Web.setClassName("lobbymob lobbytab lobbybig")
 
+      //   <nav className="flex flex-col items-center">
+      //     <Link route=SignIn className={homeLinkStyles ++ "text-3xl"} content="SIGN IN" />
+      //     {switch wsError == "" {
+      //     | true => React.null
+      //     | false =>
+      //       <React.Suspense fallback=React.null>
+      //         <LazyMessage msg=wsError />
+      //       </React.Suspense>
+      //     }}
+      //   </nav>
+      switch user {
+      | Some(user) => <Lobby user />
+      | None => <p className="font-flow text-stone-100 text-3xl "> {React.string("TODO 1")} </p>
+      }
+
+    //   <Home client />
+    // <Landing user="pok" client setHasAuth setUser />
+
+    | (Auth_Confirm(votp), _) => {
         Web.body(Web.document)
         ->Web.classList
         ->Web.addClassList3("landingmob", "landingtab", "landingbig")
-        //   <nav className="flex flex-col items-center">
-        //     <Link route=SignIn className={homeLinkStyles ++ "text-3xl"} content="SIGN IN" />
-        //     {switch wsError == "" {
-        //     | true => React.null
-        //     | false =>
-        //       <React.Suspense fallback=React.null>
-        //         <LazyMessage msg=wsError />
-        //       </React.Suspense>
-        //     }}
-        //   </nav>
-        <Home client />
-        // <Landing user="pok" client setHasAuth setUser />
-      }
 
-    | (Auth_Confirm(votp), _) => <SignIn setHasAuth setUser client votp />
+        <SignIn setHasAuth setUser client votp />
+      }
 
     // | (Leaderboard, _) =>
     //   <React.Suspense fallback=React.null>
@@ -87,7 +102,8 @@ let make = () => {
     // | (SignIn, false) => <SignIn hasAuth setHasAuth setUser user />
     | (SignIn, false) => <div> {React.string("uuu")} </div>
 
-    | (Lobby, false) => <Lobby />
+    | (Lobby, false) => <p> {React.string("jjj")} </p>
+    //  <Lobby />
 
     | (Landing, false) =>
       Route.replace(Home)
@@ -104,7 +120,7 @@ let make = () => {
     | (Landing, true) =>
       switch user {
       | Some(user) => <Landing user client setHasAuth setUser />
-      | None => <p className="font-flow text-stone-100 text-3xl "> {React.string("TODO")} </p>
+      | None => <p className="font-flow text-stone-100 text-3xl "> {React.string("TODO 2")} </p>
       }
 
     | (Leaderboard | Lobby | Play(_), true) => React.null

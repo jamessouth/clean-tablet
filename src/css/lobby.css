@@ -75,7 +75,7 @@
   );
 }
 
-.bodchmob {
+.lobbymob {
   background:
     image-set(
       url("../../assets/lobby/mob1x.webp") 1x,
@@ -84,17 +84,8 @@
     top / cover;
 }
 
-.bodleadmob {
-  background:
-    image-set(
-      url("/assets/leaderboard/mob1x.webp") 1x,
-      url("/assets/leaderboard/mob2x.webp") 2x
-    )
-    no-repeat center / cover;
-}
-
 @media screen and (min-width: 768px) {
-  .bodchtab {
+  .lobbytab {
     background:
       image-set(
         url("../../assets/lobby/tab1x.webp") 1x,
@@ -102,33 +93,15 @@
       )
       top / cover;
   }
-
-  .bodleadtab {
-    background:
-      image-set(
-        url("/assets/leaderboard/tab1x.webp") 1x,
-        url("/assets/leaderboard/tab2x.webp") 2x
-      )
-      no-repeat center / cover;
-  }
 }
 
 @media screen and (min-width: 1440px) {
-  .bodchbig {
+  .lobbybig {
     background:
       image-set(
         url("../../assets/lobby/big1x.webp") 1x,
         url("../../assets/lobby/big2x.webp") 2x
       )
       top / cover;
-  }
-
-  .bodleadbig {
-    background:
-      image-set(
-        url("/assets/leaderboard/big1x.webp") 1x,
-        url("/assets/leaderboard/big2x.webp") 2x
-      )
-      no-repeat center / cover;
   }
 }
