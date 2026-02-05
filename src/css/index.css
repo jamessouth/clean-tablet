@@ -30,7 +30,7 @@
   mask-image: url("../assets/decaying.webp");
 }
 
-.bodmob {
+.homemob {
   background:
     image-set(
       url("../assets/home/mob1x.webp") 1x,
@@ -39,8 +39,17 @@
     no-repeat center / cover;
 }
 
+.landingmob {
+  background:
+    image-set(
+      url("../assets/landing/mob1x.webp") 1x,
+      url("../assets/landing/mob2x.webp") 2x
+    )
+    no-repeat center / cover;
+}
+
 @media screen and (min-width: 768px) {
-  .bodtab {
+  .hometab {
     background:
       image-set(
         url("../assets/home/tab1x.webp") 1x,
@@ -48,14 +57,30 @@
       )
       no-repeat center / cover;
   }
+  .landingtab {
+    background:
+      image-set(
+        url("../assets/landing/tab1x.webp") 1x,
+        url("../assets/landing/tab2x.webp") 2x
+      )
+      no-repeat center / cover;
+  }
 }
 
 @media screen and (min-width: 1440px) {
-  .bodbig {
+  .homebig {
     background:
       image-set(
         url("../assets/home/big1x.webp") 1x,
         url("../assets/home/big2x.webp") 2x
+      )
+      no-repeat center / cover;
+  }
+  .landingbig {
+    background:
+      image-set(
+        url("../assets/landing/big1x.webp") 1x,
+        url("../assets/landing/big2x.webp") 2x
       )
       no-repeat center / cover;
   }

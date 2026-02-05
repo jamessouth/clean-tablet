@@ -58,7 +58,11 @@ let make = () => {
     {switch (route, hasAuth) {
     | (Home, false) => {
         //   open Route
-        Web.body(Web.document)->Web.setClassName("bodmob bodtab bodbig")
+        // Web.body(Web.document)->Web.setClassName("bodmob bodtab bodbig")
+
+        Web.body(Web.document)
+        ->Web.classList
+        ->Web.addClassList3("landingmob", "landingtab", "landingbig")
         //   <nav className="flex flex-col items-center">
         //     <Link route=SignIn className={homeLinkStyles ++ "text-3xl"} content="SIGN IN" />
         //     {switch wsError == "" {
