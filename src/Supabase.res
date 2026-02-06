@@ -215,6 +215,32 @@ module Realtime = {
   // Client-Side Filtering: Use the event key to distinguish between different types of messages (e.g., "CHAT_MSG" vs "USER_TYPING") within the same channel.
 }
 
+module Game = {
+  type gamestatus = |NotStarted|InProgress|Completed|Other
+
+let toString = t =>
+  switch t {
+  | NotStarted => "not started"
+  | InProgress => "in progress"
+  | Completed => "completed"
+  | Other => ""
+  }
+
+let fromString = s => 
+switch s {
+| "not started" => NotStarted
+| "in progress" => InProgress
+| "completed" => Completed
+| _ => Other
+}
+
+
+  type game = {
+    id: int,
+    game_status: gamestatus
+  }
+}
+
 module DB = {
   type queryBuilder<'row>
 
@@ -243,6 +269,8 @@ module DB = {
 
   @send external delete: queryBuilder<'row> => queryBuilder<'row> = "delete"
 
+  @send
+  external abortSignal: (queryBuilder<'row>, Fetch.AbortSignal) => queryBuilder<'row> = "abortSignal"
   // 2. Filters
   @send external eq: (queryBuilder<'row>, string, 'value) => queryBuilder<'row> = "eq"
   @send external gt: (queryBuilder<'row>, string, 'value) => queryBuilder<'row> = "gt"

@@ -79,7 +79,7 @@ let make = () => {
       //     }}
       //   </nav>
       switch user {
-      | Some(user) => <Lobby user />
+      | Some(user) => <Lobby user client />
       | None => <p className="font-flow text-stone-100 text-3xl "> {React.string("TODO 1")} </p>
       }
 
