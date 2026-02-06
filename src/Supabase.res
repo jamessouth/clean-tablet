@@ -216,23 +216,12 @@ module Realtime = {
 }
 
 module Game = {
-  type gamestatus = |NotStarted|InProgress|Completed|Other
+  type gamestatus = 
+  |@as("not started") NotStarted
+  |@as("in progress") InProgress
+  |@as("completed") Completed
 
-let toString = t =>
-  switch t {
-  | NotStarted => "not started"
-  | InProgress => "in progress"
-  | Completed => "completed"
-  | Other => ""
-  }
 
-let fromString = s => 
-switch s {
-| "not started" => NotStarted
-| "in progress" => InProgress
-| "completed" => Completed
-| _ => Other
-}
 
 
   type game = {
@@ -260,6 +249,8 @@ module DB = {
     error: Nullable.t<error>,
     count: Nullable.t<int>,
   }
+
+
 
   // 1. Core Query Methods
   @send external select: (queryBuilder<'row>, string) => queryBuilder<'row> = "select"
@@ -355,6 +346,23 @@ module SupaError = {
     | Auth(Auth.error)
     | Db(DB.error)
 
+    let authError = {
+          name: "VerifyOTPError",
+          status: Nullable.make(0),
+          code: Nullable.make("invalid_state"),
+          message: "both data and error are null",
+        }
+
+    let dbError = {
+            message: "invalid state",
+            name: "UpdateError",
+            details: "both data and error are null",
+            hint: "bad response",
+            code: "520",
+          }
+
+
+
   let getError = (e: t) => {
     switch e {
     | Auth(err) =>
@@ -381,8 +389,8 @@ module Global = {
   @module("@supabase/supabase-js")
   external createClient: (string, string, ~options: Options.t=?) => Client.t<'db> = "createClient"
 
-  type supastate =
+  type supastate<'data> =
     | Loading
     | Error(SupaError.t)
-    | Success
+    | Success('data)
 }

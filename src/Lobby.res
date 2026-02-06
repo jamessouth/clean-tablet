@@ -16,8 +16,8 @@ let make = (~user: Supabase.Auth.user, ~client) => {
     let timeoutSignal = AbortSignal.timeout(30_000)
     let manualSignal = AbortController.signal(controller)
 
-    let timeoutHandler = _ => Console.log("Request timed out after 30s")
-    let manualHandler = _ => Console.log("Request aborted manually")
+    let timeoutHandler = _ => Console.log("lobby Request timed out after 30s")
+    let manualHandler = _ => Console.log("lobby Request aborted manually")
 
     let signal = AbortSignal.any([timeoutSignal, manualSignal])
 
@@ -35,7 +35,7 @@ let make = (~user: Supabase.Auth.user, ~client) => {
       ->Client.from("games")
       ->DB.select("id, game_status")
       ->DB.abortSignal(signal)
-      ->DB.eq("game_status", Game.NotStarted->toString)
+      ->DB.eq("game_status", Game.NotStarted)
       ->DB.single
 
       Console.log6("loadgames", status, statusText, data, error, count)
@@ -43,25 +43,17 @@ let make = (~user: Supabase.Auth.user, ~client) => {
 
       switch (error, data, count, status, statusText) {
       | (Value(err), _, _, _, _) => setLobbyState(_ => SupaError.Db(err)->Error)
-      | (_, Value(_data), _, _, _) => setLobbyState(_ => Dontshow)
+      | (_, Value(data), _, _, _) => setLobbyState(_ => Success(data))
       // show toast
-      | (_, _, _, _, _) =>
-        setLobbyState(_ =>
-          SupaError.Db({
-            message: "invalid state",
-            name: "UpdateError",
-            details: "both data and error are null",
-            hint: "bad response",
-            code: "520",
-          })->Error
-        )
+      | (_, _, _, _, _) => setLobbyState(_ => SupaError.dbError->Error)
       }
     }
 
-    Some(() => loginOnce.current = true)
+    loadGames()
+
+    Some(() => controller.abort())
   }, [])
 
-  // <Loading label="games..." />
   <>
     <p
       className="font-flow text-stone-800 text-3xl tracking-wide absolute top-0 left-1/2 -translate-x-1/2 font-bold "
@@ -78,15 +70,20 @@ let make = (~user: Supabase.Auth.user, ~client) => {
       <p className="text-2xl"> {React.string("⬅")} </p>
     </button>
     <div className="flex flex-col items-center">
-      <ul
-        className="m-12 newgmimg:mt-14 w-11/12 <md:(flex max-w-lg flex-col) md:(grid grid-cols-2 gap-8) lg:(gap-10 justify-items-center) xl:(grid-cols-3 gap-12 max-w-1688px)"
-      >
-        {gs
-        ->Array.map(game => {
-          <Game key=game.id game />
-        })
-        ->React.array}
-      </ul>
+      {switch lobbystate {
+      | Loading => <Loading label="games..." />
+      | Error(err) => <SupaErrToast err />
+      | Success(games) =>
+        <ul
+          className="m-12 newgmimg:mt-14 w-11/12 <md:(flex max-w-lg flex-col) md:(grid grid-cols-2 gap-8) lg:(gap-10 justify-items-center) xl:(grid-cols-3 gap-12 max-w-1688px)"
+        >
+          {games
+          ->Array.map(game => {
+            <Game key=game.id game />
+          })
+          ->React.array}
+        </ul>
+      }}
     </div>
   </>
 }

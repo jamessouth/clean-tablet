@@ -66,16 +66,7 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
     | (Value(err), _, _, _, _) => setShowForm(_ => SupaError.Db(err)->Error)
     | (_, Value(_data), _, _, _) => setShowForm(_ => Dontshow)
     // show toast
-    | (_, _, _, _, _) =>
-      setShowForm(_ =>
-        SupaError.Db({
-          message: "invalid state",
-          name: "UpdateError",
-          details: "both data and error are null",
-          hint: "bad response",
-          code: "520",
-        })->Error
-      )
+    | (_, _, _, _, _) => setShowForm(_ => SupaError.dbError->Error)
     }
   }
 
