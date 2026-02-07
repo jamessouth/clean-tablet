@@ -33,7 +33,7 @@ let make = (
         setSubmitClicked(_ => true)
         switch validationError {
         | true => ()
-        | false => on_Click()->Promise.ignore
+        | false => on_Click()->ignore
         }
       }}
     >

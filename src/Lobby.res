@@ -49,9 +49,9 @@ let make = (~user: Supabase.Auth.user, ~client) => {
       }
     }
 
-    loadGames()
+    loadGames()->ignore
 
-    Some(() => controller.abort())
+    Some(() => controller->AbortController.abort(~reason="timeout or user abort"))
   }, [])
 
   <>
@@ -79,7 +79,7 @@ let make = (~user: Supabase.Auth.user, ~client) => {
         >
           {games
           ->Array.map(game => {
-            <Game key=game.id game />
+            <Game key={Int.toString(game.id)} game />
           })
           ->React.array}
         </ul>

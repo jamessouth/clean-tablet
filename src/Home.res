@@ -73,7 +73,7 @@ let make = (~client) => {
 
     | None =>
       Console.log("Check your email for the login link!")
-      setLoginState(_ => Success)
+      setLoginState(_ => Success())
     }
   }
   <>
@@ -93,7 +93,7 @@ let make = (~client) => {
       switch loginstate {
       | Loading => <Loading />
       | Error(err) => <SupaErrToast err />
-      | Success =>
+      | Success() =>
         <p className="text-stone-100 mx-auto text-xl font-anon w-4/5 text-center mb-[5vh]">
           {React.string("Click the link in your email to login!")}
         </p>

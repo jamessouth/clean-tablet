@@ -216,17 +216,14 @@ module Realtime = {
 }
 
 module Game = {
-  type gamestatus = 
-  |@as("not started") NotStarted
-  |@as("in progress") InProgress
-  |@as("completed") Completed
-
-
-
+  type gamestatus =
+    | @as("not started") NotStarted
+    | @as("in progress") InProgress
+    | @as("completed") Completed
 
   type game = {
     id: int,
-    game_status: gamestatus
+    game_status: gamestatus,
   }
 }
 
@@ -250,8 +247,6 @@ module DB = {
     count: Nullable.t<int>,
   }
 
-
-
   // 1. Core Query Methods
   @send external select: (queryBuilder<'row>, string) => queryBuilder<'row> = "select"
   @send external insert: (queryBuilder<'row>, 'payload) => queryBuilder<'row> = "insert"
@@ -261,7 +256,8 @@ module DB = {
   @send external delete: queryBuilder<'row> => queryBuilder<'row> = "delete"
 
   @send
-  external abortSignal: (queryBuilder<'row>, Fetch.AbortSignal) => queryBuilder<'row> = "abortSignal"
+  external abortSignal: (queryBuilder<'row>, Fetch.AbortSignal.t) => queryBuilder<'row> =
+    "abortSignal"
   // 2. Filters
   @send external eq: (queryBuilder<'row>, string, 'value) => queryBuilder<'row> = "eq"
   @send external gt: (queryBuilder<'row>, string, 'value) => queryBuilder<'row> = "gt"
@@ -346,22 +342,20 @@ module SupaError = {
     | Auth(Auth.error)
     | Db(DB.error)
 
-    let authError = {
-          name: "VerifyOTPError",
-          status: Nullable.make(0),
-          code: Nullable.make("invalid_state"),
-          message: "both data and error are null",
-        }
+  let authError = Auth({
+    name: "AuthError",
+    status: Nullable.make(520),
+    code: Nullable.make("invalid_state"),
+    message: "both data and error are null",
+  })
 
-    let dbError = {
-            message: "invalid state",
-            name: "UpdateError",
-            details: "both data and error are null",
-            hint: "bad response",
-            code: "520",
-          }
-
-
+  let dbError = Db({
+    message: "invalid state",
+    name: "DBError",
+    details: "both data and error are null",
+    hint: "bad response",
+    code: "520",
+  })
 
   let getError = (e: t) => {
     switch e {

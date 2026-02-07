@@ -21,7 +21,7 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
 
   let (showForm, setShowForm) = React.useState(_ => Dontshow)
 
-  let nameRef = React.useRef(Null.null)
+  let nameRef = React.useRef(None)
 
   let onSignOutClick = async () => {
     Console.log("sinout clckd")
@@ -55,9 +55,9 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
     Console.log("ch name clckd")
     setShowForm(_ => Loading)
 
-    switch nameRef.current->Null.toOption {
-    | Some(s) =>
-      nameRef.current.abort()
+    switch nameRef.current {
+    | Some(ctrlr) =>
+      ctrlr->Fetch.AbortController.abort(~reason="timeout or user abort")
       Console.log("name change cxld")
     | None => ()
     }
@@ -81,7 +81,7 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
     )
     AbortSignal.addEventListener(manualSignal, #abort(manualHandler), ~options={once: true, signal})
 
-    nameRef.current = controller
+    nameRef.current = Some(controller)
 
     open Supabase
     let {status, statusText, data, error, count} = await client
@@ -101,9 +101,9 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
     | (_, _, _, _, _) => setShowForm(_ => SupaError.dbError->Error)
     }
 
-    switch nameRef.current == controller {
+    switch nameRef.current == Some(controller) {
     | true =>
-      nameRef.current = Null.null
+      nameRef.current = None
       ()
     | false => ()
     }
