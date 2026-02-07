@@ -21,6 +21,8 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
 
   let (showForm, setShowForm) = React.useState(_ => Dontshow)
 
+  let nameRef = React.useRef(Null.null)
+
   let onSignOutClick = async () => {
     Console.log("sinout clckd")
 
@@ -52,10 +54,40 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
   let onNameChangeClick = async () => {
     Console.log("ch name clckd")
     setShowForm(_ => Loading)
+
+    switch nameRef.current->Null.toOption {
+    | Some(s) =>
+      nameRef.current.abort()
+      Console.log("name change cxld")
+    | None => ()
+    }
+
+    open Fetch
+
+    let controller = AbortController.make()
+
+    let timeoutSignal = AbortSignal.timeout(10_000)
+    let manualSignal = AbortController.signal(controller)
+
+    let timeoutHandler = _ => Console.log("name Request timed out after 10s")
+    let manualHandler = _ => Console.log("name Request aborted manually")
+
+    let signal = AbortSignal.any([timeoutSignal, manualSignal])
+
+    AbortSignal.addEventListener(
+      timeoutSignal,
+      #abort(timeoutHandler),
+      ~options={once: true, signal},
+    )
+    AbortSignal.addEventListener(manualSignal, #abort(manualHandler), ~options={once: true, signal})
+
+    nameRef.current = controller
+
     open Supabase
     let {status, statusText, data, error, count} = await client
     ->Client.from("profiles")
     ->DB.update({uname: username})
+    ->DB.abortSignal(signal)
     ->DB.eq("id", id)
     ->DB.single
 
@@ -67,6 +99,13 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
     | (_, Value(_data), _, _, _) => setShowForm(_ => Dontshow)
     // show toast
     | (_, _, _, _, _) => setShowForm(_ => SupaError.dbError->Error)
+    }
+
+    switch nameRef.current == controller {
+    | true =>
+      nameRef.current = Null.null
+      ()
+    | false => ()
     }
   }
 

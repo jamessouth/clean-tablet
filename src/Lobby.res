@@ -13,10 +13,10 @@ let make = (~user: Supabase.Auth.user, ~client) => {
 
     let controller = AbortController.make()
 
-    let timeoutSignal = AbortSignal.timeout(30_000)
+    let timeoutSignal = AbortSignal.timeout(10_000)
     let manualSignal = AbortController.signal(controller)
 
-    let timeoutHandler = _ => Console.log("lobby Request timed out after 30s")
+    let timeoutHandler = _ => Console.log("lobby Request timed out after 10s")
     let manualHandler = _ => Console.log("lobby Request aborted manually")
 
     let signal = AbortSignal.any([timeoutSignal, manualSignal])
