@@ -3,7 +3,7 @@ type formstate = Name | Email | Loading | Error(Supabase.SupaError.t) | Dontshow
 type namePayload = {uname: string}
 
 @react.component
-let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
+let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
   let {
     username,
     setUsername,
@@ -41,8 +41,7 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
     | _ =>
       Console.log("logged out")
       setShowForm(_ => Dontshow)
-      setHasAuth(_ => false)
-      setUser(_ => None)
+      setHasAuth(_ => None)
       Web.body(Web.document)
       ->Web.classList
       ->Web.removeClassList3("landingmob", "landingtab", "landingbig")

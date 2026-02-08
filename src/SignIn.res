@@ -1,5 +1,5 @@
 @react.component
-let make = (~setHasAuth, ~setUser, ~client, ~votp) => {
+let make = (~setHasAuth, ~client, ~votp) => {
   let (loginstate, setLoginState) = React.useState(_ => Supabase.Global.Loading)
 
   React.useEffect(() => {
@@ -17,17 +17,14 @@ let make = (~setHasAuth, ~setUser, ~client, ~votp) => {
       switch (ignoreUpdate.contents, error, data) {
       | (true, _, _) => ()
       | (false, Value(err), _) =>
-        setHasAuth(_ => false)
-        setUser(_ => None)
+        setHasAuth(_ => None)
         setLoginState(_ => SupaError.Auth(err)->Error)
       | (false, _, Value({user: Value(user)})) =>
-        setHasAuth(_ => true)
-        setUser(_ => Some(user))
+        setHasAuth(_ => Some(user))
         setLoginState(_ => Success())
         Route.push(Landing)
       | (false, _, _) =>
-        setHasAuth(_ => false)
-        setUser(_ => None)
+        setHasAuth(_ => None)
         setLoginState(_ => SupaError.authError->Error)
       }
     }

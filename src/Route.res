@@ -2,8 +2,7 @@ type votp = Supabase.Auth.verifyOtpParams
 
 type t =
   | Home // public ↓
-  | SignIn
-  | Auth_Confirm(votp)
+  | SignIn(votp)
   | Landing //   private ↓
   | Leaderboard
   | Lobby
@@ -13,8 +12,7 @@ type t =
 let urlStringToType = (url: RescriptReactRouter.url) =>
   switch url.path {
   | list{} => Home
-  | list{"signin"} => SignIn
-  | list{"auth", "confirm"} =>
+  | list{"signin"} =>
     switch String.split(url.search, "&") {
     | [h, t] =>
       let vals = [h, t]->Array.map(s =>
@@ -31,9 +29,9 @@ let urlStringToType = (url: RescriptReactRouter.url) =>
         | _ => #other
         },
       }
-      Auth_Confirm(votparam)
+      SignIn(votparam)
     | _ =>
-      Auth_Confirm({
+      SignIn({
         token_hash: "y",
         type_: #other,
       })
@@ -48,12 +46,11 @@ let urlStringToType = (url: RescriptReactRouter.url) =>
 let typeToUrlString = t =>
   switch t {
   | Home => "/"
-  | SignIn => "/signin"
   | Landing => "/api/landing"
   | Leaderboard => "/api/leaderboard"
   | Lobby => "/api/lobby"
   | Play(game) => `/api/play/${game}`
-  | Auth_Confirm(_) | NotFound => ""
+  | SignIn(_) | NotFound => ""
   }
 
 let useRouter = () => urlStringToType(RescriptReactRouter.useUrl())
