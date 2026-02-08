@@ -368,14 +368,24 @@ module SupaError = {
       | Some(s) => Int.toString(s)
       | None => "none"
       }
-      `Name: ${err.name})^*Message: ${err.message})^*Code: ${code})^*Status: ${status})^*Please wait a minute and try again`->String.split(
-        ")^*",
-      )
+      `Name: ${err.name})^*Message: ${err.message})^*Code: ${code})^*Status: ${status})^*Please wait a minute and try again`
     | Db(err) =>
-      `Name: ${err.name})^*Message: ${err.message})^*Details: ${err.details})^*Code: ${err.code})^*Hint: ${err.hint})^*Please wait a minute and try again`->String.split(
-        ")^*",
-      )
-    }
+      switch err.message->String.includes("Error:") {
+      | true =>
+        let arr = err.message->String.split(": ")
+        let name = arr->Array.getUnsafe(0)
+        let msg = arr->Array.getUnsafe(1)
+        `Name: ${name})^*Message: ${msg})^*Details: ${err.details})^*Code: ${err.code})^*Hint: ${err.hint}`
+      | false =>
+        `Name: ${err.name})^*Message: ${err.message})^*Details: ${err.details})^*Code: ${err.code})^*Hint: ${err.hint}`
+      } ++ ")^*Please wait a minute and try again"
+    }->String.split(")^*")
+    // ->Array.filter(el =>
+    //   switch el->String.endsWith(" ") {
+    //   | true => false
+    //   | false => true
+    //   }
+    // )
   }
 }
 

@@ -1,15 +1,15 @@
 @react.component
-let make = (~fillColor="fill-stone-100", ~label="") => <>
+let make = (~color="stone-100", ~label="") => <>
   {switch label == "" {
   | true => React.null
   | false =>
-    <p className="text-center text-stone-100 font-anon text-lg">
+    <p className={`text-center text-${color} font-anon text-lg`}>
       {React.string(`loading ${label}`)}
     </p>
   }}
   <div className="h-8 mx-auto w-8 mb-[5vh]">
     <svg
-      className={`w-8 h-8 animate-spin ${fillColor}`}
+      className={`w-8 h-8 animate-spin fill-${color}`}
       viewBox="0 0 100 100"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

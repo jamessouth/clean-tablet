@@ -13,7 +13,7 @@ let make = (~user: Supabase.Auth.user, ~client) => {
 
     let controller = AbortController.make()
 
-    let timeoutSignal = AbortSignal.timeout(10_000)
+    let timeoutSignal = AbortSignal.timeout(100)
     let manualSignal = AbortController.signal(controller)
 
     let timeoutHandler = _ => Console.log("lobby Request timed out after 10s")
@@ -42,7 +42,11 @@ let make = (~user: Supabase.Auth.user, ~client) => {
       // resp->Auth.getResult
 
       switch (error, data, count, status, statusText) {
-      | (Value(err), _, _, _, _) => setLobbyState(_ => SupaError.Db(err)->Error)
+      | (Value(err), _, _, _, _) =>
+        switch err.message->String.includes("FetchError: undefined") {
+        | true => Console.log("eating abort err")
+        | false => setLobbyState(_ => SupaError.Db(err)->Error)
+        }
       | (_, Value(data), _, _, _) => setLobbyState(_ => Success(data))
       // show toast
       | (_, _, _, _, _) => setLobbyState(_ => SupaError.dbError->Error)
@@ -67,11 +71,11 @@ let make = (~user: Supabase.Auth.user, ~client) => {
       className="w-15 h-7 border bg-stone-800/5 border-stone-800 absolute top-0 left-0 cursor-pointer"
       onClick={_ => Route.push(Landing)}
     >
-      <p className="text-2xl"> {React.string("⬅")} </p>
+      <p className="leading-none text-2xl"> {React.string("⬅")} </p>
     </button>
     <div className="flex flex-col items-center">
       {switch lobbystate {
-      | Loading => <Loading label="games..." />
+      | Loading => <Loading color="stone-800" label="games..." />
       | Error(err) => <SupaErrToast err />
       | Success(games) =>
         <ul
