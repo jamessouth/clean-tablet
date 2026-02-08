@@ -11,7 +11,6 @@ let make = (~color="stone-100", ~label="") => <>
     <svg
       className={`w-8 h-8 animate-spin fill-${color}`}
       viewBox="0 0 100 100"
-      fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path

@@ -232,10 +232,10 @@ module DB = {
 
   type error = {
     message: string,
-    name: string,
-    details: string,
-    hint: string,
-    code: string,
+    name: Nullable.t<string>,
+    details: Nullable.t<string>,
+    hint: Nullable.t<string>,
+    code: Nullable.t<string>,
   }
 
   // The response type from any DB call
@@ -340,7 +340,7 @@ module Options = {
 module SupaError = {
   type t =
     | Auth(Auth.error)
-    | Db(DB.error)
+    | Db(DB.error, option<int>, option<string>)
 
   let authError = Auth({
     name: "AuthError",
@@ -349,43 +349,72 @@ module SupaError = {
     message: "both data and error are null",
   })
 
-  let dbError = Db({
-    message: "invalid state",
-    name: "DBError",
-    details: "both data and error are null",
-    hint: "bad response",
-    code: "520",
-  })
+  let dbError = Db(
+    {
+      message: "invalid state",
+      name: Nullable.make("DBError"),
+      details: Nullable.make("both data and error are null"),
+      hint: Nullable.make("bad response"),
+      code: Nullable.make("520"),
+    },
+    None,
+    None,
+  )
 
   let getError = (e: t) => {
-    switch e {
+    (switch e {
     | Auth(err) =>
       let code = switch Nullable.toOption(err.code) {
-      | Some(s) => s
-      | None => "none"
+      | Some(c) => c
+      | None => ""
       }
       let status = switch Nullable.toOption(err.status) {
       | Some(s) => Int.toString(s)
-      | None => "none"
+      | None => ""
       }
-      `Name: ${err.name})^*Message: ${err.message})^*Code: ${code})^*Status: ${status})^*Please wait a minute and try again`
-    | Db(err) =>
+      `Name: ${err.name})^*Message: ${err.message})^*Code: ${code})^*Status: ${status}`
+    | Db(err, s, st) =>
+      let status = switch s {
+      | Some(s) => Int.toString(s)
+      | None => ""
+      }
+      let statusText = switch st {
+      | Some(st) => st
+      | None => ""
+      }
+      let dets = switch err.details->Nullable.toOption {
+      | Some(d) => d
+      | None => ""
+      }
+      let code = switch Nullable.toOption(err.code) {
+      | Some(c) => c
+      | None => ""
+      }
+      let hint = switch Nullable.toOption(err.hint) {
+      | Some(h) => h
+      | None => ""
+      }
       switch err.message->String.includes("Error:") {
       | true =>
         let arr = err.message->String.split(": ")
         let name = arr->Array.getUnsafe(0)
         let msg = arr->Array.getUnsafe(1)
-        `Name: ${name})^*Message: ${msg})^*Details: ${err.details})^*Code: ${err.code})^*Hint: ${err.hint}`
+        `Name: ${name})^*Message: ${msg})^*Details: ${dets})^*Code: ${code})^*Hint: ${hint})^*Status: ${status})^*StatusText: ${statusText}`
       | false =>
-        `Name: ${err.name})^*Message: ${err.message})^*Details: ${err.details})^*Code: ${err.code})^*Hint: ${err.hint}`
-      } ++ ")^*Please wait a minute and try again"
-    }->String.split(")^*")
-    // ->Array.filter(el =>
-    //   switch el->String.endsWith(" ") {
-    //   | true => false
-    //   | false => true
-    //   }
-    // )
+        let name = switch Nullable.toOption(err.name) {
+        | Some(n) => n
+        | None => ""
+        }
+        `Name: ${name})^*Message: ${err.message})^*Details: ${dets})^*Code: ${code})^*Hint: ${hint})^*Status: ${status})^*StatusText: ${statusText}`
+      }
+    } ++ ")^*Please wait a minute and try again")
+    ->String.split(")^*")
+    ->Array.filter(el =>
+      switch el->String.endsWith(" ") {
+      | true => false
+      | false => true
+      }
+    )
   }
 }
 

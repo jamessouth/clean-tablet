@@ -95,7 +95,7 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUser) => {
     // resp->Auth.getResult
 
     switch (error, data, count, status, statusText) {
-    | (Value(err), _, _, _, _) => setShowForm(_ => SupaError.Db(err)->Error)
+    | (Value(err), _, _, s, st) => setShowForm(_ => SupaError.Db(err, Some(s), Some(st))->Error)
     | (_, Value(_data), _, _, _) => setShowForm(_ => Dontshow)
     // show toast
     | (_, _, _, _, _) => setShowForm(_ => SupaError.dbError->Error)
