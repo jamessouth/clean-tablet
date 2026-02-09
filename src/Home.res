@@ -40,16 +40,29 @@ let make = (~client, ~setHasAuth) => {
 
   React.useEffect(() => {
     let ignoreUpdate = ref(false)
+    Console.log("in home eff")
+    let funfun = async () => {
+      open Supabase
+      Console.log("in home func")
+      let {error, data} = await client
+      ->Client.auth
+      ->Auth.getSession
 
-    switch ignoreUpdate.contents {
-    | true => ()
-    | false =>
-      let token = Dom_storage2.localStorage->Dom_storage2.getItem("clean-tablet")
-      switch token {
-      | Some(t) => Console.log2("tok", t)
-      | None => Console.log("no tok")
+      Console.log3("home", error, data)
+
+      switch (ignoreUpdate.contents, error, data) {
+      | (true, _, _) => ()
+      | (false, Value(err), _) =>
+        setHasAuth(_ => None)
+        setLoginState(_ => SupaError.Auth(err)->Error)
+      | (false, _, {session: Value({user})}) => setHasAuth(_ => Some(user))
+      | (false, _, _) =>
+        setHasAuth(_ => None)
+        setLoginState(_ => SupaError.authError->Error)
       }
     }
+
+    funfun()->ignore
 
     Some(() => ignoreUpdate.contents = true)
   }, [])

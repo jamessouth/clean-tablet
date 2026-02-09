@@ -22,6 +22,8 @@ let mockuser: Supabase.Auth.user = {
   email: "a@aol.com",
   user_metadata: {
     username: "bill",
+    game: Some("123"),
+    token: Some("123ef2"),
   },
 }
 

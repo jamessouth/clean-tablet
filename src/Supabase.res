@@ -1,5 +1,9 @@
 module Auth = {
-  type userMetadata = {username: string}
+  type userMetadata = {
+    username: string,
+    game: option<string>,
+    token: option<string>,
+  }
 
   type user = {
     id: string,
@@ -46,6 +50,11 @@ module Auth = {
   }
 
   type signOutResp = {error: Nullable.t<error>}
+
+  type getSessionResp = {
+    data: {session: Nullable.t<session>},
+    error: Nullable.t<error>,
+  }
 
   type verifyOtpType = [
     | #email
@@ -95,7 +104,7 @@ module Auth = {
   type t
 
   @send
-  external getSession: t => Promise.t<response<option<session>>> = "getSession"
+  external getSession: t => Promise.t<getSessionResp> = "getSession"
 
   @send
   external getUser: t => Promise.t<response<option<user>>> = "getUser"
