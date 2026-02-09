@@ -3,7 +3,7 @@
 let name_cookie_key = "clean_tablet_username="
 
 @react.component
-let make = (~client) => {
+let make = (~client, ~setHasAuth) => {
   let {
     username,
     setUsername,
@@ -23,17 +23,35 @@ let make = (~client) => {
   //   let (authError, setAuthError) = React.useState(_ => None)
 
   React.useEffect(() => {
-    switch name_cookie_key->Cookie.getCookieValue {
-    | Some(v) =>
+    let ignoreUpdate = ref(false)
+    switch (ignoreUpdate.contents, name_cookie_key->Cookie.getCookieValue) {
+    | (true, _) => ()
+    | (false, Some(v)) =>
       switch v->String.split("=")->Array.get(1) {
       | Some(c) =>
         setUsername(_ => c)
         setHasNameCookie(_ => true)
       | None => ()
       }
-    | None => ()
+    | (false, None) => ()
     }
-    None
+    Some(() => ignoreUpdate.contents = true)
+  }, [])
+
+  React.useEffect(() => {
+    let ignoreUpdate = ref(false)
+
+    switch ignoreUpdate.contents {
+    | true => ()
+    | false =>
+      let token = Dom_storage2.localStorage->Dom_storage2.getItem("clean-tablet")
+      switch token {
+      | Some(t) => Console.log2("tok", t)
+      | None => Console.log("no tok")
+      }
+    }
+
+    Some(() => ignoreUpdate.contents = true)
   }, [])
 
   //   React.useEffect0(() => {

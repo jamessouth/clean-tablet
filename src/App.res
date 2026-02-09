@@ -51,7 +51,7 @@ let make = () => {
       //   open Route
       //   Web.body(Web.document)->Web.setClassName("lobbymob lobbytab lobbybig")
 
-      <Home client />
+      <Home client setHasAuth />
 
     | (Home, Some(_)) => {
         Route.replace(Landing)
