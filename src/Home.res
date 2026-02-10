@@ -1,6 +1,5 @@
 // let username_max_length = 10
 // let email_max_length = 99
-let name_cookie_key = "clean_tablet_username="
 
 @react.component
 let make = (~client, ~setHasAuth) => {
@@ -16,10 +15,11 @@ let make = (~client, ~setHasAuth) => {
     unameValdnError,
   } = FormHook.useForm()
 
+  let {hasNameCookie, setHasNameCookie} = CookieHook.useCookie()
+
   let (loginstate, setLoginState) = React.useState(_ => Supabase.Global.Loading)
   let (showLoginStatus, setShowLoginStatus) = React.Uncurried.useState(_ => false)
 
-  let (hasNameCookie, setHasNameCookie) = React.useState(_ => false)
   //   let (authError, setAuthError) = React.useState(_ => None)
 
   React.useEffect(() => {
