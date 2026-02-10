@@ -15,7 +15,7 @@ let make = (~client, ~setHasAuth) => {
     unameValdnError,
   } = FormHook.useForm()
 
-  let {hasNameCookie, setHasNameCookie} = CookieHook.useCookie()
+  let nameCookie = CookieHook.useCookie()
 
   let (loginstate, setLoginState) = React.useState(_ => Supabase.Global.Loading)
   let (showLoginStatus, setShowLoginStatus) = React.Uncurried.useState(_ => false)
@@ -24,17 +24,11 @@ let make = (~client, ~setHasAuth) => {
 
   React.useEffect(() => {
     let ignoreUpdate = ref(false)
-    switch (ignoreUpdate.contents, name_cookie_key->Cookie.getCookieValue) {
-    | (true, _) => ()
-    | (false, Some(v)) =>
-      switch v->String.split("=")->Array.get(1) {
-      | Some(c) =>
-        setUsername(_ => c)
-        setHasNameCookie(_ => true)
-      | None => ()
-      }
-    | (false, None) => ()
+    switch (ignoreUpdate.contents, nameCookie) {
+    | (false, Some(c)) => setUsername(_ => c)
+    | _ => ()
     }
+
     Some(() => ignoreUpdate.contents = true)
   }, [])
 
@@ -82,9 +76,9 @@ let make = (~client, ~setHasAuth) => {
   let on_Click = async () => {
     open Supabase
     Console.log3("submit clckd", username, email)
-    switch hasNameCookie {
-    | true => ()
-    | false => name_cookie_key->Cookie.setCookie(username)
+    switch nameCookie {
+    | Some(_) => ()
+    | None => CookieHook.setNameCookie(username)
     }
     setShowLoginStatus(_ => true)
     // Route.push(SignIn)
@@ -109,14 +103,11 @@ let make = (~client, ~setHasAuth) => {
   }
   <>
     <Header
-      mgt={switch hasNameCookie {
-      | true => "mt-20"
-      | false => "mt-17"
+      mgt={switch nameCookie {
+      | Some(_) => "mt-20"
+      | None => "mt-17"
       }}
-      username={switch hasNameCookie {
-      | true => username
-      | false => ""
-      }}
+      username
     />
 
     {switch showLoginStatus {
@@ -131,18 +122,18 @@ let make = (~client, ~setHasAuth) => {
       }
     | false =>
       <Form
-        ht={switch hasNameCookie {
-        | true => "h-46"
-        | false => "h-54"
+        ht={switch nameCookie {
+        | Some(_) => "h-46"
+        | None => "h-54"
         }}
         on_Click
         leg="Sign in"
         validationError
         setSubmitClicked
       >
-        {switch hasNameCookie {
-        | true => React.null
-        | false =>
+        {switch nameCookie {
+        | Some(_) => React.null
+        | None =>
           <Input
             value=username
             propName="username"

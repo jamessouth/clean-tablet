@@ -7,18 +7,12 @@ let yearsMillis = Float.parseFloat("31536000000")
 let name_cookie_key = "clean_tablet_username="
 
 let setNameCookie = value => {
-  let key = name_cookie_key
   let now = Date.make()
   let inAYear = Date.getTime(now) + yearsMillis
   let _ = now->setTime(inAYear)
   let expiry = now->Date.toUTCString
 
-  document->setCookie(`${key}${value};expires=${expiry};path=/;SameSite=Strict`)
-}
-
-type return = {
-  nameCookie: bool,
-  setNameCookie: (bool => bool) => unit,
+  document->setCookie(`${name_cookie_key}${value};expires=${expiry};path=/;SameSite=Strict`)
 }
 
 let useCookie = () => {
@@ -41,8 +35,5 @@ let useCookie = () => {
     None
   }, [])
 
-  {
-    nameCookie,
-    setNameCookie,
-  }
+  nameCookie
 }

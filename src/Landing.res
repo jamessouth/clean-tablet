@@ -1,6 +1,6 @@
 type formstate = Name | Email | Loading | Error(Supabase.SupaError.t) | Dontshow
 
-type namePayload = {uname: string}
+type namePayload = {username: string}
 
 @react.component
 let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
@@ -85,7 +85,7 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
     open Supabase
     let {status, statusText, data, error, count} = await client
     ->Client.from("profiles")
-    ->DB.update({uname: username})
+    ->DB.update({username: username})
     ->DB.abortSignal(signal)
     ->DB.eq("id", id)
     ->DB.single
@@ -95,8 +95,10 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
 
     switch (error, data, count, status, statusText) {
     | (Value(err), _, _, s, st) => setShowForm(_ => SupaError.Db(err, Some(s), Some(st))->Error)
-    | (_, Value(_data), _, _, _) => setShowForm(_ => Dontshow)
-    // show toast
+    | (_, Value({username}), _, _, _) =>
+      setShowForm(_ => Dontshow)
+      // show toast
+      CookieHook.setNameCookie(username)
     | (_, _, _, _, _) => setShowForm(_ => SupaError.dbError->Error)
     }
 
