@@ -23,6 +23,7 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
 
   let nameRef = React.useRef(None)
 
+  //TODO deal with timeout
   let onSignOutClick = async () => {
     Console.log("sinout clckd")
 
@@ -61,24 +62,7 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
     | None => ()
     }
 
-    open Fetch
-
-    let controller = AbortController.make()
-
-    let timeoutSignal = AbortSignal.timeout(10_000)
-    let manualSignal = AbortController.signal(controller)
-
-    let timeoutHandler = _ => Console.log("name Request timed out after 10s")
-    let manualHandler = _ => Console.log("name Request aborted manually")
-
-    let signal = AbortSignal.any([timeoutSignal, manualSignal])
-
-    AbortSignal.addEventListener(
-      timeoutSignal,
-      #abort(timeoutHandler),
-      ~options={once: true, signal},
-    )
-    AbortSignal.addEventListener(manualSignal, #abort(manualHandler), ~options={once: true, signal})
+    let (controller, signal) = AbortCtrl.abortCtrl("Name")
 
     nameRef.current = Some(controller)
 
@@ -110,6 +94,7 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
     }
   }
 
+  //TODO deal with timeout
   let onEmailChangeClick = async () => {
     Console.log("ch email clckd")
 

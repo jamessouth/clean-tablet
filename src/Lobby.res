@@ -9,24 +9,7 @@ let make = (~user: Supabase.Auth.user, ~client) => {
   React.useEffect(() => {
     Console.log("in lobby eff")
 
-    open Fetch
-
-    let controller = AbortController.make()
-
-    let timeoutSignal = AbortSignal.timeout(10_000)
-    let manualSignal = AbortController.signal(controller)
-
-    let timeoutHandler = _ => Console.log("lobby Request timed out after 10s")
-    let manualHandler = _ => Console.log("lobby Request aborted manually")
-
-    let signal = AbortSignal.any([timeoutSignal, manualSignal])
-
-    AbortSignal.addEventListener(
-      timeoutSignal,
-      #abort(timeoutHandler),
-      ~options={once: true, signal},
-    )
-    AbortSignal.addEventListener(manualSignal, #abort(manualHandler), ~options={once: true, signal})
+    let (controller, signal) = AbortCtrl.abortCtrl("Lobby")
 
     let loadGames = async () => {
       Console.log("loadgames func")
@@ -56,7 +39,7 @@ let make = (~user: Supabase.Auth.user, ~client) => {
 
     loadGames()->ignore
 
-    Some(() => controller->AbortController.abort(~reason="timeout or user abort"))
+    Some(() => controller->Fetch.AbortController.abort(~reason="timeout or user abort"))
   }, [])
 
   <>
