@@ -98,7 +98,7 @@ let make = (~client, ~setHasAuth) => {
     ->Auth.signInWithOtp({
       email,
       options: {
-        shouldCreateUser: true,
+        shouldCreateUser: false,
         data: JSON.Encode.object(dict{"username": JSON.Encode.string(username)}),
       },
     })
@@ -121,17 +121,14 @@ let make = (~client, ~setHasAuth) => {
       username
     />
 
-    {switch showLoginStatus {
-    | true =>
-      switch loginstate {
-      | Loading => <Loading />
-      | Error(err) => <SupaErrToast err />
-      | Success() =>
-        <p className="text-stone-100 mx-auto text-xl font-anon w-4/5 text-center mb-[5vh]">
-          {React.string("Click the link in your email to login!")}
-        </p>
-      }
-    | false =>
+    {switch (showLoginStatus, loginstate) {
+    | (_, Error(err)) => <SupaErrToast err />
+    | (true, Loading) => <Loading />
+    | (true, Success()) =>
+      <p className="text-stone-100 mx-auto text-xl font-anon w-4/5 text-center mb-[5vh]">
+        {React.string("Click the link in your email to login!")}
+      </p>
+    | (false, _) =>
       <Form
         ht={switch nameCookie {
         | Some(_) => "h-46"

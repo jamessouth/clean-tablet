@@ -33,8 +33,8 @@ let make = () => {
 
   let (hasAuth, setHasAuth) = React.useState(_ => None)
 
-  let (_wsError, _setWsError) = React.Uncurried.useState(_ => "")
-  let (_leaderData, _setLeaderData) = React.Uncurried.useState(_ => [])
+  //   let (_wsError, _setWsError) = React.Uncurried.useState(_ => "")
+  //   let (_leaderData, _setLeaderData) = React.Uncurried.useState(_ => [])
 
   //   module LazyMessage = {
   //     let make = React.lazy_(() => import(Message.make))

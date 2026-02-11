@@ -81,7 +81,7 @@ export default defineConfig({
   server: {
     headers: {
       'content-security-policy-report-only':
-        "default-src 'none'; img-src 'self'; script-src 'self' 'report-sample' 'unsafe-inline'; connect-src 'self' https://yzcnlmnrwxmbvrjoupkw.supabase.co wss://yzcnlmnrwxmbvrjoupkw.supabase.co; font-src https://fonts.gstatic.com; style-src 'self' 'report-sample' 'unsafe-inline' https://fonts.googleapis.com; report-uri http://localhost:5173/; worker-src 'self' blob: http://localhost:5173;",
+        "default-src 'none'; img-src 'self'; script-src 'self' 'report-sample' 'unsafe-inline'; connect-src 'self' https://yzcnlmnrwxmbvrjoupkw.supabase.co wss://yzcnlmnrwxmbvrjoupkw.supabase.co data: http://localhost:5173; font-src https://fonts.gstatic.com; style-src 'self' 'report-sample' 'unsafe-inline' https://fonts.googleapis.com; report-uri http://localhost:5173/; worker-src 'self' blob: http://localhost:5173;",
     },
     watch: {
       // We ignore ReScript build artifacts to avoid unnecessarily triggering HMR on incremental compilation
