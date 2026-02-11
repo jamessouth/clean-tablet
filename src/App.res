@@ -33,8 +33,6 @@ let make = () => {
 
   let (hasAuth, setHasAuth) = React.useState(_ => None)
 
-  //   let (token, _setToken) = React.Uncurried.useState(_ => None)
-  //   let (retrievedUsername, setRetrievedUsername) = React.Uncurried.useState(_ => "")
   let (_wsError, _setWsError) = React.Uncurried.useState(_ => "")
   let (_leaderData, _setLeaderData) = React.Uncurried.useState(_ => [])
 

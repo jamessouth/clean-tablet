@@ -19,15 +19,6 @@ let make = (
 
       {children}
     </fieldset>
-    // {switch (submitClicked, leg == "Sign in", validationError) {
-    // | (false, _, _)
-    // | (true, false, _)
-    // | (true, true, Some(_)) => React.null
-    // | (true, true, None) =>
-    //   <div className="absolute left-1/2 transform -translate-x-2/4 bottom-10">
-    //     <Loading label="..." />
-    //   </div>
-    // }}
     <Button
       onClick={_ => {
         setSubmitClicked(_ => true)

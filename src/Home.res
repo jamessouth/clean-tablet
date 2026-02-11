@@ -35,8 +35,8 @@ let make = (~client, ~setHasAuth) => {
   React.useEffect(() => {
     let ignoreUpdate = ref(false)
     Console.log("in home eff")
+    open Supabase
     let funfun = async () => {
-      open Supabase
       Console.log("in home func")
       let {error, data} = await client
       ->Client.auth
@@ -55,10 +55,21 @@ let make = (~client, ~setHasAuth) => {
         setLoginState(_ => SupaError.authError->Error)
       }
     }
-
     funfun()->ignore
 
-    Some(() => ignoreUpdate.contents = true)
+    let {data: {subscription: {unsubscribe}}} =
+      client
+      ->Client.auth
+      ->Auth.onAuthStateChange((ev, sess) => {
+        Console.log3("auth event cb", ev, sess)
+      })
+
+    Some(
+      () => {
+        ignoreUpdate.contents = true
+        unsubscribe()
+      },
+    )
   }, [])
 
   //   React.useEffect0(() => {

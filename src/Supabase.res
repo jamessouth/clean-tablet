@@ -82,24 +82,24 @@ module Auth = {
   }
 
   // Poly-variants for Auth Events (safer than raw strings)
-  type event = [
+  type authEvent = [
+    | #INITIAL_SESSION
+    | #PASSWORD_RECOVERY
     | #SIGNED_IN
     | #SIGNED_OUT
     | #TOKEN_REFRESHED
     | #USER_UPDATED
-    | #USER_DELETED
-    | #PASSWORD_RECOVERY
-    | #INITIAL_SESSION
   ] // Special event Supabase fires on load
 
-  // The subscription object returned by onAuthStateChange
-  type subscription = {
-    id: string,
-    callback: unit,
-    unsubscribe: unit => unit,
+  type authStateChangeResponse = {
+    data: {
+      subscription: {
+        id: string,
+        callback: (authEvent, Nullable.t<session>) => unit,
+        unsubscribe: unit => unit,
+      },
+    },
   }
-
-  type authStateChangeResponse = {subscription: subscription}
 
   type t
 
@@ -118,8 +118,10 @@ module Auth = {
 
   // Note: The callback receives the event (mapped to poly-variant) and the session (nullable)
   @send
-  external onAuthStateChange: (t, (event, option<session>) => unit) => authStateChangeResponse =
-    "onAuthStateChange"
+  external onAuthStateChange: (
+    t,
+    (authEvent, Nullable.t<session>) => unit,
+  ) => authStateChangeResponse = "onAuthStateChange"
 
   @send
   external verifyOtp: (t, verifyOtpParams) => Promise.t<response<verifyOtpResp>> = "verifyOtp"
