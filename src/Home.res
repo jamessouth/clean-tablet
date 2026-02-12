@@ -16,6 +16,7 @@ let make = (~client, ~setHasAuth) => {
   } = FormHook.useForm()
 
   let nameCookie = CookieHook.useCookie()
+  let (showToast, setShowToast) = ToastHook.useToast()
 
   let (loginstate, setLoginState) = React.useState(_ => Supabase.Global.Loading)
   let (showLoginStatus, setShowLoginStatus) = React.Uncurried.useState(_ => false)
@@ -52,7 +53,7 @@ let make = (~client, ~setHasAuth) => {
       | (false, _, {session: Value({user})}) => setHasAuth(_ => Some(user))
       | (false, _, _) =>
         setHasAuth(_ => None)
-        setLoginState(_ => SupaError.authError->Error)
+        setShowToast(_ => Some("No session found. Please log in!"))
       }
     }
     funfun()->ignore
@@ -121,8 +122,13 @@ let make = (~client, ~setHasAuth) => {
       username
     />
 
+    {switch showToast {
+    | None => React.null
+    | Some(msg) => <Toast msg setShowToast />
+    }}
+
     {switch (showLoginStatus, loginstate) {
-    | (_, Error(err)) => <SupaErrToast err />
+    | (_, Error(err)) => <SupaErr err />
     | (true, Loading) => <Loading />
     | (true, Success()) =>
       <p className="text-stone-100 mx-auto text-xl font-anon w-4/5 text-center mb-[5vh]">

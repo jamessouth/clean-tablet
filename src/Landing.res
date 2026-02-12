@@ -16,6 +16,8 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
     unameValdnError,
   } = FormHook.useForm()
 
+  let (showToast, setShowToast) = ToastHook.useToast()
+
   let {id} = user
   //   let {username} = user.user_metadata
 
@@ -81,7 +83,7 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
     | (Value(err), _, _, s, st) => setShowForm(_ => SupaError.Db(err, Some(s), Some(st))->Error)
     | (_, Value({username}), _, _, _) =>
       setShowForm(_ => Dontshow)
-      // show toast
+      setShowToast(_ => Some(`Username changed to ${username}.`))
       CookieHook.setNameCookie(username)
     | (_, _, _, _, _) => setShowForm(_ => SupaError.dbError->Error)
     }
@@ -108,8 +110,9 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
 
     switch (error, data) {
     | (Value(err), _) => setShowForm(_ => SupaError.Auth(err)->Error)
-    | (_, Value(_user)) => setShowForm(_ => Dontshow)
-    // show toast
+    | (_, Value({email})) =>
+      setShowForm(_ => Dontshow)
+      setShowToast(_ => Some(`Email changed to ${email}.`))
     | (_, _) =>
       setShowForm(_ =>
         SupaError.Auth({
@@ -139,6 +142,11 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
       <Link route=Lobby textsize="text-4xl" content="LOBBY" />
       <Link route=Leaderboard textsize="text-3xl" content="LEADERBOARD" />
     </nav>
+
+    {switch showToast {
+    | None => React.null
+    | Some(msg) => <Toast msg setShowToast />
+    }}
 
     {switch showForm {
     | Name | Email =>
@@ -182,7 +190,7 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
         }}
       </Form>
 
-    | Error(err) => <SupaErrToast err />
+    | Error(err) => <SupaErr err />
     | Loading => <Loading />
     | Dontshow => React.null
     }}

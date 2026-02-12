@@ -32,7 +32,6 @@ let make = (~user: Supabase.Auth.user, ~client) => {
         }
 
       | (_, Value(data), _, _, _) => setLobbyState(_ => Success(data))
-      // show toast
       | (_, _, _, _, _) => setLobbyState(_ => SupaError.dbError->Error)
       }
     }
@@ -60,7 +59,7 @@ let make = (~user: Supabase.Auth.user, ~client) => {
     <div className="flex flex-col items-center">
       {switch lobbystate {
       | Loading => <Loading color="stone-800" label="games..." />
-      | Error(err) => <SupaErrToast err />
+      | Error(err) => <SupaErr err />
       | Success(games) =>
         <ul
           className="m-12 newgmimg:mt-14 w-11/12 <md:(flex max-w-lg flex-col) md:(grid grid-cols-2 gap-8) lg:(gap-10 justify-items-center) xl:(grid-cols-3 gap-12 max-w-1688px)"

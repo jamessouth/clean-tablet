@@ -39,7 +39,7 @@ let make = (~setHasAuth, ~client, ~votp) => {
     <div>
       {switch loginstate {
       | Loading => <Loading label="session" />
-      | Error(err) => <SupaErrToast err />
+      | Error(err) => <SupaErr err />
       | Success() => React.null
       }}
     </div>
