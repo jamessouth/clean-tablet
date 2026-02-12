@@ -1,5 +1,5 @@
 @react.component
-let make = (~msg, ~setShowToast) => {
+let make = (~msg, ~setShowToast: (ToastHook.toastState => ToastHook.toastState) => unit) => {
   <div
     className="absolute z-1 left-1/2 -translate-x-1/2 text-stone-100 bg-green-600 font-anon w-3/4 flex justify-around max-w-sm"
   >

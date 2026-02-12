@@ -145,6 +145,7 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
 
     {switch showToast {
     | None => React.null
+    | Loading => <Loading />
     | Some(msg) => <Toast msg setShowToast />
     }}
 

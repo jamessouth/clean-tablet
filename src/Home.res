@@ -124,6 +124,7 @@ let make = (~client, ~setHasAuth) => {
 
     {switch showToast {
     | None => React.null
+    | Loading => <Loading />
     | Some(msg) => <Toast msg setShowToast />
     }}
 

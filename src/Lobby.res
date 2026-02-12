@@ -30,7 +30,6 @@ let make = (~user: Supabase.Auth.user, ~client) => {
         | true => Console.log("eating abort err")
         | false => setLobbyState(_ => SupaError.Db(err, Some(s), Some(st))->Error)
         }
-
       | (_, Value(data), _, _, _) => setLobbyState(_ => Success(data))
       | (_, _, _, _, _) => setLobbyState(_ => SupaError.dbError->Error)
       }
