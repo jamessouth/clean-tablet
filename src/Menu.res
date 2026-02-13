@@ -38,7 +38,7 @@ let make = (~onSignOutClick, ~onShowNameFormClick, ~onShowEmailFormClick) => {
       />
     </button>
     <div
-      className={"flex flex-col top-12 left-1 absolute justify-around items-center z-1 h-32 w-16 rounded-sm menubg " ++
+      className={"flex flex-col top-12 left-1 absolute justify-around items-center z-1 h-32 w-16 rounded-sm bg-radial-[at_12%_12%] from-stone-500 to-stone-900 to-85% " ++
       switch menuIsOpen {
       | true => "block"
       | false => "hidden"

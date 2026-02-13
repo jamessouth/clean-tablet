@@ -22,10 +22,6 @@
   --font-perm: Permanent Marker, cursive;
 }
 
-.menubg {
-  background: url("../assets/menubg.webp") no-repeat;
-}
-
 .decay-mask {
   mask-image: url("../assets/decaying.webp");
 }
