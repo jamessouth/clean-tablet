@@ -48,11 +48,23 @@ let make = (~onSignOutClick, ~onShowNameFormClick, ~onShowEmailFormClick) => {
         <img className="block" src="/src/assets/icons/signout.png" />
       </button>
 
-      <button className="cursor-pointer" onClick={_ => onShowNameFormClick()->ignore}>
+      <button
+        className="cursor-pointer"
+        onClick={_ => {
+          handleMenuClick()
+          onShowNameFormClick()->ignore
+        }}
+      >
         <img className="block" src="/src/assets/icons/name.png" />
       </button>
 
-      <button className="cursor-pointer" onClick={_ => onShowEmailFormClick()->ignore}>
+      <button
+        className="cursor-pointer"
+        onClick={_ => {
+          handleMenuClick()
+          onShowEmailFormClick()->ignore
+        }}
+      >
         <img className="block" src="/src/assets/icons/email.png" />
       </button>
     </div>
