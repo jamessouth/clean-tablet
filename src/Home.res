@@ -25,13 +25,14 @@ let make = (~client, ~setHasAuth) => {
 
   React.useEffect(() => {
     let ignoreUpdate = ref(false)
+    Console.log2("cook", nameCookie)
     switch (ignoreUpdate.contents, nameCookie) {
     | (false, Some(c)) => setUsername(_ => c)
     | _ => ()
     }
 
     Some(() => ignoreUpdate.contents = true)
-  }, [])
+  }, [nameCookie])
 
   React.useEffect(() => {
     let ignoreUpdate = ref(false)
