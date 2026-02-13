@@ -36,6 +36,10 @@ let make = (~client, ~setHasAuth) => {
 
   React.useEffect(() => {
     let ignoreUpdate = ref(false)
+    switch ignoreUpdate.contents {
+    | true => ()
+    | false => setShowToast(_ => Loading)
+    }
     Console.log("in home eff")
     open Supabase
     let funfun = async () => {
@@ -100,7 +104,7 @@ let make = (~client, ~setHasAuth) => {
     ->Auth.signInWithOtp({
       email,
       options: {
-        shouldCreateUser: false,
+        shouldCreateUser: true,
         data: JSON.Encode.object(dict{"username": JSON.Encode.string(username)}),
       },
     })

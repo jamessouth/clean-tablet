@@ -75,7 +75,11 @@ let make = () => {
       Route.replace(Home)
       React.null
 
-    | (Landing, Some(user)) => <Landing user client setHasAuth />
+    | (Landing, Some(user)) =>
+      Web.body(Web.document)
+      ->Web.classList
+      ->Web.addClassList3("landingmob", "landingtab", "landingbig")
+      <Landing user client setHasAuth />
 
     // | (Leaderboard, _) =>
     //   <React.Suspense fallback=React.null>
