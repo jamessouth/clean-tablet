@@ -54,7 +54,7 @@ let make = (~client, ~setHasAuth) => {
       | (false, _, {session: Value({user})}) => setHasAuth(_ => Some(user))
       | (false, _, _) =>
         setHasAuth(_ => None)
-        setShowToast(_ => Some("No session found. Please log in!"))
+        setShowToast(_ => Some(""))
       }
     }
     funfun()->ignore
@@ -120,13 +120,15 @@ let make = (~client, ~setHasAuth) => {
       | Some(_) => "mt-20"
       | None => "mt-17"
       }}
-      username
+      username={switch nameCookie {
+      | Some(u) => u
+      | None => ""
+      }}
     />
 
     {switch showToast {
-    | None => React.null
     | Loading => <Loading />
-    | Some(msg) => <Toast msg setShowToast />
+    | _ => React.null
     }}
 
     {switch (showLoginStatus, loginstate) {
