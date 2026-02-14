@@ -6,14 +6,14 @@ type namePayload = {username: string}
 let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
   let {
     username,
-    setUsername,
     email,
-    setEmail,
     submitClicked,
-    setSubmitClicked,
     validationError,
     emailValdnError,
     unameValdnError,
+    setUsername,
+    setEmail,
+    setSubmitClicked,
   } = FormHook.useForm()
 
   let (showToast, setShowToast) = ToastHook.useToast()

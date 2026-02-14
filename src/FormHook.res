@@ -3,16 +3,16 @@ let unameRegex = /^\w{3,10}$/
 
 type return = {
   username: string,
-  setUsername: (string => string) => unit,
   email: string,
-  setEmail: (string => string) => unit,
   submitClicked: bool,
-  setSubmitClicked: (bool => bool) => unit,
   validationError: bool,
-  setValidationError: (bool => bool) => unit,
   emailValdnError: option<string>,
-  setEmailValdnError: (option<string> => option<string>) => unit,
   unameValdnError: option<string>,
+  setUsername: (string => string) => unit,
+  setEmail: (string => string) => unit,
+  setSubmitClicked: (bool => bool) => unit,
+  setValidationError: (bool => bool) => unit,
+  setEmailValdnError: (option<string> => option<string>) => unit,
   setUnameValdnError: (option<string> => option<string>) => unit,
 }
 
@@ -33,6 +33,7 @@ let useForm = () => {
   ))
 
   React.useEffect(() => {
+    Console.log("email error")
     switch String.match(email, emailRegex) {
     | None => setEmailValdnError(_ => Some("enter a valid email address"))
     | Some(_) => setEmailValdnError(_ => None)
@@ -41,6 +42,7 @@ let useForm = () => {
   }, [email])
 
   React.useEffect(() => {
+    Console.log("uname error")
     switch String.match(username, unameRegex) {
     | None => setUnameValdnError(_ => Some("3-10 letters, numbers, and _ only"))
     | Some(_) => setUnameValdnError(_ => None)
@@ -58,16 +60,16 @@ let useForm = () => {
 
   {
     username,
-    setUsername,
     email,
-    setEmail,
     submitClicked,
-    setSubmitClicked,
     validationError,
-    setValidationError,
     emailValdnError,
-    setEmailValdnError,
     unameValdnError,
+    setUsername,
+    setEmail,
+    setSubmitClicked,
+    setValidationError,
+    setEmailValdnError,
     setUnameValdnError,
   }
 }

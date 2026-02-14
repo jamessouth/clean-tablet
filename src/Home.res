@@ -5,14 +5,14 @@
 let make = (~client, ~setHasAuth) => {
   let {
     username,
-    setUsername,
     email,
-    setEmail,
     submitClicked,
-    setSubmitClicked,
     validationError,
     emailValdnError,
     unameValdnError,
+    setUsername,
+    setEmail,
+    setSubmitClicked,
   } = FormHook.useForm()
 
   let nameCookie = CookieHook.useCookie()
