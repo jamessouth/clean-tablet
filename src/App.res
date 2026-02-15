@@ -71,7 +71,11 @@ let make = () => {
           React.null
         }
 
-      | (About, None) => <About />
+      | (About, None) =>
+        Web.body(Web.document)
+        ->Web.classList
+        ->Web.addClassList3("aboutmob", "abouttab", "aboutbig")
+        <About />
       | (About, Some(_)) => {
           Route.replace(Landing)
           React.null

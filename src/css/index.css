@@ -53,6 +53,15 @@
     top / cover;
 }
 
+.aboutmob {
+  background:
+    image-set(
+      url("../assets/about/mob1x.webp") 1x,
+      url("../assets/about/mob2x.webp") 2x
+    )
+    top / cover;
+}
+
 @media screen and (min-width: 768px) {
   .hometab {
     background:
@@ -75,6 +84,14 @@
       image-set(
         url("../assets/lobby/tab1x.webp") 1x,
         url("../assets/lobby/tab2x.webp") 2x
+      )
+      top / cover;
+  }
+  .abouttab {
+    background:
+      image-set(
+        url("../assets/about/tab1x.webp") 1x,
+        url("../assets/about/tab2x.webp") 2x
       )
       top / cover;
   }
@@ -102,6 +119,14 @@
       image-set(
         url("../assets/lobby/big1x.webp") 1x,
         url("../assets/lobby/big2x.webp") 2x
+      )
+      top / cover;
+  }
+  .aboutbig {
+    background:
+      image-set(
+        url("../assets/about/big1x.webp") 1x,
+        url("../assets/about/big2x.webp") 2x
       )
       top / cover;
   }
