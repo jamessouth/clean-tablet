@@ -3,6 +3,7 @@ type votp = Supabase.Auth.verifyOtpParams
 type t =
   | Home // public ↓
   | SignIn(votp)
+  | About
   | Landing //   private ↓
   | Leaderboard
   | Lobby
@@ -12,6 +13,7 @@ type t =
 let urlStringToType = (url: RescriptReactRouter.url) =>
   switch url.path {
   | list{} => Home
+  | list{"about"} => About
   | list{"signin"} =>
     switch String.split(url.search, "&") {
     | [h, t] =>
@@ -46,6 +48,7 @@ let urlStringToType = (url: RescriptReactRouter.url) =>
 let typeToUrlString = t =>
   switch t {
   | Home => "/"
+  | About => "/about"
   | Landing => "/api/landing"
   | Leaderboard => "/api/leaderboard"
   | Lobby => "/api/lobby"

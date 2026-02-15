@@ -44,82 +44,93 @@ let make = () => {
   module LazyLeaderboard = {
     let _make = React.lazy_(() => import(Leaderboard.make))
   }
+  <>
+    <main>
+      {switch (route, hasAuth) {
+      | (Home, None) =>
+        //   open Route
+        //   Web.body(Web.document)->Web.setClassName("lobbymob lobbytab lobbybig")
 
-  <main>
-    {switch (route, hasAuth) {
-    | (Home, None) =>
-      //   open Route
-      //   Web.body(Web.document)->Web.setClassName("lobbymob lobbytab lobbybig")
+        <Home client setHasAuth />
 
-      <Home client setHasAuth />
+      | (Home, Some(_)) => {
+          Route.replace(Landing)
+          React.null
+        }
 
-    | (Home, Some(_)) => {
-        Route.replace(Landing)
+      | (SignIn(votp), None) => {
+          Web.body(Web.document)
+          ->Web.classList
+          ->Web.addClassList3("landingmob", "landingtab", "landingbig")
+
+          <SignIn setHasAuth client votp />
+        }
+
+      | (SignIn(_), Some(_)) => {
+          Route.replace(Landing)
+          React.null
+        }
+
+      | (About, None) => <About />
+      | (About, Some(_)) => {
+          Route.replace(Landing)
+          React.null
+        }
+
+      | (Landing, None) =>
+        Route.replace(Home)
         React.null
-      }
 
-    | (SignIn(votp), None) => {
+      | (Landing, Some(user)) =>
         Web.body(Web.document)
         ->Web.classList
         ->Web.addClassList3("landingmob", "landingtab", "landingbig")
+        <Landing user client setHasAuth />
 
-        <SignIn setHasAuth client votp />
-      }
+      // | (Leaderboard, _) =>
+      //   <React.Suspense fallback=React.null>
+      //     <LazyLeaderboard playerName="bill" setLeaderData />
+      //   </React.Suspense>
+      //   <React.Suspense fallback=React.null> auth </React.Suspense>
 
-    | (SignIn(_), Some(_)) => {
-        Route.replace(Landing)
+      | (Leaderboard, None) =>
+        Route.replace(Home)
         React.null
-      }
 
-    | (Landing, None) =>
-      Route.replace(Home)
-      React.null
+      | (Leaderboard, Some(_)) =>
+        <p className="font-flow text-stone-100 text-3xl "> {React.string("TODO 1")} </p>
 
-    | (Landing, Some(user)) =>
-      Web.body(Web.document)
-      ->Web.classList
-      ->Web.addClassList3("landingmob", "landingtab", "landingbig")
-      <Landing user client setHasAuth />
+      | (Lobby, None) =>
+        Route.replace(Home)
+        React.null
 
-    // | (Leaderboard, _) =>
-    //   <React.Suspense fallback=React.null>
-    //     <LazyLeaderboard playerName="bill" setLeaderData />
-    //   </React.Suspense>
-    //   <React.Suspense fallback=React.null> auth </React.Suspense>
+      | (Lobby, Some(user)) => <Lobby user client />
 
-    | (Leaderboard, None) =>
-      Route.replace(Home)
-      React.null
+      | (Play(_), None) =>
+        Route.replace(Home)
+        React.null
+      | (Play(_), Some(_)) =>
+        <p className="font-flow text-stone-100 text-3xl "> {React.string("TODO 2")} </p>
 
-    | (Leaderboard, Some(_)) =>
-      <p className="font-flow text-stone-100 text-3xl "> {React.string("TODO 1")} </p>
-
-    | (Lobby, None) =>
-      Route.replace(Home)
-      React.null
-
-    | (Lobby, Some(user)) => <Lobby user client />
-
-    | (Play(_), None) =>
-      Route.replace(Home)
-      React.null
-    | (Play(_), Some(_)) =>
-      <p className="font-flow text-stone-100 text-3xl "> {React.string("TODO 2")} </p>
-
-    | (NotFound, _) =>
-      <div>
-        <Header />
-        <p className="text-center font-anon mt-12 mx-4 text-stone-100 text-4xl">
-          {React.string("page not found")}
-        </p>
-        <Button
-          onClick={_ => {
-            Route.push(Home)
-          }}
-        >
-          {React.string("home")}
-        </Button>
-      </div>
+      | (NotFound, _) =>
+        <div>
+          <Header />
+          <p className="text-center font-anon mt-12 mx-4 text-stone-100 text-4xl">
+            {React.string("page not found")}
+          </p>
+          <Button
+            onClick={_ => {
+              Route.push(Home)
+            }}
+          >
+            {React.string("home")}
+          </Button>
+        </div>
+      }}
+    </main>
+    {switch route {
+    | Home => <Footer />
+    | _ => React.null
     }}
-  </main>
+  </>
 }
