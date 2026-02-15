@@ -2,6 +2,8 @@ type formstate = Name | Email | Loading | Error(Supabase.SupaError.t) | Dontshow
 
 type namePayload = {username: string}
 
+let textLinkBase = "w-5/6 border border-stone-100 bg-stone-800/40 text-center text-stone-100 decay-mask p-2 max-w-80 font-fred "
+
 @react.component
 let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
   let {
@@ -22,6 +24,7 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
   //   let {username} = user.user_metadata
 
   let (showForm, setShowForm) = React.useState(_ => Dontshow)
+  let (oldData, setOldData) = React.useState(_ => "")
 
   let nameRef = React.useRef(None)
 
@@ -127,11 +130,27 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
 
   let onShowNameFormClick = async () => {
     Console.log("ch name form clckd")
+    setOldData(_ => username)
+    setUsername(_ => "")
     setShowForm(_ => Name)
   }
+
+  let onCxlNameChangeClick = async () => {
+    setUsername(_ => oldData)
+    setOldData(_ => "")
+    setShowForm(_ => Dontshow)
+  }
+
   let onShowEmailFormClick = async () => {
     Console.log("ch email form clckd")
+    setOldData(_ => email)
+    setEmail(_ => "")
     setShowForm(_ => Email)
+  }
+  let onCxlEmailChangeClick = async () => {
+    setEmail(_ => oldData)
+    setOldData(_ => "")
+    setShowForm(_ => Dontshow)
   }
 
   <>
@@ -139,8 +158,10 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
 
     <Header mgt="mt-17" />
     <nav className="flex flex-col items-center h-[30vh] justify-around">
-      <Link route=Lobby textsize="text-4xl" content="LOBBY" />
-      <Link route=Leaderboard textsize="text-3xl" content="LEADERBOARD" />
+      <Link route=Lobby className={textLinkBase ++ "text-4xl"}> {React.string("LOBBY")} </Link>
+      <Link route=Leaderboard className={textLinkBase ++ "text-3xl"}>
+        {React.string("LEADERBOARD")}
+      </Link>
     </nav>
 
     {switch showToast {
@@ -155,6 +176,14 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
         on_Click={switch showForm {
         | Name => onNameChangeClick
         | Email => onEmailChangeClick
+        | _ =>
+          async () => {
+            ()
+          }
+        }}
+        on_Cxl_Click={switch showForm {
+        | Name => onCxlNameChangeClick
+        | Email => onCxlEmailChangeClick
         | _ =>
           async () => {
             ()

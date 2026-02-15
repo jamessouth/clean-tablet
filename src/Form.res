@@ -2,6 +2,7 @@
 let make = (
   ~ht="h-46",
   ~on_Click,
+  ~on_Cxl_Click=?,
   ~leg,
   ~validationError,
   ~setSubmitClicked,
@@ -19,16 +20,27 @@ let make = (
 
       {children}
     </fieldset>
-    <Button
-      onClick={_ => {
-        setSubmitClicked(_ => true)
-        switch validationError {
-        | true => ()
-        | false => on_Click()->ignore
-        }
+    <div
+      className={switch on_Cxl_Click {
+      | Some(_) => "flex"
+      | None => ""
       }}
     >
-      {React.string("submit")}
-    </Button>
+      {switch on_Cxl_Click {
+      | Some(f) => <Button onClick={_ => f()->ignore}> {React.string("cancel")} </Button>
+      | None => React.null
+      }}
+      <Button
+        onClick={_ => {
+          setSubmitClicked(_ => true)
+          switch validationError {
+          | true => ()
+          | false => on_Click()->ignore
+          }
+        }}
+      >
+        {React.string("submit")}
+      </Button>
+    </div>
   </form>
 }
