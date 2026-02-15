@@ -48,8 +48,7 @@ let make = () => {
     <main>
       {switch (route, hasAuth) {
       | (Home, None) =>
-        //   open Route
-        //   Web.body(Web.document)->Web.setClassName("lobbymob lobbytab lobbybig")
+        Web.body(Web.document)->Web.setClassName("homemob hometab homebig")
 
         <Home client setHasAuth />
 

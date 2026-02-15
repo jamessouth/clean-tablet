@@ -5,7 +5,9 @@ let make = () => {
       {React.string("ABOUT")}
     </h2>
 
-    <p className="text-2xl text-center px-4 font-arch text-stone-100">
+    <p
+      className="text-2xl text-center px-4 font-arch text-shadow-[0_1px_1px_rgba(28,25,23,1)] text-stone-100"
+    >
       {React.string("All artwork by ")}
       <a
         className="underline"
