@@ -1,15 +1,22 @@
 @react.component
 let make = () => {
-  <div className="flex flex-col max-h-96 justify-between items-center mt-12 h-[80vh]">
+  <div className="flex flex-col justify-between items-center mt-12 ">
     <h2 className="text-5xl font-arch decay-mask text-stone-100"> {React.string("ABOUT")} </h2>
 
     <p className="text-2xl text-center px-4 font-arch text-stone-100">
       {React.string("All artwork by ")}
-      <a href="https://en.wikipedia.org/wiki/Theodor_Kittelsen" rel="noopener noreferrer">
+      <a
+        className="underline"
+        target="_blank"
+        href="https://en.wikipedia.org/wiki/Theodor_Kittelsen"
+        rel="noopener noreferrer"
+      >
         {React.string("Theodor Kittelsen")}
       </a>
       {React.string(". All images sourced from ")}
       <a
+        className="underline"
+        target="_blank"
         href="https://commons.wikimedia.org/wiki/Category:Theodor_Kittelsen"
         rel="noopener noreferrer"
       >
