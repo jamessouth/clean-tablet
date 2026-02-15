@@ -176,7 +176,5 @@ let make = (~client, ~setHasAuth) => {
         />
       </Form>
     }}
-
-    <Footer />
   </>
 }

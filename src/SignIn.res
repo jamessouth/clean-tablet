@@ -47,6 +47,5 @@ let make = (~setHasAuth, ~client, ~votp) => {
       | Success() => React.null
       }}
     </div>
-    <Footer />
   </>
 }
