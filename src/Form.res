@@ -5,7 +5,7 @@ let make = (
   ~on_Cxl_Click=?,
   ~leg,
   ~validationError,
-  ~setSubmitClicked,
+  ~setFormSubmitClicked,
   ~children=React.null,
 ) => {
   <form className="w-4/5 m-auto relative mb-[5vh]">
@@ -32,7 +32,7 @@ let make = (
       }}
       <Button
         onClick={_ => {
-          setSubmitClicked(_ => true)
+          setFormSubmitClicked(_ => true)
           switch validationError {
           | true => ()
           | false => on_Click()->ignore

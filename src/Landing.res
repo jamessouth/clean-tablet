@@ -5,26 +5,33 @@ type namePayload = {username: string}
 let textLinkBase = "w-5/6 border border-stone-100 bg-stone-800/40 text-center text-stone-100 decay-mask p-2 max-w-80 font-fred "
 
 @react.component
-let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
+let make = (
+  ~user: Supabase.Auth.user,
+  ~client,
+  ~setHasAuth,
+  ~username,
+  ~setUsername,
+  ~email,
+  ~setEmail,
+) => {
   let {
-    username,
-    email,
-    submitClicked,
+    formUsername,
+    formEmail,
+    formSubmitClicked,
     validationError,
     emailValdnError,
     unameValdnError,
-    setUsername,
-    setEmail,
-    setSubmitClicked,
+    setFormUsername,
+    setFormEmail,
+    setFormSubmitClicked,
   } = FormHook.useForm()
 
   let (showToast, setShowToast) = ToastHook.useToast()
 
   let {id} = user
-  //   let {username} = user.user_metadata
 
   let (showForm, setShowForm) = React.useState(_ => Dontshow)
-  let (oldData, setOldData) = React.useState(_ => "")
+  let (oldData, setOldData) = React.useState(_ => None)
 
   let nameRef = React.useRef(None)
 
@@ -46,13 +53,11 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
 
     | _ =>
       Console.log("logged out")
-      setShowForm(_ => Dontshow)
+      setShowForm(_ => Loading)
       setHasAuth(_ => None)
       Web.body(Web.document)
       ->Web.classList
       ->Web.removeClassList3("landingmob", "landingtab", "landingbig")
-    // Route.push(SignIn)
-    //redirect
     }
   }
 
@@ -74,7 +79,7 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
     open Supabase
     let {status, statusText, data, error, count} = await client
     ->Client.from("profiles")
-    ->DB.update({username: username})
+    ->DB.update({username: formUsername})
     ->DB.abortSignal(signal)
     ->DB.eq("id", id)
     ->DB.single
@@ -107,7 +112,7 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
     open Supabase
     let {error, data} = await client
     ->Client.auth
-    ->Auth.updateUser({email: email})
+    ->Auth.updateUser({email: formEmail})
 
     Console.log3("upd user email", error, data)
 
@@ -130,26 +135,28 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
 
   let onShowNameFormClick = async () => {
     Console.log("ch name form clckd")
-    setOldData(_ => username)
-    setUsername(_ => "")
+    // setOldData(_ => username)
+    // setUsername(_ => None)
     setShowForm(_ => Name)
   }
 
   let onCxlNameChangeClick = async () => {
-    setUsername(_ => oldData)
-    setOldData(_ => "")
+    Console.log("on cxl name")
+    // setUsername(_ => oldData)
+    // setOldData(_ => "")
     setShowForm(_ => Dontshow)
   }
 
   let onShowEmailFormClick = async () => {
     Console.log("ch email form clckd")
-    setOldData(_ => email)
-    setEmail(_ => "")
+    // setOldData(_ => email)
+    // setEmail(_ => "")
     setShowForm(_ => Email)
   }
   let onCxlEmailChangeClick = async () => {
-    setEmail(_ => oldData)
-    setOldData(_ => "")
+    Console.log("on cxl email")
+    // setEmail(_ => oldData)
+    // setOldData(_ => "")
     setShowForm(_ => Dontshow)
   }
 
@@ -157,7 +164,7 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
     <Menu onSignOutClick onShowNameFormClick onShowEmailFormClick />
 
     <Header mgt="mt-17" />
-    <nav className="flex flex-col items-center h-[30vh] justify-around">
+    <nav className="flex flex-col items-center h-[30vh] justify-around mb-8">
       <Link route=Lobby className={textLinkBase ++ "text-4xl"}> {React.string("LOBBY")} </Link>
       <Link route=Leaderboard className={textLinkBase ++ "text-3xl"}>
         {React.string("LEADERBOARD")}
@@ -195,25 +202,25 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
         | _ => ""
         }}
         validationError
-        setSubmitClicked
+        setFormSubmitClicked
       >
         {switch showForm {
         | Name =>
           <Input
-            value=username
+            value=formUsername
             propName="username"
             inputMode="username"
-            setFunc=setUsername
-            submitClicked
+            setFunc=setFormUsername
+            formSubmitClicked
             valdnError=unameValdnError
           />
         | Email =>
           <Input
-            value=email
+            value=formEmail
             propName="email"
             inputMode="email"
-            setFunc=setEmail
-            submitClicked
+            setFunc=setFormEmail
+            formSubmitClicked
             valdnError=emailValdnError
           />
         | _ => React.null

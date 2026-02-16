@@ -6,7 +6,7 @@ let make = (
   ~inputMode="text",
   ~onKeyPress=_e => (),
   ~setFunc,
-  ~submitClicked,
+  ~formSubmitClicked,
   ~valdnError,
 ) => {
   let onChange = e => setFunc(_ => ReactEvent.Form.target(e)["value"])
@@ -30,7 +30,7 @@ let make = (
       }}
       value
     />
-    {switch (submitClicked, valdnError) {
+    {switch (formSubmitClicked, valdnError) {
     | (false, _) | (true, None) => React.null
     | (true, Some(error)) => <Message msg=error />
     }}

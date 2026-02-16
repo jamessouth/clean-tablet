@@ -4,15 +4,15 @@
 @react.component
 let make = (~client, ~setHasAuth) => {
   let {
-    username,
-    email,
-    submitClicked,
+    formUsername,
+    formEmail,
+    formSubmitClicked,
     validationError,
     emailValdnError,
     unameValdnError,
-    setUsername,
-    setEmail,
-    setSubmitClicked,
+    setFormUsername,
+    setFormEmail,
+    setFormSubmitClicked,
   } = FormHook.useForm()
 
   let nameCookie = CookieHook.useCookie()
@@ -27,7 +27,7 @@ let make = (~client, ~setHasAuth) => {
     let ignoreUpdate = ref(false)
     Console.log2("cook", nameCookie)
     switch (ignoreUpdate.contents, nameCookie) {
-    | (false, Some(c)) => setUsername(_ => c)
+    | (false, Some(c)) => setFormUsername(_ => c)
     | _ => ()
     }
 
@@ -92,20 +92,20 @@ let make = (~client, ~setHasAuth) => {
 
   let on_Click = async () => {
     open Supabase
-    Console.log3("submit clckd", username, email)
+    Console.log3("submit clckd", formUsername, formEmail)
     switch nameCookie {
     | Some(_) => ()
-    | None => CookieHook.setNameCookie(username)
+    | None => CookieHook.setNameCookie(formUsername)
     }
     setShowLoginStatus(_ => true)
     // Route.push(SignIn)
     let {error} = await client
     ->Client.auth
     ->Auth.signInWithOtp({
-      email,
+      email: formEmail,
       options: {
         shouldCreateUser: true,
-        data: JSON.Encode.object(dict{"username": JSON.Encode.string(username)}),
+        data: JSON.Encode.object(dict{"username": JSON.Encode.string(formUsername)}),
       },
     })
     switch Nullable.toOption(error) {
@@ -151,27 +151,27 @@ let make = (~client, ~setHasAuth) => {
         on_Click
         leg="Sign in"
         validationError
-        setSubmitClicked
+        setFormSubmitClicked
       >
         {switch nameCookie {
         | Some(_) => React.null
         | None =>
           <Input
-            value=username
+            value=formUsername
             propName="username"
             inputMode="username"
-            setFunc=setUsername
-            submitClicked
+            setFunc=setFormUsername
+            formSubmitClicked
             valdnError=unameValdnError
           />
         }}
 
         <Input
-          value=email
+          value=formEmail
           propName="email"
           inputMode="email"
-          setFunc=setEmail
-          submitClicked
+          setFunc=setFormEmail
+          formSubmitClicked
           valdnError=emailValdnError
         />
       </Form>

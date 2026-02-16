@@ -2,25 +2,25 @@ let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 let unameRegex = /^\w{3,10}$/
 
 type return = {
-  username: string,
-  email: string,
-  submitClicked: bool,
+  formUsername: string,
+  formEmail: string,
+  formSubmitClicked: bool,
   validationError: bool,
   emailValdnError: option<string>,
   unameValdnError: option<string>,
-  setUsername: (string => string) => unit,
-  setEmail: (string => string) => unit,
-  setSubmitClicked: (bool => bool) => unit,
+  setFormUsername: (string => string) => unit,
+  setFormEmail: (string => string) => unit,
+  setFormSubmitClicked: (bool => bool) => unit,
   setValidationError: (bool => bool) => unit,
   setEmailValdnError: (option<string> => option<string>) => unit,
   setUnameValdnError: (option<string> => option<string>) => unit,
 }
 
 let useForm = () => {
-  let (username, setUsername) = React.useState(_ => "")
-  let (email, setEmail) = React.useState(_ => "")
+  let (formUsername, setFormUsername) = React.useState(_ => "")
+  let (formEmail, setFormEmail) = React.useState(_ => "")
 
-  let (submitClicked, setSubmitClicked) = React.Uncurried.useState(_ => false)
+  let (formSubmitClicked, setFormSubmitClicked) = React.Uncurried.useState(_ => false)
 
   let (validationError, setValidationError) = React.useState(_ => true)
 
@@ -34,21 +34,21 @@ let useForm = () => {
 
   React.useEffect(() => {
     Console.log("email error")
-    switch String.match(email, emailRegex) {
+    switch String.match(formEmail, emailRegex) {
     | None => setEmailValdnError(_ => Some("enter a valid email address"))
     | Some(_) => setEmailValdnError(_ => None)
     }
     None
-  }, [email])
+  }, [formEmail])
 
   React.useEffect(() => {
     Console.log("uname error")
-    switch String.match(username, unameRegex) {
+    switch String.match(formUsername, unameRegex) {
     | None => setUnameValdnError(_ => Some("3-10 letters, numbers, and _ only"))
     | Some(_) => setUnameValdnError(_ => None)
     }
     None
-  }, [username])
+  }, [formUsername])
 
   React.useEffect(() => {
     switch (emailValdnError, unameValdnError) {
@@ -59,15 +59,15 @@ let useForm = () => {
   }, (emailValdnError, unameValdnError))
 
   {
-    username,
-    email,
-    submitClicked,
+    formUsername,
+    formEmail,
+    formSubmitClicked,
     validationError,
     emailValdnError,
     unameValdnError,
-    setUsername,
-    setEmail,
-    setSubmitClicked,
+    setFormUsername,
+    setFormEmail,
+    setFormSubmitClicked,
     setValidationError,
     setEmailValdnError,
     setUnameValdnError,
