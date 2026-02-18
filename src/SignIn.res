@@ -1,22 +1,24 @@
+let ignoreUpdate = ref(false)
+
 @react.component
 let make = (~setHasAuth, ~client, ~votp, ~setUsername, ~setEmail) => {
   let (loginstate, setLoginState) = React.useState(_ => Supabase.Global.Loading)
 
   React.useEffect(() => {
-    let ignoreUpdate = ref(false)
-    Console.log2("signin start", ignoreUpdate)
-    let funfun = async () => {
-      open Supabase
-      Console.log("signin func")
-      let {error, data} = await client
-      ->Client.auth
-      ->Auth.verifyOtp(votp)
+    Console.log2("signin start", ignoreUpdate.contents)
+    switch ignoreUpdate.contents {
+    | true => ()
+    | false =>
+      ignoreUpdate := true
+      let funfun = async () => {
+        open Supabase
+        Console.log("signin func")
+        let {error, data} = await client
+        ->Client.auth
+        ->Auth.verifyOtp(votp)
 
-      Console.log3("signin data", error, data)
+        Console.log3("signin data", error, data)
 
-      switch ignoreUpdate.contents {
-      | true => ()
-      | false =>
         switch (error, data) {
         | (Value(err), _) =>
           setHasAuth(_ => None)
@@ -31,12 +33,12 @@ let make = (~setHasAuth, ~client, ~votp, ~setUsername, ~setEmail) => {
           setLoginState(_ => SupaError.authError->Error)
         }
       }
+
+      funfun()->ignore
     }
+    Console.log2("signin end", ignoreUpdate.contents)
 
-    funfun()->ignore
-    Console.log2("signin end", ignoreUpdate)
-
-    Some(() => ignoreUpdate := true)
+    None
   }, [votp])
 
   <>
