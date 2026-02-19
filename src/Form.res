@@ -6,9 +6,10 @@ let make = (
   ~leg,
   ~validationError,
   ~setFormSubmitClicked,
+  ~css="mb-[5vh]",
   ~children=React.null,
 ) => {
-  <form className="w-4/5 m-auto relative mb-[5vh]">
+  <form className={"w-4/5 m-auto relative " ++ css}>
     <fieldset className={`flex flex-col items-center justify-around ${ht}`}>
       {switch String.length(leg) > 0 {
       | true =>

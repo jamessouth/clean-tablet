@@ -180,6 +180,7 @@ let make = (
     {switch showForm {
     | Name | Email =>
       <Form
+        css="mb-[15vh]"
         on_Click={switch showForm {
         | Name => onNameChangeClick
         | Email => onEmailChangeClick
