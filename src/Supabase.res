@@ -33,9 +33,32 @@ module Auth = {
     status: Nullable.t<int>,
   }
 
+  type verifyOtpType = [
+    | #email
+    | #signup
+    | #other
+  ]
+
+  type verifyOtpParams = {
+    @as("type") type_: verifyOtpType,
+    token_hash: string,
+  }
+
   type verifyOtpResp = {
     user: Nullable.t<user>,
     session: Nullable.t<session>,
+  }
+
+  type signInWithOtpOptions = {
+    emailRedirectTo?: string, // Vital for Magic Links
+    shouldCreateUser?: bool,
+    data?: JSON.t, // For passing metadata to the user on creation
+    captchaToken?: string,
+  }
+
+  type signInWithOtpCredentials = {
+    email: string,
+    options?: signInWithOtpOptions,
   }
 
   type signInWithOtpResp = {
@@ -56,30 +79,7 @@ module Auth = {
     error: Nullable.t<error>,
   }
 
-  type verifyOtpType = [
-    | #email
-    | #signup
-    | #other
-  ]
-
-  type verifyOtpParams = {
-    @as("type") type_: verifyOtpType,
-    token_hash: string,
-  }
-
   type userAttributes = {email: string}
-
-  type signInWithOtpOptions = {
-    emailRedirectTo?: string, // Vital for Magic Links
-    shouldCreateUser?: bool,
-    data?: JSON.t, // For passing metadata to the user on creation
-    captchaToken?: string,
-  }
-
-  type signInWithOtpCredentials = {
-    email: string,
-    options?: signInWithOtpOptions,
-  }
 
   // Poly-variants for Auth Events (safer than raw strings)
   type authEvent = [
