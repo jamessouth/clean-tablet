@@ -51,8 +51,7 @@ let make = () => {
     <main>
       {switch (route, hasAuth) {
       | (Home, None) =>
-        Web.body(Web.document)->Web.setClassName("homemob hometab homebig")
-
+        Web.document->Web.body->Web.setClassName("homemob hometab homebig")
         <Home client setHasAuth />
 
       | (Home, Some(_)) => {
@@ -61,10 +60,7 @@ let make = () => {
         }
 
       | (SignIn(votp), None) => {
-          Web.body(Web.document)
-          ->Web.classList
-          ->Web.addClassList3("landingmob", "landingtab", "landingbig")
-
+          Web.document->Web.body->Web.setClassName("landingmob landingtab landingbig")
           <SignIn setHasAuth client votp setUsername setEmail />
         }
 
@@ -74,9 +70,7 @@ let make = () => {
         }
 
       | (About, None) =>
-        Web.body(Web.document)
-        ->Web.classList
-        ->Web.addClassList3("aboutmob", "abouttab", "aboutbig")
+        Web.document->Web.body->Web.setClassName("aboutmob abouttab aboutbig")
         <About />
       | (About, Some(_)) => {
           Route.replace(Landing)
@@ -88,9 +82,7 @@ let make = () => {
         React.null
 
       | (Landing, Some(user)) =>
-        Web.body(Web.document)
-        ->Web.classList
-        ->Web.addClassList3("landingmob", "landingtab", "landingbig")
+        Web.document->Web.body->Web.setClassName("landingmob landingtab landingbig")
         <Landing user client setHasAuth username setUsername email setEmail />
 
       // | (Leaderboard, _) =>

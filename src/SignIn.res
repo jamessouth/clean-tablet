@@ -25,6 +25,13 @@ let make = (
         setHasAuth(_ => None)
         setLoginState(_ => SupaError.Auth(err)->Error)
       | (_, {session: Value({user})}) =>
+        Route.replace(
+          SignIn({
+            type_: #other,
+            token_hash: "",
+          }),
+        )
+
         setEmail(_ => Some(user.email))
         setUsername(_ => Some(user.user_metadata.username))
         setLoginState(_ => Success())
@@ -58,6 +65,12 @@ let make = (
             setHasAuth(_ => None)
             setLoginState(_ => SupaError.Auth(err)->Error)
           | (_, Value({user: Value(user)})) =>
+            Route.replace(
+              SignIn({
+                type_: #other,
+                token_hash: "",
+              }),
+            )
             setEmail(_ => Some(user.email))
             setUsername(_ => Some(user.user_metadata.username))
             setLoginState(_ => Success())
