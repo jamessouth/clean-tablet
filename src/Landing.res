@@ -55,9 +55,6 @@ let make = (
       Console.log("logged out")
       setShowForm(_ => Loading)
       setHasAuth(_ => None)
-      Web.body(Web.document)
-      ->Web.classList
-      ->Web.removeClassList3("landingmob", "landingtab", "landingbig")
     }
   }
 
