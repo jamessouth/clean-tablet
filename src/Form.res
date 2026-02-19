@@ -27,7 +27,10 @@ let make = (
       }}
     >
       {switch on_Cxl_Click {
-      | Some(f) => <Button onClick={_ => f()->ignore}> {React.string("cancel")} </Button>
+      | Some(f) =>
+        <Button onClick={_ => f()->ignore} css="bg-stone-300 mr-5 ">
+          {React.string("cancel")}
+        </Button>
       | None => React.null
       }}
       <Button
