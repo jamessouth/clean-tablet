@@ -49,6 +49,8 @@ module Auth = {
     session: Nullable.t<session>,
   }
 
+  type updateUserResp = {user: user}
+
   type signInWithOtpOptions = {
     emailRedirectTo?: string, // Vital for Magic Links
     shouldCreateUser?: bool,
@@ -127,7 +129,7 @@ module Auth = {
   external verifyOtp: (t, verifyOtpParams) => Promise.t<response<verifyOtpResp>> = "verifyOtp"
 
   @send
-  external updateUser: (t, userAttributes) => Promise.t<response<user>> = "updateUser"
+  external updateUser: (t, userAttributes) => Promise.t<response<updateUserResp>> = "updateUser"
 }
 
 module Realtime = {
@@ -240,6 +242,8 @@ module Game = {
 
 module DB = {
   type queryBuilder<'row>
+
+  type updateUsernameInput = {username: string}
 
   type error = {
     message: string,

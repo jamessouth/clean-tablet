@@ -1,13 +1,7 @@
 let toks = Set.make()
 
 @react.component
-let make = (
-  ~setHasAuth,
-  ~client,
-  ~votp: Supabase.Auth.verifyOtpParams,
-  ~setUsername,
-  ~setEmail,
-) => {
+let make = (~setHasAuth, ~client, ~votp: Supabase.Auth.verifyOtpParams) => {
   let (loginstate, setLoginState) = React.useState(_ => Supabase.Global.Loading)
 
   React.useEffect(() => {
@@ -32,8 +26,6 @@ let make = (
           }),
         )
 
-        setEmail(_ => Some(user.email))
-        setUsername(_ => Some(user.user_metadata.username))
         setLoginState(_ => Success())
         setHasAuth(_ => Some(user))
       | (_, _) =>
@@ -71,8 +63,6 @@ let make = (
                 token_hash: "",
               }),
             )
-            setEmail(_ => Some(user.email))
-            setUsername(_ => Some(user.user_metadata.username))
             setLoginState(_ => Success())
             setHasAuth(_ => Some(user))
           | (_, _) =>

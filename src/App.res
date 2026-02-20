@@ -32,8 +32,6 @@ let make = () => {
   let route = Route.useRouter()
 
   let (hasAuth, setHasAuth) = React.useState(_ => None)
-  let (username, setUsername) = React.useState(_ => None)
-  let (email, setEmail) = React.useState(_ => None)
 
   //   let (_wsError, _setWsError) = React.Uncurried.useState(_ => "")
   //   let (_leaderData, _setLeaderData) = React.Uncurried.useState(_ => [])
@@ -41,7 +39,7 @@ let make = () => {
   //   module LazyMessage = {
   //     let make = React.lazy_(() => import(Message.make))
   //   }
-  Console.log4("app", hasAuth, username, email)
+  Console.log2("app", hasAuth)
 
   //   module LazyLeaderboard = {
   //     let _make = React.lazy_(() => import(Leaderboard.make))
@@ -61,7 +59,7 @@ let make = () => {
 
       | (SignIn(votp), None) => {
           Web.document->Web.body->Web.setClassName("landingmob landingtab landingbig")
-          <SignIn setHasAuth client votp setUsername setEmail />
+          <SignIn setHasAuth client votp />
         }
 
       | (SignIn(_), Some(_)) => {
@@ -83,7 +81,7 @@ let make = () => {
 
       | (Landing, Some(user)) =>
         Web.document->Web.body->Web.setClassName("landingmob landingtab landingbig")
-        <Landing user client setHasAuth username setUsername email setEmail />
+        <Landing user client setHasAuth />
 
       // | (Leaderboard, _) =>
       //   <React.Suspense fallback=React.null>

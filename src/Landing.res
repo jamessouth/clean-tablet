@@ -1,19 +1,9 @@
 type formstate = Name | Email | Loading | Error(Supabase.SupaError.t) | Dontshow
 
-type namePayload = {username: string}
-
 let textLinkBase = "w-5/6 border border-stone-100 bg-stone-800/40 text-center text-stone-100 decay-mask p-2 max-w-80 font-fred "
 
 @react.component
-let make = (
-  ~user: Supabase.Auth.user,
-  ~client,
-  ~setHasAuth,
-  ~username,
-  ~setUsername,
-  ~email,
-  ~setEmail,
-) => {
+let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
   let {
     formUsername,
     formEmail,
@@ -28,10 +18,10 @@ let make = (
 
   let (showToast, setShowToast) = ToastHook.useToast()
 
-  let {id} = user
+  let {email, id, user_metadata} = user
+  let {username} = user_metadata
 
   let (showForm, setShowForm) = React.useState(_ => Dontshow)
-  let (oldData, setOldData) = React.useState(_ => None)
 
   let nameRef = React.useRef(None)
 
@@ -76,17 +66,20 @@ let make = (
     open Supabase
     let {status, statusText, data, error, count} = await client
     ->Client.from("profiles")
-    ->DB.update({username: formUsername})
+    ->DB.update({DB.username: formUsername})
     ->DB.abortSignal(signal)
     ->DB.eq("id", id)
     ->DB.single
 
     Console.log6("upd user name", status, statusText, data, error, count)
     // resp->Auth.getResult
+    setFormEmail(_ => "")
+    setFormUsername(_ => "")
+    setFormSubmitClicked(_ => false)
 
     switch (error, data, count, status, statusText) {
     | (Value(err), _, _, s, st) => setShowForm(_ => SupaError.Db(err, Some(s), Some(st))->Error)
-    | (_, Value({username}), _, _, _) =>
+    | (_, Value({DB.username: username}), _, _, _) =>
       setShowForm(_ => Dontshow)
       setShowToast(_ => Some(`Username changed to ${username}.`))
       CookieHook.setNameCookie(username)
@@ -112,10 +105,13 @@ let make = (
     ->Auth.updateUser({email: formEmail})
 
     Console.log3("upd user email", error, data)
+    setFormEmail(_ => "")
+    setFormUsername(_ => "")
+    setFormSubmitClicked(_ => false)
 
     switch (error, data) {
     | (Value(err), _) => setShowForm(_ => SupaError.Auth(err)->Error)
-    | (_, Value({email})) =>
+    | (_, Value({user: {email}})) =>
       setShowForm(_ => Dontshow)
       setShowToast(_ => Some(`Email changed to ${email}.`))
     | (_, _) =>
@@ -132,28 +128,26 @@ let make = (
 
   let onShowNameFormClick = async () => {
     Console.log("ch name form clckd")
-    // setOldData(_ => username)
-    // setUsername(_ => None)
+    setFormEmail(_ => "dd@dd.dd")
     setShowForm(_ => Name)
   }
 
   let onCxlNameChangeClick = async () => {
     Console.log("on cxl name")
-    // setUsername(_ => oldData)
-    // setOldData(_ => "")
+    setFormEmail(_ => "")
+    setFormUsername(_ => "")
     setShowForm(_ => Dontshow)
   }
 
   let onShowEmailFormClick = async () => {
     Console.log("ch email form clckd")
-    // setOldData(_ => email)
-    // setEmail(_ => "")
+    setFormUsername(_ => "ddd")
     setShowForm(_ => Email)
   }
   let onCxlEmailChangeClick = async () => {
     Console.log("on cxl email")
-    // setEmail(_ => oldData)
-    // setOldData(_ => "")
+    setFormEmail(_ => "")
+    setFormUsername(_ => "")
     setShowForm(_ => Dontshow)
   }
 
