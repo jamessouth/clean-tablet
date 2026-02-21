@@ -104,6 +104,7 @@ let make = (~playerName, ~setLeaderData) => {
               setLeaderData(_ => [])
               Route.push(Lobby)
             }}
+            css=""
             className="cursor-pointer font-over text-5xl bg-transparent absolute left-10"
           >
             {React.string("←")}
@@ -143,6 +144,7 @@ let make = (~playerName, ~setLeaderData) => {
               <th key=btnText className={"sticky top-0 h-8 bg-amber-300 w-16.667vw " ++ cn}>
                 <Button
                   onClick={_ => oc}
+                  css=""
                   className={"bg-transparent cursor-pointer text-dark-600 text-base font-anon font-bold w-full h-8" ++ if (
                     sortedField == field
                   ) {

@@ -14,7 +14,7 @@ let make = (~game: Supabase.Game.game) => {
     </p>
     <p className="col-span-2" />
 
-    <Button onClick={_ => Console.log("game btn")} className={"left-0" ++ btnStyle}>
+    <Button onClick={_ => Console.log("game btn")} css="" className={"left-0 " ++ btnStyle}>
       {React.string("join")}
     </Button>
   </li>

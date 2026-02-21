@@ -109,6 +109,7 @@ let make = () => {
         <p className="font-flow text-stone-100 text-3xl "> {React.string("TODO 2")} </p>
 
       | (NotFound, _) =>
+        Web.document->Web.body->Web.setClassName("homemob hometab homebig")
         <div>
           <Header />
           <p className="text-center font-anon mt-12 mx-4 text-stone-100 text-4xl">

@@ -19,8 +19,9 @@ let make = (~onSignOutClick, ~onShowNameFormClick, ~onShowEmailFormClick) => {
     setMenuIsOpen(prev => !prev)
   }
   <>
-    <button
+    <Button
       onClick={handleMenuClick}
+      css=""
       className="flex flex-col absolute top-1 left-1 justify-evenly h-6 w-6 self-start cursor-pointer "
     >
       <Line
@@ -36,7 +37,7 @@ let make = (~onSignOutClick, ~onShowNameFormClick, ~onShowEmailFormClick) => {
         openTrue="origin-left -rotate-[24deg] scale-x-133"
         openFalse="translate-y-0.5"
       />
-    </button>
+    </Button>
     <div
       className={"flex flex-col top-12 left-1 absolute justify-around items-center z-1 h-32 w-16 rounded-sm bg-radial-[at_12%_12%] from-stone-500 to-stone-900 to-85% " ++
       switch menuIsOpen {
@@ -44,7 +45,8 @@ let make = (~onSignOutClick, ~onShowNameFormClick, ~onShowEmailFormClick) => {
       | false => "hidden"
       }}
     >
-      <button
+      <Button
+        css=""
         className="cursor-pointer"
         onClick={_ => {
           handleMenuClick()
@@ -52,9 +54,10 @@ let make = (~onSignOutClick, ~onShowNameFormClick, ~onShowEmailFormClick) => {
         }}
       >
         <img className="block" src="/src/assets/icons/name.png" />
-      </button>
+      </Button>
 
-      <button
+      <Button
+        css=""
         className="cursor-pointer"
         onClick={_ => {
           handleMenuClick()
@@ -62,11 +65,11 @@ let make = (~onSignOutClick, ~onShowNameFormClick, ~onShowEmailFormClick) => {
         }}
       >
         <img className="block" src="/src/assets/icons/email.png" />
-      </button>
+      </Button>
 
-      <button className="cursor-pointer" onClick={_ => onSignOutClick()->ignore}>
+      <Button css="" className="cursor-pointer" onClick={_ => onSignOutClick()->ignore}>
         <img className="block" src="/src/assets/icons/signout.png" />
-      </button>
+      </Button>
     </div>
   </>
 }

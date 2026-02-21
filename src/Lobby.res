@@ -49,12 +49,13 @@ let make = (~user: Supabase.Auth.user, ~client) => {
     <h2 className="text-center text-stone-800 text-5xl mt-28 font-fred">
       {React.string("LOBBY")}
     </h2>
-    <button
+    <Button
+      css=""
       className="w-15 h-7 border bg-stone-800/5 border-stone-800 absolute top-0 left-0 cursor-pointer"
       onClick={_ => Route.push(Landing)}
     >
       <p className="leading-none text-2xl"> {React.string("⬅")} </p>
-    </button>
+    </Button>
     <div className="flex flex-col items-center">
       {switch lobbystate {
       | Loading => <Loading color="stone-800" label="games..." />
