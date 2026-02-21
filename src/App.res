@@ -17,15 +17,15 @@ let options: Supabase.Options.t = {
 }
 let client: Supabase.Client.t<unit> = Supabase.Global.createClient(url, apikey, ~options)
 
-let mockuser: Supabase.Auth.user = {
-  id: "12345",
-  email: "a@aol.com",
-  user_metadata: {
-    username: "bill",
-    game: Some("123"),
-    token: Some("123ef2"),
-  },
-}
+// let mockuser: Supabase.Auth.user = {
+//   id: "12345",
+//   email: "a@aol.com",
+//   user_metadata: {
+//     username: "bill",
+//     game: Some("123"),
+//     token: Some("123ef2"),
+//   },
+// }
 
 @react.component
 let make = () => {

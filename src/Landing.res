@@ -111,9 +111,11 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
 
     switch (error, data) {
     | (Value(err), _) => setShowForm(_ => SupaError.Auth(err)->Error)
-    | (_, Value({user: {email}})) =>
+    | (_, Value({user: {email, new_email}})) =>
       setShowForm(_ => Dontshow)
-      setShowToast(_ => Some(`Email changed to ${email}.`))
+      setShowToast(_ => Some(
+        `Click the link sent to ${new_email} to complete the change from ${email} to ${new_email}.`,
+      ))
     | (_, _) =>
       setShowForm(_ =>
         SupaError.Auth({

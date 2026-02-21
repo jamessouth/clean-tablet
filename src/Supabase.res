@@ -10,6 +10,7 @@ module Auth = {
     // aud: string,
     // role: string,
     email: string,
+    new_email: string,
     // created_at: string,
     user_metadata: userMetadata,
   }
