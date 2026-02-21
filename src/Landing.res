@@ -18,8 +18,7 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
 
   let (showToast, setShowToast) = ToastHook.useToast()
 
-  let {email, id, user_metadata} = user
-  let {username} = user_metadata
+  let {id} = user
 
   let (showForm, setShowForm) = React.useState(_ => Dontshow)
 
