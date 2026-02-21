@@ -73,18 +73,19 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
 
     Console.log6("upd user name", status, statusText, data, error, count)
     // resp->Auth.getResult
-    setFormEmail(_ => "")
-    setFormUsername(_ => "")
-    setFormSubmitClicked(_ => false)
 
     switch (error, data, count, status, statusText) {
     | (Value(err), _, _, s, st) => setShowForm(_ => SupaError.Db(err, Some(s), Some(st))->Error)
-    | (_, Value({DB.username: username}), _, _, _) =>
+    | (_, _, _, 204, _) =>
       setShowForm(_ => Dontshow)
-      setShowToast(_ => Some(`Username changed to ${username}.`))
-      CookieHook.setNameCookie(username)
+      setShowToast(_ => Some(`Username changed to ${formUsername}.`))
+      CookieHook.setNameCookie(formUsername)
     | (_, _, _, _, _) => setShowForm(_ => SupaError.dbError->Error)
     }
+
+    setFormEmail(_ => "")
+    setFormUsername(_ => "")
+    setFormSubmitClicked(_ => false)
 
     switch nameRef.current == Some(controller) {
     | true =>
