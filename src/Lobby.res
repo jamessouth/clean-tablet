@@ -41,11 +41,6 @@ let make = (~user: Supabase.Auth.user, ~client) => {
   }, [])
 
   <>
-    <p
-      className="font-flow text-stone-100 text-3xl tracking-wide absolute top-0 left-1/2 -translate-x-1/2 font-bold "
-    >
-      {React.string(username)}
-    </p>
     <h2 className="text-center text-stone-100 text-5xl mt-28 font-fred">
       {React.string("LOBBY")}
     </h2>

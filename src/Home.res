@@ -2,7 +2,7 @@
 // let email_max_length = 99
 
 @react.component
-let make = (~client, ~setHasAuth) => {
+let make = (~client, ~setHasAuth, ~nameCookieState, ~setNameCookie) => {
   let {
     formUsername,
     formEmail,
@@ -15,7 +15,6 @@ let make = (~client, ~setHasAuth) => {
     setFormSubmitClicked,
   } = FormHook.useForm()
 
-  let nameCookie = CookieHook.useCookie()
   let (showToast, setShowToast) = ToastHook.useToast()
 
   let (loginstate, setLoginState) = React.useState(_ => Supabase.Global.Loading)
@@ -25,14 +24,14 @@ let make = (~client, ~setHasAuth) => {
 
   React.useEffect(() => {
     let ignoreUpdate = ref(false)
-    Console.log2("cook", nameCookie)
-    switch (ignoreUpdate.contents, nameCookie) {
+    Console.log2("cook", nameCookieState)
+    switch (ignoreUpdate.contents, nameCookieState) {
     | (false, Some(c)) => setFormUsername(_ => c)
     | _ => ()
     }
 
     Some(() => ignoreUpdate.contents = true)
-  }, [nameCookie])
+  }, [nameCookieState])
 
   React.useEffect(() => {
     let ignoreUpdate = ref(false)
@@ -93,9 +92,9 @@ let make = (~client, ~setHasAuth) => {
   let on_Click = async () => {
     open Supabase
     Console.log3("submit clckd", formUsername, formEmail)
-    switch nameCookie {
+    switch nameCookieState {
     | Some(_) => ()
-    | None => CookieHook.setNameCookie(formUsername)
+    | None => setNameCookie(formUsername)
     }
     setShowLoginStatus(_ => true)
     // Route.push(SignIn)
@@ -119,17 +118,6 @@ let make = (~client, ~setHasAuth) => {
     }
   }
   <>
-    <Header
-      mgt={switch nameCookie {
-      | Some(_) => "mt-20"
-      | None => "mt-17"
-      }}
-      username={switch nameCookie {
-      | Some(u) => u
-      | None => ""
-      }}
-    />
-
     {switch showToast {
     | Loading => <Loading />
     | _ => React.null
@@ -144,7 +132,7 @@ let make = (~client, ~setHasAuth) => {
       </p>
     | (false, _) =>
       <Form
-        ht={switch nameCookie {
+        ht={switch nameCookieState {
         | Some(_) => "h-46"
         | None => "h-54"
         }}
@@ -153,7 +141,7 @@ let make = (~client, ~setHasAuth) => {
         validationError
         setFormSubmitClicked
       >
-        {switch nameCookie {
+        {switch nameCookieState {
         | Some(_) => React.null
         | None =>
           <Input

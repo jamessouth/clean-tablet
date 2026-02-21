@@ -3,7 +3,7 @@ type formstate = Name | Email | Loading | Error(Supabase.SupaError.t) | Dontshow
 let textLinkBase = "w-5/6 border border-stone-100 bg-stone-800/40 text-center text-stone-100 decay-mask p-2 max-w-80 font-fred "
 
 @react.component
-let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
+let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setNameCookie) => {
   let {
     formUsername,
     formEmail,
@@ -78,7 +78,7 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
     | (_, _, _, 204, _) =>
       setShowForm(_ => Dontshow)
       setShowToast(_ => Some(`Username changed to ${formUsername}.`))
-      CookieHook.setNameCookie(formUsername)
+      setNameCookie(formUsername)
     | (_, _, _, _, _) => setShowForm(_ => SupaError.dbError->Error)
     }
 
@@ -156,7 +156,6 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
   <>
     <Menu onSignOutClick onShowNameFormClick onShowEmailFormClick />
 
-    <Header mgt="mt-17" />
     <nav className="flex flex-col items-center h-[30vh] justify-around mb-8">
       <Link route=Lobby className={textLinkBase ++ "text-4xl"}> {React.string("LOBBY")} </Link>
       <Link route=Leaderboard className={textLinkBase ++ "text-3xl"}>

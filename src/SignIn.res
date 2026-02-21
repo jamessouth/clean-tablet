@@ -79,7 +79,6 @@ let make = (~setHasAuth, ~client, ~votp: Supabase.Auth.verifyOtpParams) => {
   }, [votp])
 
   <>
-    <Header />
     <div>
       {switch loginstate {
       | Loading => <Loading label="session" />

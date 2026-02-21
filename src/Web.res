@@ -22,6 +22,8 @@ type closeEventHandler = closeEvent => unit
 @send external closeCodeReason: (Nullable.t<t>, int, string) => unit = "close"
 @send external sendString: (Nullable.t<t>, string) => unit = "send"
 @val external document: Dom.document = "document"
+@scope("document") @val external cookie: string = "cookie"
+@set external setCookie: (Dom.document, string) => unit = "cookie"
 @get external body: Dom.document => Dom.htmlBodyElement = "body"
 @set external setClassName: (Dom.htmlBodyElement, string) => unit = "className"
 @get external classList: Dom.htmlBodyElement => Dom.domTokenList = "classList"
