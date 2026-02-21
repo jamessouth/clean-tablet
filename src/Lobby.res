@@ -2,8 +2,6 @@
 
 @react.component
 let make = (~user: Supabase.Auth.user, ~client) => {
-  let {username} = user.user_metadata
-
   let (lobbystate, setLobbyState) = React.useState(_ => Supabase.Global.Loading)
 
   React.useEffect(() => {

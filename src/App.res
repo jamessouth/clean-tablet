@@ -76,20 +76,25 @@ let make = () => {
   //   }
 
   <>
+    {switch (route, hasAuth) {
+    | (Home, None) =>
+      <Header
+        mgt={switch nameCookieState {
+        | Some(_) => "mt-20"
+        | None => "mt-17"
+        }}
+        username=nameCookieState
+      />
+    | (SignIn(_), None) => <Header />
+    | (Landing, Some(_)) => <Header username=nameCookieState />
+    | (Lobby, Some(_)) => <Header username=nameCookieState head=false />
+    | _ => React.null
+    }}
     <main>
       {switch (route, hasAuth) {
       | (Home, None) =>
         Web.document->Web.body->Web.setClassName("homemob hometab homebig")
-        <>
-          <Header
-            mgt={switch nameCookieState {
-            | Some(_) => "mt-20"
-            | None => "mt-17"
-            }}
-            username=nameCookieState
-          />
-          <Home client setHasAuth nameCookieState setNameCookie />
-        </>
+        <Home client setHasAuth nameCookieState setNameCookie />
 
       | (Home, Some(_)) => {
           Route.replace(Landing)
@@ -98,10 +103,7 @@ let make = () => {
 
       | (SignIn(votp), None) => {
           Web.document->Web.body->Web.setClassName("landingmob landingtab landingbig")
-          <>
-            <Header />
-            <SignIn setHasAuth client votp />
-          </>
+          <SignIn setHasAuth client votp />
         }
 
       | (SignIn(_), Some(_)) => {
@@ -123,10 +125,7 @@ let make = () => {
 
       | (Landing, Some(user)) =>
         Web.document->Web.body->Web.setClassName("landingmob landingtab landingbig")
-        <>
-          <Header username=nameCookieState />
-          <Landing user client setHasAuth setNameCookie />
-        </>
+        <Landing user client setHasAuth setNameCookie />
 
       // | (Leaderboard, _) =>
       //   <React.Suspense fallback=React.null>
@@ -145,11 +144,7 @@ let make = () => {
         Route.replace(Home)
         React.null
 
-      | (Lobby, Some(user)) =>
-        <>
-          <Header username=nameCookieState head=false />
-          <Lobby user client />
-        </>
+      | (Lobby, Some(user)) => <Lobby user client />
 
       | (Play(_), None) =>
         Route.replace(Home)
