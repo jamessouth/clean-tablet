@@ -81,21 +81,31 @@ let make = (~client, ~setHasAuth) => {
 
   //     None
   //   })
-
+  // { TAG: "Form", _0: "SignUp" }
   let on_Click = async () => {
     open Supabase
     Console.log3("submit clckd", formUsername, formEmail)
+    Console.log2("pgstate", pageState)
+    let options: Auth.signInWithOtpOptions = switch pageState {
+    | Form(tp) =>
+      switch tp {
+      | SignIn => {
+          shouldCreateUser: false,
+        }
+      | SignUp => {
+          shouldCreateUser: true,
+          data: JSON.Encode.object(dict{"username": JSON.Encode.string(formUsername)}),
+        }
+      }
+    | _ => {}
+    }
 
     setPageState(_ => Loading)
-    // Route.push(SignIn)
     let {error} = await client
     ->Client.auth
     ->Auth.signInWithOtp({
       email: formEmail,
-      options: {
-        shouldCreateUser: true,
-        data: JSON.Encode.object(dict{"username": JSON.Encode.string(formUsername)}),
-      },
+      options,
     })
     switch Nullable.toOption(error) {
     | Some(err) =>
