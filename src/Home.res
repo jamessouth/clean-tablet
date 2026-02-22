@@ -1,8 +1,15 @@
 // let username_max_length = 10
 // let email_max_length = 99
+type formType = SignIn | SignUp
+type pageState<'data> =
+  | Buttons
+  | Form(formType)
+  | Loading
+  | Error(Supabase.SupaError.t)
+  | Success('data)
 
 @react.component
-let make = (~client, ~setHasAuth, ~nameCookieState, ~setNameCookie) => {
+let make = (~client, ~setHasAuth) => {
   let {
     formUsername,
     formEmail,
@@ -17,21 +24,7 @@ let make = (~client, ~setHasAuth, ~nameCookieState, ~setNameCookie) => {
 
   let (showToast, setShowToast) = ToastHook.useToast()
 
-  let (loginstate, setLoginState) = React.useState(_ => Supabase.Global.Loading)
-  let (showLoginStatus, setShowLoginStatus) = React.Uncurried.useState(_ => false)
-
-  //   let (authError, setAuthError) = React.useState(_ => None)
-
-  React.useEffect(() => {
-    let ignoreUpdate = ref(false)
-    Console.log2("cook", nameCookieState)
-    switch (ignoreUpdate.contents, nameCookieState) {
-    | (false, Some(c)) => setFormUsername(_ => c)
-    | _ => ()
-    }
-
-    Some(() => ignoreUpdate.contents = true)
-  }, [nameCookieState])
+  let (pageState, setPageState) = React.Uncurried.useState(_ => Buttons)
 
   React.useEffect(() => {
     let ignoreUpdate = ref(false)
@@ -53,7 +46,7 @@ let make = (~client, ~setHasAuth, ~nameCookieState, ~setNameCookie) => {
       | (true, _, _) => ()
       | (false, Value(err), _) =>
         setHasAuth(_ => None)
-        setLoginState(_ => SupaError.Auth(err)->Error)
+        setPageState(_ => SupaError.Auth(err)->Error)
       | (false, _, {session: Value({user})}) => setHasAuth(_ => Some(user))
       | (false, _, _) =>
         setHasAuth(_ => None)
@@ -92,11 +85,8 @@ let make = (~client, ~setHasAuth, ~nameCookieState, ~setNameCookie) => {
   let on_Click = async () => {
     open Supabase
     Console.log3("submit clckd", formUsername, formEmail)
-    switch nameCookieState {
-    | Some(_) => ()
-    | None => setNameCookie(formUsername)
-    }
-    setShowLoginStatus(_ => true)
+
+    setPageState(_ => Loading)
     // Route.push(SignIn)
     let {error} = await client
     ->Client.auth
@@ -110,11 +100,11 @@ let make = (~client, ~setHasAuth, ~nameCookieState, ~setNameCookie) => {
     switch Nullable.toOption(error) {
     | Some(err) =>
       Console.log2("err", err)
-      setLoginState(_ => SupaError.Auth(err)->Error)
+      setPageState(_ => SupaError.Auth(err)->Error)
 
     | None =>
       Console.log("Check your email for the login link!")
-      setLoginState(_ => Success())
+      setPageState(_ => Success())
     }
   }
   <>
@@ -123,27 +113,38 @@ let make = (~client, ~setHasAuth, ~nameCookieState, ~setNameCookie) => {
     | _ => React.null
     }}
 
-    {switch (showLoginStatus, loginstate) {
-    | (_, Error(err)) => <SupaErr err />
-    | (true, Loading) => <Loading />
-    | (true, Success()) =>
-      <p className="text-stone-100 mx-auto text-xl font-anon w-4/5 text-center mb-[5vh]">
-        {React.string("Click the link in your email to login!")}
-      </p>
-    | (false, _) =>
+    {switch pageState {
+    | Buttons =>
+      <>
+        <Button onClick={_ => f()->ignore} css="bg-stone-300 mr-5 ">
+          {React.string("sign in")}
+        </Button>
+        <Button
+          onClick={_ => {
+            setFormSubmitClicked(_ => true)
+          }}
+        >
+          {React.string("sign up")}
+        </Button>
+      </>
+
+    | Form(tp) =>
       <Form
-        ht={switch nameCookieState {
-        | Some(_) => "h-46"
-        | None => "h-54"
+        ht={switch tp {
+        | SignIn => "h-46"
+        | SignUp => "h-54"
         }}
         on_Click
-        leg="Sign in"
+        leg={switch tp {
+        | SignIn => "Sign in"
+        | SignUp => "Sign up"
+        }}
         validationError
         setFormSubmitClicked
       >
-        {switch nameCookieState {
-        | Some(_) => React.null
-        | None =>
+        {switch tp {
+        | SignIn => React.null
+        | SignUp =>
           <Input
             value=formUsername
             propName="username"
@@ -163,6 +164,13 @@ let make = (~client, ~setHasAuth, ~nameCookieState, ~setNameCookie) => {
           valdnError=emailValdnError
         />
       </Form>
+    | Error(err) => <SupaErr err />
+    | Loading => <Loading />
+
+    | Success() =>
+      <p className="text-stone-100 mx-auto text-xl font-anon w-4/5 text-center mb-[5vh]">
+        {React.string("Click the link in your email to login!")}
+      </p>
     }}
   </>
 }
