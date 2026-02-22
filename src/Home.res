@@ -50,7 +50,7 @@ let make = (~client, ~setHasAuth) => {
       | (false, _, {session: Value({user})}) => setHasAuth(_ => Some(user))
       | (false, _, _) =>
         setHasAuth(_ => None)
-        setShowToast(_ => Some(""))
+        setShowToast(_ => None)
       }
     }
     funfun()->ignore
@@ -114,19 +114,27 @@ let make = (~client, ~setHasAuth) => {
 
     | None =>
       Console.log("Check your email for the login link!")
-      setPageState(_ => Success())
+      setPageState(_ => Success("You may close this tab."))
+      setShowToast(_ => Some("Check your email for the magic link!"))
     }
   }
   <>
     {switch showToast {
     | Loading => <Loading />
-    | _ => React.null
+    | Some(msg) => <Toast msg setShowToast />
+    | None => React.null
     }}
 
     {switch pageState {
     | Buttons =>
       <>
-        <Button css="bg-stone-100 mt-[7vh] " onClick={_ => setPageState(_ => Form(SignIn))}>
+        <Button
+          css="bg-stone-100 mt-[7vh] "
+          onClick={_ => {
+            setFormUsername(_ => "ddd")
+            setPageState(_ => Form(SignIn))
+          }}
+        >
           {React.string("SIGN IN")}
         </Button>
         <Button
@@ -177,11 +185,14 @@ let make = (~client, ~setHasAuth) => {
       </Form>
     | Error(err) => <SupaErr err />
     | Loading => <Loading />
-
-    | Success() =>
-      <p className="text-stone-100 mx-auto text-xl font-anon w-4/5 text-center mb-[5vh]">
-        {React.string("Click the link in your email to login!")}
-      </p>
+    | Success(m) =>
+      switch showToast {
+      | None =>
+        <p className="text-stone-100 mx-auto text-xl font-anon w-4/5 text-center mb-[5vh]">
+          {React.string(m)}
+        </p>
+      | _ => React.null
+      }
     }}
   </>
 }
