@@ -116,15 +116,16 @@ let make = (~client, ~setHasAuth) => {
     {switch pageState {
     | Buttons =>
       <>
-        <Button onClick={_ => f()->ignore} css="bg-stone-300 mr-5 ">
-          {React.string("sign in")}
+        <Button css="bg-stone-100 mt-[7vh] " onClick={_ => setPageState(_ => Form(SignIn))}>
+          {React.string("SIGN IN")}
         </Button>
         <Button
+          css="bg-stone-100 mt-[9vh] "
           onClick={_ => {
-            setFormSubmitClicked(_ => true)
+            setPageState(_ => Form(SignUp))
           }}
         >
-          {React.string("sign up")}
+          {React.string("SIGN UP")}
         </Button>
       </>
 

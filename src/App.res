@@ -2,18 +2,6 @@
 external apikey: string = "VITE_SB_PUB_APIKEY"
 @val @scope(("import", "meta", "env"))
 external url: string = "VITE_SB_URL"
-@send external setTime: (Date.t, Date.msSinceEpoch) => Date.t = "setTime"
-let yearsMillis = Float.parseFloat("31536000000")
-let name_cookie_key = "clean_tablet_username="
-
-let setNameCookie = value => {
-  let now = Date.make()
-  let inAYear = Date.getTime(now) + yearsMillis
-  let _ = now->setTime(inAYear)
-  let expiry = now->Date.toUTCString
-
-  Web.document->Web.setCookie(`${name_cookie_key}${value};expires=${expiry};path=/;SameSite=Strict`)
-}
 
 let options: Supabase.Options.t = {
   auth: {
@@ -44,27 +32,6 @@ let make = () => {
   let route = Route.useRouter()
 
   let (hasAuth, setHasAuth) = React.useState(_ => None)
-  let (nameCookieState, setNameCookieState) = React.useState(_ => None)
-
-  React.useEffect(() => {
-    Console.log("in cookie eff")
-
-    switch Web.cookie
-    ->String.split(";")
-    ->Array.find(k => k->String.trim->String.startsWith(name_cookie_key)) {
-    | None => ()
-    | Some(c) =>
-      switch c->String.split("=")->Array.get(1) {
-      | None => ()
-      | Some(v) => setNameCookieState(_ => Some(v))
-      }
-    }
-
-    None
-  }, [])
-
-  //   let (_wsError, _setWsError) = React.Uncurried.useState(_ => "")
-  //   let (_leaderData, _setLeaderData) = React.Uncurried.useState(_ => [])
 
   //   module LazyMessage = {
   //     let make = React.lazy_(() => import(Message.make))
@@ -79,22 +46,33 @@ let make = () => {
     {switch (route, hasAuth) {
     | (Home, None) =>
       <Header
-        mgt={switch nameCookieState {
-        | Some(_) => "mt-20"
-        | None => "mt-17"
-        }}
-        username=nameCookieState
+      // mgt={switch nameCookieState {
+      // | Some(_) => "mt-20"
+      // | None => "mt-17"
+      // }}
+      // username=nameCookieState
       />
     | (SignIn(_), None) => <Header />
-    | (Landing, Some(_)) => <Header username=nameCookieState />
-    | (Lobby, Some(_)) => <Header username=nameCookieState head=false />
+    | (Landing, Some(_)) =>
+      <Header
+      // username=nameCookieState
+      />
+    | (Lobby, Some(_)) =>
+      <Header
+        // username=nameCookieState
+        head=false
+      />
     | _ => React.null
     }}
     <main>
       {switch (route, hasAuth) {
       | (Home, None) =>
         Web.document->Web.body->Web.setClassName("homemob hometab homebig")
-        <Home client setHasAuth nameCookieState setNameCookie />
+        <Home
+          client
+          setHasAuth
+          // nameCookieState setNameCookie
+        />
 
       | (Home, Some(_)) => {
           Route.replace(Landing)
@@ -125,7 +103,12 @@ let make = () => {
 
       | (Landing, Some(user)) =>
         Web.document->Web.body->Web.setClassName("landingmob landingtab landingbig")
-        <Landing user client setHasAuth setNameCookie />
+        <Landing
+          user
+          client
+          setHasAuth
+          //  setNameCookie
+        />
 
       // | (Leaderboard, _) =>
       //   <React.Suspense fallback=React.null>
