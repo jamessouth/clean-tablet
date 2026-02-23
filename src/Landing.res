@@ -3,9 +3,7 @@ type formstate = Name | Email | Loading | Error(Supabase.SupaError.t) | Dontshow
 let textLinkBase = "w-5/6 border border-stone-100 bg-stone-800/40 text-center text-stone-100 decay-mask p-2 max-w-80 font-fred "
 
 @react.component
-let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
-  //  ~setNameCookie
-
+let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth, ~setUsername) => {
   let {
     formUsername,
     formEmail,
@@ -80,7 +78,7 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
     | (_, _, _, 204, _) =>
       setShowForm(_ => Dontshow)
       setShowToast(_ => Some(`Username changed to ${formUsername}.`))
-    //   setNameCookie(formUsername)
+      setUsername(_ => Some(formUsername))
     | (_, _, _, _, _) => setShowForm(_ => SupaError.dbError->Error)
     }
 
@@ -140,6 +138,7 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
     Console.log("on cxl name")
     setFormEmail(_ => "")
     setFormUsername(_ => "")
+    setFormSubmitClicked(_ => false)
     setShowForm(_ => Dontshow)
   }
 
@@ -152,11 +151,15 @@ let make = (~user: Supabase.Auth.user, ~client, ~setHasAuth) => {
     Console.log("on cxl email")
     setFormEmail(_ => "")
     setFormUsername(_ => "")
+    setFormSubmitClicked(_ => false)
     setShowForm(_ => Dontshow)
   }
 
   <>
-    <Menu onSignOutClick onShowNameFormClick onShowEmailFormClick />
+    {switch showForm {
+    | Name | Email => React.null
+    | _ => <Menu onSignOutClick onShowNameFormClick onShowEmailFormClick />
+    }}
 
     <nav className="flex flex-col items-center h-[30vh] justify-around mb-8">
       <Link route=Lobby className={textLinkBase ++ "text-4xl"}> {React.string("LOBBY")} </Link>

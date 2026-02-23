@@ -21,12 +21,7 @@ let make = (
 
       {children}
     </fieldset>
-    <div
-      className={switch on_Cxl_Click {
-      | Some(_) => "flex"
-      | None => ""
-      }}
-    >
+    <div className="flex justify-around items-center h-[15vh]">
       {switch on_Cxl_Click {
       | Some(f) =>
         <Button onClick={_ => f()->ignore} css="bg-stone-300 mr-5 ">

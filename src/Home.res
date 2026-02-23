@@ -9,7 +9,7 @@ type pageState<'data> =
   | Success('data)
 
 @react.component
-let make = (~client, ~setHasAuth) => {
+let make = (~client, ~setHasAuth, ~setUsername) => {
   let {
     formUsername,
     formEmail,
@@ -33,6 +33,8 @@ let make = (~client, ~setHasAuth) => {
     | false => setShowToast(_ => Loading)
     }
     Console.log("in home eff")
+    let (_, signal) = AbortCtrl.abortCtrl("Home")
+
     open Supabase
     let funfun = async () => {
       Console.log("in home func")
@@ -47,7 +49,35 @@ let make = (~client, ~setHasAuth) => {
       | (false, Value(err), _) =>
         setHasAuth(_ => None)
         setPageState(_ => SupaError.Auth(err)->Error)
-      | (false, _, {session: Value({user})}) => setHasAuth(_ => Some(user))
+      | (false, _, {session: Value({user})}) =>
+        let {status, statusText, data, error, count} = await client
+        ->Client.from("profiles")
+        ->DB.select("username")
+        ->DB.abortSignal(signal)
+        ->DB.eq("id", user.id)
+        ->DB.single
+
+        Console.log6("home get name", status, statusText, data, error, count)
+
+        switch (error, data, count, status, statusText) {
+        | (Value(err), _, _, s, st) =>
+          switch err.message->String.includes("FetchError: undefined") {
+          | true => Console.log("eating abort err")
+          | false => setPageState(_ => SupaError.Db(err, Some(s), Some(st))->Error)
+          }
+          setUsername(_ => Some("error"))
+        | (_, Value({DB.username: username}), _, _, _) =>
+          setPageState(_ => Success(""))
+          setUsername(_ => Some(username))
+
+        | (_, _, _, _, _) =>
+          setPageState(_ => SupaError.dbError->Error)
+          setUsername(_ => Some("error"))
+        }
+
+        setShowToast(_ => None)
+        setHasAuth(_ => Some(user))
+
       | (false, _, _) =>
         setHasAuth(_ => None)
         setShowToast(_ => None)
@@ -127,9 +157,8 @@ let make = (~client, ~setHasAuth) => {
 
     {switch pageState {
     | Buttons =>
-      <>
+      <div className="flex flex-col items-center h-[25vh] justify-around">
         <Button
-          css="bg-stone-100 mt-[7vh] "
           onClick={_ => {
             setFormUsername(_ => "ddd")
             setPageState(_ => Form(SignIn))
@@ -138,14 +167,13 @@ let make = (~client, ~setHasAuth) => {
           {React.string("SIGN IN")}
         </Button>
         <Button
-          css="bg-stone-100 mt-[9vh] "
           onClick={_ => {
             setPageState(_ => Form(SignUp))
           }}
         >
           {React.string("SIGN UP")}
         </Button>
-      </>
+      </div>
 
     | Form(tp) =>
       <Form

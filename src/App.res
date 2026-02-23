@@ -32,6 +32,7 @@ let make = () => {
   let route = Route.useRouter()
 
   let (hasAuth, setHasAuth) = React.useState(_ => None)
+  let (username, setUsername) = React.useState(_ => None)
 
   //   module LazyMessage = {
   //     let make = React.lazy_(() => import(Message.make))
@@ -44,35 +45,17 @@ let make = () => {
 
   <>
     {switch (route, hasAuth) {
-    | (Home, None) =>
-      <Header
-      // mgt={switch nameCookieState {
-      // | Some(_) => "mt-20"
-      // | None => "mt-17"
-      // }}
-      // username=nameCookieState
-      />
+    | (Home, None) => <Header />
     | (SignIn(_), None) => <Header />
-    | (Landing, Some(_)) =>
-      <Header
-      // username=nameCookieState
-      />
-    | (Lobby, Some(_)) =>
-      <Header
-        // username=nameCookieState
-        head=false
-      />
+    | (Landing, Some(_)) => <Header username />
+    | (Lobby, Some(_)) => <Header username head=false />
     | _ => React.null
     }}
     <main>
       {switch (route, hasAuth) {
       | (Home, None) =>
         Web.document->Web.body->Web.setClassName("homemob hometab homebig")
-        <Home
-          client
-          setHasAuth
-          // nameCookieState setNameCookie
-        />
+        <Home client setHasAuth setUsername />
 
       | (Home, Some(_)) => {
           Route.replace(Landing)
@@ -103,12 +86,7 @@ let make = () => {
 
       | (Landing, Some(user)) =>
         Web.document->Web.body->Web.setClassName("landingmob landingtab landingbig")
-        <Landing
-          user
-          client
-          setHasAuth
-          //  setNameCookie
-        />
+        <Landing user client setHasAuth setUsername />
 
       // | (Leaderboard, _) =>
       //   <React.Suspense fallback=React.null>
