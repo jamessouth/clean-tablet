@@ -34,6 +34,51 @@ let make = () => {
   let (hasAuth, setHasAuth) = React.useState(_ => None)
   let (username, setUsername) = React.useState(_ => None)
 
+  React.useEffect(() => {
+    Console.log("app eff")
+
+    open Supabase
+    switch hasAuth {
+    | None => None
+    | Some({id}: Auth.user) => {
+        let (controller, signal) = AbortCtrl.abortCtrl("App")
+
+        let getUname = async () => {
+          Console.log("app func")
+
+          let {status, statusText, data, error, count} = await client
+          ->Client.from("profiles")
+          ->DB.select("username")
+          ->DB.abortSignal(signal)
+          ->DB.eq("id", id)
+          ->DB.single
+
+          Console.log6("app get name", status, statusText, data, error, count)
+
+          switch (error, data, count, status, statusText) {
+          | (Value(err), _, _, s, st) =>
+            switch err.message->String.includes("FetchError: undefined") {
+            | true => Console.log("eating abort err")
+            | false => Console.log("some other err")
+            }
+            Console.log2(s, st)
+            Console.error(err)
+            setUsername(_ => Some("undefined"))
+          | (_, Value({DB.username: username}), _, _, _) => setUsername(_ => Some(username))
+
+          | (_, _, _, _, _) =>
+            Console.log("no data or error on name fetch")
+            setUsername(_ => Some("undefined"))
+          }
+        }
+
+        getUname->ignore
+
+        Some(() => controller->Fetch.AbortController.abort(~reason="timeout or user abort"))
+      }
+    }
+  }, [hasAuth])
+
   //   module LazyMessage = {
   //     let make = React.lazy_(() => import(Message.make))
   //   }
@@ -55,7 +100,7 @@ let make = () => {
       {switch (route, hasAuth) {
       | (Home, None) =>
         Web.document->Web.body->Web.setClassName("homemob hometab homebig")
-        <Home client setHasAuth setUsername />
+        <Home client setHasAuth />
 
       | (Home, Some(_)) => {
           Route.replace(Landing)

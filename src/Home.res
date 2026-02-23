@@ -9,7 +9,7 @@ type pageState<'data> =
   | Success('data)
 
 @react.component
-let make = (~client, ~setHasAuth, ~setUsername) => {
+let make = (~client, ~setHasAuth) => {
   let {
     formUsername,
     formEmail,
@@ -33,7 +33,6 @@ let make = (~client, ~setHasAuth, ~setUsername) => {
     | false => setShowToast(_ => Loading)
     }
     Console.log("in home eff")
-    let (_, signal) = AbortCtrl.abortCtrl("Home")
 
     open Supabase
     let funfun = async () => {
@@ -50,31 +49,6 @@ let make = (~client, ~setHasAuth, ~setUsername) => {
         setHasAuth(_ => None)
         setPageState(_ => SupaError.Auth(err)->Error)
       | (false, _, {session: Value({user})}) =>
-        let {status, statusText, data, error, count} = await client
-        ->Client.from("profiles")
-        ->DB.select("username")
-        ->DB.abortSignal(signal)
-        ->DB.eq("id", user.id)
-        ->DB.single
-
-        Console.log6("home get name", status, statusText, data, error, count)
-
-        switch (error, data, count, status, statusText) {
-        | (Value(err), _, _, s, st) =>
-          switch err.message->String.includes("FetchError: undefined") {
-          | true => Console.log("eating abort err")
-          | false => setPageState(_ => SupaError.Db(err, Some(s), Some(st))->Error)
-          }
-          setUsername(_ => Some("error"))
-        | (_, Value({DB.username: username}), _, _, _) =>
-          setPageState(_ => Success(""))
-          setUsername(_ => Some(username))
-
-        | (_, _, _, _, _) =>
-          setPageState(_ => SupaError.dbError->Error)
-          setUsername(_ => Some("error"))
-        }
-
         setShowToast(_ => None)
         setHasAuth(_ => Some(user))
 
