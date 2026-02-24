@@ -27,12 +27,125 @@ let client: Supabase.Client.t<unit> = Supabase.Global.createClient(url, apikey, 
 //   },
 // }
 
+//   React.useEffect0(() => {
+//     Js.log("signin use effect")
+
+//     ImageLoad.import_("./ImageLoad.bs")
+//     ->Promise.then(func => {
+//       Promise.resolve(func["bghand"](.))
+//     })
+//     ->ignore
+
+//     None
+//   })
+
+type formType = SignIn | SignUp
+type pageState<'data> =
+  | Buttons
+  | Form(formType)
+  | Loading
+  | Error(Supabase.SupaError.t)
+  | Success('data)
+
+let ranOnce = ref(false)
+
 @react.component
 let make = () => {
   let route = Route.useRouter()
+  let (showToast, setShowToast) = ToastHook.useToast()
+  let (pageState, setPageState) = React.Uncurried.useState(_ => Loading)
+  let {
+    formUsername,
+    formEmail,
+    formSubmitClicked,
+    validationError,
+    emailValdnError,
+    unameValdnError,
+    setFormUsername,
+    setFormEmail,
+    setFormSubmitClicked,
+  } = FormHook.useForm()
 
   let (hasAuth, setHasAuth) = React.useState(_ => None)
   let (username, setUsername) = React.useState(_ => None)
+
+  React.useEffect(() => {
+    open Supabase
+    switch ranOnce.contents {
+    | true => None
+    | false => {
+        ranOnce := true
+        switch route {
+        | Home => {
+            Console.log("in home eff")
+
+            let homefun = async () => {
+              Console.log("in home func")
+              let {error, data} = await client
+              ->Client.auth
+              ->Auth.getSession
+
+              Console.log3("home", error, data)
+
+              switch (error, data) {
+              | (Value(err), _) =>
+                setHasAuth(_ => None)
+                setPageState(_ => SupaError.Auth(err)->Error)
+              | (_, {session: Value({user})}) =>
+                setPageState(_ => Success(""))
+                setHasAuth(_ => Some(user))
+
+              | (_, _) =>
+                setHasAuth(_ => None)
+                setPageState(_ => Buttons)
+              }
+            }
+            homefun()->ignore
+
+            let {data: {subscription: {unsubscribe}}} =
+              client
+              ->Client.auth
+              ->Auth.onAuthStateChange((ev, sess) => {
+                Console.log3("auth event cb", ev, sess)
+              })
+
+            Some(() => unsubscribe())
+          }
+        | SignIn(votp) => {
+            let signinfun = async () => {
+              let {error, data} = await client
+              ->Client.auth
+              ->Auth.verifyOtp(votp)
+
+              Console.log3("signin data", error, data)
+
+              switch (error, data) {
+              | (Value(err), _) =>
+                setHasAuth(_ => None)
+                setPageState(_ => SupaError.Auth(err)->Error)
+              | (_, Value({user: Value(user)})) =>
+                Route.replace(
+                  SignIn({
+                    type_: #other,
+                    token_hash: "",
+                  }),
+                )
+                setPageState(_ => Success(""))
+                setHasAuth(_ => Some(user))
+              | (_, _) =>
+                setHasAuth(_ => None)
+                setPageState(_ => SupaError.authError->Error)
+              }
+            }
+
+            signinfun()->ignore
+            None
+          }
+        | _ => None
+        }
+      }
+    }
+  }, [])
 
   React.useEffect(() => {
     Console.log("app eff")
@@ -88,10 +201,45 @@ let make = () => {
   //     let _make = React.lazy_(() => import(Leaderboard.make))
   //   }
 
+  let on_Click = async () => {
+    open Supabase
+    Console.log3("submit clckd", formUsername, formEmail)
+    Console.log2("pgstate", pageState)
+    let options: Auth.signInWithOtpOptions = switch pageState {
+    | Form(tp) =>
+      switch tp {
+      | SignIn => {
+          shouldCreateUser: false,
+        }
+      | SignUp => {
+          shouldCreateUser: true,
+          data: JSON.Encode.object(dict{"username": JSON.Encode.string(formUsername)}),
+        }
+      }
+    | _ => {}
+    }
+
+    setPageState(_ => Loading)
+    let {error} = await client
+    ->Client.auth
+    ->Auth.signInWithOtp({
+      email: formEmail,
+      options,
+    })
+    switch Nullable.toOption(error) {
+    | Some(err) =>
+      Console.log2("err", err)
+      setPageState(_ => SupaError.Auth(err)->Error)
+
+    | None =>
+      Console.log("Check your email for the login link!")
+      setPageState(_ => Success("You may close this tab."))
+      setShowToast(_ => Some("Check your email for the magic link!"))
+    }
+  }
   <>
     {switch (route, hasAuth) {
-    | (Home, None) => <Header />
-    | (SignIn(_), None) => <Header />
+    | (Home | SignIn(_), None) => <Header />
     | (Landing, Some(_)) => <Header username />
     | (Lobby, Some(_)) => <Header username head=false />
     | _ => React.null
@@ -100,17 +248,98 @@ let make = () => {
       {switch (route, hasAuth) {
       | (Home, None) =>
         Web.document->Web.body->Web.setClassName("homemob hometab homebig")
-        <Home client setHasAuth />
+
+        <>
+          {switch showToast {
+          | Loading => <Loading />
+          | Some(msg) => <Toast msg setShowToast />
+          | None => React.null
+          }}
+
+          {switch pageState {
+          | Buttons =>
+            <div className="flex flex-col items-center h-[25vh] justify-around">
+              <Button
+                onClick={_ => {
+                  setFormUsername(_ => "ddd")
+                  setPageState(_ => Form(SignIn))
+                }}
+              >
+                {React.string("SIGN IN")}
+              </Button>
+              <Button
+                onClick={_ => {
+                  setPageState(_ => Form(SignUp))
+                }}
+              >
+                {React.string("SIGN UP")}
+              </Button>
+            </div>
+
+          | Form(tp) =>
+            <Form
+              ht={switch tp {
+              | SignIn => "h-46"
+              | SignUp => "h-54"
+              }}
+              on_Click
+              leg={switch tp {
+              | SignIn => "Sign in"
+              | SignUp => "Sign up"
+              }}
+              validationError
+              setFormSubmitClicked
+            >
+              {switch tp {
+              | SignIn => React.null
+              | SignUp =>
+                <Input
+                  value=formUsername
+                  propName="username"
+                  inputMode="username"
+                  setFunc=setFormUsername
+                  formSubmitClicked
+                  valdnError=unameValdnError
+                />
+              }}
+
+              <Input
+                value=formEmail
+                propName="email"
+                inputMode="email"
+                setFunc=setFormEmail
+                formSubmitClicked
+                valdnError=emailValdnError
+              />
+            </Form>
+          | Error(err) => <SupaErr err />
+          | Loading => <Loading />
+          | Success(m) =>
+            switch showToast {
+            | None =>
+              <p className="text-stone-100 mx-auto text-xl font-anon w-4/5 text-center mb-[5vh]">
+                {React.string(m)}
+              </p>
+            | _ => React.null
+            }
+          }}
+        </>
 
       | (Home, Some(_)) => {
           Route.replace(Landing)
           React.null
         }
 
-      | (SignIn(votp), None) => {
-          Web.document->Web.body->Web.setClassName("landingmob landingtab landingbig")
-          <SignIn setHasAuth client votp />
-        }
+      | (SignIn(_), None) =>
+        Web.document->Web.body->Web.setClassName("landingmob landingtab landingbig")
+
+        <div>
+          {switch pageState {
+          | Loading => <Loading label="session" />
+          | Error(err) => <SupaErr err />
+          | _ => React.null
+          }}
+        </div>
 
       | (SignIn(_), Some(_)) => {
           Route.replace(Landing)
