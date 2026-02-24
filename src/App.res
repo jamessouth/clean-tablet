@@ -69,8 +69,44 @@ let make = () => {
   let (hasAuth, setHasAuth) = React.useState(_ => None)
   let (username, setUsername) = React.useState(_ => None)
 
+  let getName = id => {
+    let (_, signal) = AbortCtrl.abortCtrl("App getName")
+    open Supabase
+    let getUname = async () => {
+      Console.log("app func")
+
+      let {status, statusText, data, error, count} = await client
+      ->Client.from("profiles")
+      ->DB.select("username")
+      ->DB.abortSignal(signal)
+      ->DB.eq("id", id)
+      ->DB.single
+
+      Console.log6("app get name", status, statusText, data, error, count)
+
+      switch (error, data, count, status, statusText) {
+      | (Value(err), _, _, s, st) =>
+        switch err.message->String.includes("FetchError: undefined") {
+        | true => Console.log("eating abort err")
+        | false => Console.log("some other err")
+        }
+        Console.log2(s, st)
+        Console.error(err)
+        setUsername(_ => Some("undefined"))
+      | (_, Value({DB.username: username}), _, _, _) => setUsername(_ => Some(username))
+
+      | (_, _, _, _, _) =>
+        Console.log("no data or error on name fetch")
+        setUsername(_ => Some("undefined"))
+      }
+    }
+
+    getUname->ignore
+  }
+
   React.useEffect(() => {
     open Supabase
+    Console.log2("rano", ranOnce.contents)
     switch ranOnce.contents {
     | true => None
     | false => {
@@ -94,7 +130,7 @@ let make = () => {
               | (_, {session: Value({user})}) =>
                 setPageState(_ => Success(""))
                 setHasAuth(_ => Some(user))
-
+                getName(user.id)
               | (_, _) =>
                 setHasAuth(_ => None)
                 setPageState(_ => Buttons)
@@ -132,6 +168,7 @@ let make = () => {
                 )
                 setPageState(_ => Success(""))
                 setHasAuth(_ => Some(user))
+                getName(user.id)
               | (_, _) =>
                 setHasAuth(_ => None)
                 setPageState(_ => SupaError.authError->Error)
@@ -146,51 +183,6 @@ let make = () => {
       }
     }
   }, [])
-
-  React.useEffect(() => {
-    Console.log("app eff")
-
-    open Supabase
-    switch hasAuth {
-    | None => None
-    | Some({id}: Auth.user) => {
-        let (controller, signal) = AbortCtrl.abortCtrl("App")
-
-        let getUname = async () => {
-          Console.log("app func")
-
-          let {status, statusText, data, error, count} = await client
-          ->Client.from("profiles")
-          ->DB.select("username")
-          ->DB.abortSignal(signal)
-          ->DB.eq("id", id)
-          ->DB.single
-
-          Console.log6("app get name", status, statusText, data, error, count)
-
-          switch (error, data, count, status, statusText) {
-          | (Value(err), _, _, s, st) =>
-            switch err.message->String.includes("FetchError: undefined") {
-            | true => Console.log("eating abort err")
-            | false => Console.log("some other err")
-            }
-            Console.log2(s, st)
-            Console.error(err)
-            setUsername(_ => Some("undefined"))
-          | (_, Value({DB.username: username}), _, _, _) => setUsername(_ => Some(username))
-
-          | (_, _, _, _, _) =>
-            Console.log("no data or error on name fetch")
-            setUsername(_ => Some("undefined"))
-          }
-        }
-
-        getUname->ignore
-
-        Some(() => controller->Fetch.AbortController.abort(~reason="timeout or user abort"))
-      }
-    }
-  }, [hasAuth])
 
   //   module LazyMessage = {
   //     let make = React.lazy_(() => import(Message.make))
