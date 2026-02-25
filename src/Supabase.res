@@ -276,6 +276,8 @@ module DB = {
     "abortSignal"
   // 2. Filters
   @send external eq: (queryBuilder<'row>, string, 'value) => queryBuilder<'row> = "eq"
+  @send
+  external eqExec: (queryBuilder<'row>, string, 'value) => Promise.t<response<array<'row>>> = "eq"
   @send external gt: (queryBuilder<'row>, string, 'value) => queryBuilder<'row> = "gt"
   @send external lt: (queryBuilder<'row>, string, 'value) => queryBuilder<'row> = "lt"
   @send

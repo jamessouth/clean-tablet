@@ -1,11 +1,11 @@
 @react.component
-let make = (~mgt="mt-17", ~username=None, ~head=true) => {
+let make = (~mgt="mt-17", ~username=None, ~head=true, ~color="stone-100") => {
   <header className={`mb-10 ${mgt} newgmimg:mb-12`}>
     {switch username {
     | None => React.null
     | Some(u) =>
       <p
-        className="font-flow text-stone-100 text-3xl tracking-wide absolute top-0 left-1/2 -translate-x-1/2 font-bold "
+        className={`font-flow text-${color} text-3xl tracking-wide absolute top-0 left-1/2 -translate-x-1/2 font-bold `}
       >
         {React.string(u)}
       </p>

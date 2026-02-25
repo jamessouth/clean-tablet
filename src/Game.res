@@ -4,12 +4,12 @@ let btnStyle = " cursor-pointer text-base font-bold text-stone-100 font-anon w-1
 let make = (~game: Supabase.Game.game) => {
   let {id} = game
 
-  let bg = "game" ++ Int.toString(Int.mod(id, 10))
-
-  let liStyle = `<md:mb-16 grid grid-cols-2 grid-rows-6 relative text-xl bg-bottom bg-no-repeat h-200px text-center font-bold text-dark-800 font-anon pb-8 ${bg} lg:(max-w-lg w-full)`
-
-  <li className=liStyle>
-    <p className="absolute text-stone-100 text-xs left-1/2 transform -translate-x-2/4 -top-3.5">
+  <li
+    className={"grid grid-cols-2 grid-rows-6 relative text-xl bg-bottom bg-no-repeat h-[200px] text-center font-bold text-dark-800 font-anon pb-8 md:mb-16 lg:max-w-lg lg:w-full " ++
+    "game" ++
+    Int.toString(Int.mod(id, 10))}
+  >
+    <p className="absolute text-stone-800 text-xs left-1/2 transform -translate-x-2/4 -top-3.5">
       {React.string(Int.toString(id))}
     </p>
     <p className="col-span-2" />

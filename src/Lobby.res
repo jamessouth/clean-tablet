@@ -16,8 +16,7 @@ let make = (~user: Supabase.Auth.user, ~client) => {
       ->Client.from("games")
       ->DB.select("id, game_status")
       ->DB.abortSignal(signal)
-      ->DB.eq("game_status", Game.NotStarted)
-      ->DB.single
+      ->DB.eqExec("game_status", Game.NotStarted)
 
       Console.log6("loadgames", status, statusText, data, error, count)
       // resp->Auth.getResult
@@ -39,19 +38,19 @@ let make = (~user: Supabase.Auth.user, ~client) => {
   }, [])
 
   <>
-    <h2 className="text-center text-stone-100 text-5xl mt-28 font-fred">
+    <h2 className="text-center text-stone-800 text-5xl mt-28 font-fred">
       {React.string("LOBBY")}
     </h2>
     <Button
       css=""
-      className="w-15 h-7 border bg-stone-100/5 border-stone-100 absolute top-0 left-0 cursor-pointer"
+      className="w-15 h-7 border bg-stone-800/5 border-stone-800 absolute top-0 left-0 cursor-pointer"
       onClick={_ => Route.push(Landing)}
     >
-      <p className="leading-none text-stone-100 text-2xl"> {React.string("⬅")} </p>
+      <p className="leading-none text-stone-800 text-2xl"> {React.string("⬅")} </p>
     </Button>
     <div className="flex flex-col items-center">
       {switch lobbystate {
-      | Loading => <Loading color="stone-100" label="games..." />
+      | Loading => <Loading color="stone-800" label="games..." />
       | Error(err) => <SupaErr err />
       | Success(games) =>
         <ul

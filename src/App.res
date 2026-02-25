@@ -228,7 +228,7 @@ let make = () => {
     {switch (route, hasAuth) {
     | (Home | SignIn(_), None) => <Header />
     | (Landing, Some(_)) => <Header username />
-    | (Lobby, Some(_)) => <Header username head=false />
+    | (Lobby, Some(_)) => <Header username head=false color="stone-800" />
     | _ => React.null
     }}
     <main>
@@ -366,7 +366,9 @@ let make = () => {
         Route.replace(Home)
         React.null
 
-      | (Lobby, Some(user)) => <Lobby user client />
+      | (Lobby, Some(user)) =>
+        Web.document->Web.body->Web.setClassName("lobbymob lobbytab lobbybig")
+        <Lobby user client />
 
       | (Play(_), None) =>
         Route.replace(Home)

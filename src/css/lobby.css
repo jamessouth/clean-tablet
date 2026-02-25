@@ -7,71 +7,71 @@
 
 .game0 {
   background-image: image-set(
-    url("../../assets/games/troldslottet1x.webp") 1x,
-    url("../../assets/games/troldslottet2x.webp") 2x
+    url("/src/assets/games/troldslottet1x.webp") 1x,
+    url("/src/assets/games/troldslottet2x.webp") 2x
   );
 }
 
 .game1 {
   background-image: image-set(
-    url("../../assets/games/huldra1x.webp") 1x,
-    url("../../assets/games/huldra2x.webp") 2x
+    url("/src/assets/games/huldra1x.webp") 1x,
+    url("/src/assets/games/huldra2x.webp") 2x
   );
 }
 
 .game2 {
   background-image: image-set(
-    url("../../assets/games/svaelg1x.webp") 1x,
-    url("../../assets/games/svaelg2x.webp") 2x
+    url("/src/assets/games/svaelg1x.webp") 1x,
+    url("/src/assets/games/svaelg2x.webp") 2x
   );
 }
 
 .game3 {
   background-image: image-set(
-    url("../../assets/games/korn1x.webp") 1x,
-    url("../../assets/games/korn2x.webp") 2x
+    url("/src/assets/games/korn1x.webp") 1x,
+    url("/src/assets/games/korn2x.webp") 2x
   );
 }
 
 .game4 {
   background-image: image-set(
-    url("../../assets/games/dammen1x.webp") 1x,
-    url("../../assets/games/dammen2x.webp") 2x
+    url("/src/assets/games/dammen1x.webp") 1x,
+    url("/src/assets/games/dammen2x.webp") 2x
   );
 }
 
 .game5 {
   background-image: image-set(
-    url("../../assets/games/fossen1x.webp") 1x,
-    url("../../assets/games/fossen2x.webp") 2x
+    url("/src/assets/games/fossen1x.webp") 1x,
+    url("/src/assets/games/fossen2x.webp") 2x
   );
 }
 
 .game6 {
   background-image: image-set(
-    url("../../assets/games/pluk1x.webp") 1x,
-    url("../../assets/games/pluk2x.webp") 2x
+    url("/src/assets/games/pluk1x.webp") 1x,
+    url("/src/assets/games/pluk2x.webp") 2x
   );
 }
 
 .game7 {
   background-image: image-set(
-    url("../../assets/games/spring1x.webp") 1x,
-    url("../../assets/games/spring2x.webp") 2x
+    url("/src/assets/games/spring1x.webp") 1x,
+    url("/src/assets/games/spring2x.webp") 2x
   );
 }
 
 .game8 {
   background-image: image-set(
-    url("../../assets/games/troldspor1x.webp") 1x,
-    url("../../assets/games/troldspor2x.webp") 2x
+    url("/src/assets/games/troldspor1x.webp") 1x,
+    url("/src/assets/games/troldspor2x.webp") 2x
   );
 }
 
 .game9 {
   background-image: image-set(
-    url("../../assets/games/bear1x.webp") 1x,
-    url("../../assets/games/bear2x.webp") 2x
+    url("/src/assets/games/bear1x.webp") 1x,
+    url("/src/assets/games/bear2x.webp") 2x
   );
 }
 
