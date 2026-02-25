@@ -111,43 +111,8 @@ let make = () => {
     | true => None
     | false => {
         ranOnce := true
-        switch route {
-        | Home => {
-            Console.log("in home eff")
-
-            let homefun = async () => {
-              Console.log("in home func")
-              let {error, data} = await client
-              ->Client.auth
-              ->Auth.getSession
-
-              Console.log3("home", error, data)
-
-              switch (error, data) {
-              | (Value(err), _) =>
-                setHasAuth(_ => None)
-                setPageState(_ => SupaError.Auth(err)->Error)
-              | (_, {session: Value({user})}) =>
-                setPageState(_ => Success(""))
-                setHasAuth(_ => Some(user))
-                getName(user.id)
-              | (_, _) =>
-                setHasAuth(_ => None)
-                setPageState(_ => Buttons)
-              }
-            }
-            homefun()->ignore
-
-            let {data: {subscription: {unsubscribe}}} =
-              client
-              ->Client.auth
-              ->Auth.onAuthStateChange((ev, sess) => {
-                Console.log3("auth event cb", ev, sess)
-              })
-
-            Some(() => unsubscribe())
-          }
-        | SignIn(votp) => {
+        switch (route, hasAuth) {
+        | (SignIn(votp), None) => {
             let signinfun = async () => {
               let {error, data} = await client
               ->Client.auth
@@ -166,7 +131,7 @@ let make = () => {
                     token_hash: "",
                   }),
                 )
-                setPageState(_ => Success(""))
+                setPageState(_ => Buttons)
                 setHasAuth(_ => Some(user))
                 getName(user.id)
               | (_, _) =>
@@ -178,11 +143,46 @@ let make = () => {
             signinfun()->ignore
             None
           }
+        | (_, None) => {
+            Console.log("in home eff")
+
+            let homefun = async () => {
+              Console.log("in home func")
+              let {error, data} = await client
+              ->Client.auth
+              ->Auth.getSession
+
+              Console.log3("home", error, data)
+
+              switch (error, data) {
+              | (Value(err), _) =>
+                setHasAuth(_ => None)
+                setPageState(_ => SupaError.Auth(err)->Error)
+              | (_, {session: Value({user})}) =>
+                setPageState(_ => Buttons)
+                setHasAuth(_ => Some(user))
+                getName(user.id)
+              | (_, _) =>
+                setHasAuth(_ => None)
+                setPageState(_ => Buttons)
+              }
+            }
+            homefun()->ignore
+
+            let {data: {subscription: {unsubscribe}}} =
+              client
+              ->Client.auth
+              ->Auth.onAuthStateChange((ev, sess) => {
+                Console.log3("auth event cb", ev, sess)
+              })
+
+            Some(() => unsubscribe())
+          }
         | _ => None
         }
       }
     }
-  }, [])
+  }, [hasAuth])
 
   //   module LazyMessage = {
   //     let make = React.lazy_(() => import(Message.make))
