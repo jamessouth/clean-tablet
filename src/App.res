@@ -69,39 +69,34 @@ let make = () => {
   let (hasAuth, setHasAuth) = React.useState(_ => None)
   let (username, setUsername) = React.useState(_ => None)
 
-  let getName = id => {
+  let getName = async id => {
+    Console.log("app func")
     let (_, signal) = AbortCtrl.abortCtrl("App getName")
     open Supabase
-    let getUname = async () => {
-      Console.log("app func")
+    let {status, statusText, data, error, count} = await client
+    ->Client.from("profiles")
+    ->DB.select("username")
+    ->DB.abortSignal(signal)
+    ->DB.eq("id", id)
+    ->DB.single
 
-      let {status, statusText, data, error, count} = await client
-      ->Client.from("profiles")
-      ->DB.select("username")
-      ->DB.abortSignal(signal)
-      ->DB.eq("id", id)
-      ->DB.single
+    Console.log6("app get name", status, statusText, data, error, count)
 
-      Console.log6("app get name", status, statusText, data, error, count)
-
-      switch (error, data, count, status, statusText) {
-      | (Value(err), _, _, s, st) =>
-        switch err.message->String.includes("FetchError: undefined") {
-        | true => Console.log("eating abort err")
-        | false => Console.log("some other err")
-        }
-        Console.log2(s, st)
-        Console.error(err)
-        setUsername(_ => Some("undefined"))
-      | (_, Value({DB.username: username}), _, _, _) => setUsername(_ => Some(username))
-
-      | (_, _, _, _, _) =>
-        Console.log("no data or error on name fetch")
-        setUsername(_ => Some("undefined"))
+    switch (error, data, count, status, statusText) {
+    | (Value(err), _, _, s, st) =>
+      switch err.message->String.includes("FetchError: undefined") {
+      | true => Console.log("eating abort err")
+      | false => Console.log("some other err")
       }
-    }
+      Console.log2(s, st)
+      Console.error(err)
+      setUsername(_ => Some("undefined"))
+    | (_, Value({DB.username: username}), _, _, _) => setUsername(_ => Some(username))
 
-    getUname->ignore
+    | (_, _, _, _, _) =>
+      Console.log("no data or error on name fetch")
+      setUsername(_ => Some("undefined"))
+    }
   }
 
   React.useEffect(() => {
@@ -131,9 +126,9 @@ let make = () => {
                     token_hash: "",
                   }),
                 )
+                await getName(user.id)
                 setPageState(_ => Buttons)
                 setHasAuth(_ => Some(user))
-                getName(user.id)
               | (_, _) =>
                 setHasAuth(_ => None)
                 setPageState(_ => SupaError.authError->Error)
@@ -159,9 +154,9 @@ let make = () => {
                 setHasAuth(_ => None)
                 setPageState(_ => SupaError.Auth(err)->Error)
               | (_, {session: Value({user})}) =>
+                await getName(user.id)
                 setPageState(_ => Buttons)
                 setHasAuth(_ => Some(user))
-                getName(user.id)
               | (_, _) =>
                 setHasAuth(_ => None)
                 setPageState(_ => Buttons)
