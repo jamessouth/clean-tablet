@@ -1,5 +1,7 @@
-let useBroadcast = (~client, ~channelName, ~event, ~onMessage) => {
+let useBroadcast = (~client, ~config, ~channelName, ~event, ~onMessage) => {
   let (status, setStatus) = React.useState(_ => None)
+
+  Console.log2("bc hook", channelName)
 
   // 1. Store the latest onMessage in a ref so we don't need it in the useEffect deps
   let onMessageRef = React.useRef(onMessage)
@@ -19,10 +21,7 @@ let useBroadcast = (~client, ~channelName, ~event, ~onMessage) => {
     let channel = client->Supabase.Client.channel(
       channelName,
       ~options={
-        config: {
-          broadcast: {self: false, ack: false},
-          private_: true,
-        },
+        config: config,
       },
     )
 
@@ -35,7 +34,9 @@ let useBroadcast = (~client, ~channelName, ~event, ~onMessage) => {
     })
 
     channel
-    ->Supabase.Realtime.subscribeWithCallback((newStatus, _err) => {
+    ->Supabase.Realtime.subscribeWithCallback((newStatus, err) => {
+      Console.log3("rtsub cb", newStatus, err)
+
       // In Strict Mode, this might fire for the first 'mount' even after unmount
       // Checking if channelRef is still set prevents setting state on unmounted components
       switch channelRef.current->Nullable.toOption {
@@ -60,7 +61,7 @@ let useBroadcast = (~client, ~channelName, ~event, ~onMessage) => {
 
   let broadcast = payload => {
     switch channelRef.current->Nullable.toOption {
-    | Some(chan) => chan->Supabase.Realtime.send({type_: "broadcast", event, payload})
+    | Some(chan) => chan->Supabase.Realtime.sendBroadcast(~event, ~payload)
     | None => Promise.resolve(#error)
     }
   }

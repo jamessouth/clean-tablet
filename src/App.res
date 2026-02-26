@@ -366,9 +366,9 @@ let make = () => {
         Route.replace(Home)
         React.null
 
-      | (Lobby, Some(user)) =>
+      | (Lobby, Some(_)) =>
         Web.document->Web.body->Web.setClassName("lobbymob lobbytab lobbybig")
-        <Lobby user client />
+        <Lobby username client />
 
       | (Play(_), None) =>
         Route.replace(Home)

@@ -134,10 +134,6 @@ module Auth = {
 }
 
 module Realtime = {
-  // ---------------------------------------------------------
-  // Types
-  // ---------------------------------------------------------
-
   type channel
 
   type subscribeStatus = [
@@ -153,23 +149,20 @@ module Realtime = {
     | #error
   ]
 
-  // The shape of the incoming broadcast packet
   type broadcastResponse<'payload> = {
     event: string,
     payload: 'payload,
   }
 
-  // Configuration for the broadcast behavior
-  type broadcastConfig = {
-    self?: bool, // Receive your own messages?
-    ack?: bool, // Wait for server acknowledgment?
+  type channelOptions = {
+    config: {
+      broadcast: {
+        self: bool,
+        ack: bool,
+      },
+      @as("private") private_: bool,
+    },
   }
-
-  type channelConfig = {broadcast?: broadcastConfig, @as("private") private_?: bool}
-  type channelOptions = {config?: channelConfig}
-  // ---------------------------------------------------------
-  // Channel Methods
-  // ---------------------------------------------------------
 
   // 1. Subscribe
   // ----------------------------
@@ -198,14 +191,13 @@ module Realtime = {
   // If 'ack' is false in channel config, this resolves to 'ok' immediately
 
   type sendArgs<'a> = {
-    @as("type") type_: string, // "broadcast"
+    @as("type") type_: string,
     event: string,
     payload: 'a,
   }
 
   @send external send: (channel, sendArgs<'a>) => Promise.t<sendStatus> = "send"
 
-  // Helper for sending Broadcasts specifically
   let sendBroadcast = (channel, ~event, ~payload) => {
     send(channel, {type_: "broadcast", event, payload})
   }
@@ -313,7 +305,7 @@ module Client = {
 
   // 1. Define the channel method on the client
   @send
-  external channel: (t<'db>, string, ~options: Realtime.channelOptions=?) => Realtime.channel =
+  external channel: (t<'db>, string, ~options: Realtime.channelOptions) => Realtime.channel =
     "channel"
 
   @get external getChannels: t<'db> => array<Realtime.channel> = "channels"
