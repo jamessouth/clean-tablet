@@ -58,7 +58,7 @@ let make = (~username, ~client) => {
         >
           {games
           ->Array.map(game => {
-            <Game key={Int.toString(game.id)} client game />
+            <Game key={Int.toString(game.id)} client game username />
           })
           ->React.array}
         </ul>
