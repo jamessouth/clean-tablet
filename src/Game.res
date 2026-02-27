@@ -1,5 +1,3 @@
-let btnStyle = " cursor-pointer text-base font-bold text-stone-100 font-anon w-1/2 bottom-0 h-8 absolute bg-stone-700 bg-opacity-70 filter disabled:(cursor-not-allowed contrast-25)"
-
 @react.component
 let make = (~client, ~game: Supabase.Game.game, ~username) => {
   let {id} = game
@@ -20,7 +18,7 @@ let make = (~client, ~game: Supabase.Game.game, ~username) => {
       },
     )
     channelRef.current = Nullable.make(channel)
-
+    // (prev => prev->Array.concat([res.payload])->Set.fromArray->Set.toArray)
     channel
     ->Supabase.Realtime.onBroadcast({"event": "join"}, res =>
       setPlayers(prev => prev->Array.concat([res.payload]))
@@ -58,42 +56,49 @@ let make = (~client, ~game: Supabase.Game.game, ~username) => {
     "game" ++
     Int.toString(Int.mod(id, 10))}
   >
-    <p
-      className="text-shadow-[1px_2px_1px_rgba(28,25,23,1)] text-stone-100 text-center font-anon font-bold text-sm "
-    >
-      {React.string(gamename)}
-    </p>
-    <ul>
+    <ul className="flex">
       {Array.mapWithIndex(players, (pl, i) => {
         <li key={Int.toString(i)}> {React.string(pl)} </li>
       })->React.array}
     </ul>
-    <Button
-      onClick={_ => {
-        Console.log("join btn")
-        switch channelRef.current {
-        | Value(ch) => ch->Supabase.Realtime.sendBroadcast(~event="join", ~payload=username)->ignore
-        | _ => ()
-        }
-      }}
-      css=""
-      className={"left-0 " ++ btnStyle}
+
+    // let btnStyle = " cursor-pointer text-base   w-1/2     disabled:(cursor-not-allowed contrast-25)"
+
+    <div
+      className="flex absolute bottom-0 h-8 font-bold text-stone-100 font-anon bg-stone-800/55 w-full items-center"
     >
-      {React.string("join")}
-    </Button>
-    <Button
-      onClick={_ => {
-        Console.log("leave btn2")
-        switch channelRef.current {
-        | Value(ch) =>
-          ch->Supabase.Realtime.sendBroadcast(~event="leave", ~payload=username)->ignore
-        | _ => ()
-        }
-      }}
-      css=""
-      className={"right-0 " ++ btnStyle}
-    >
-      {React.string("leave")}
-    </Button>
+      <Button
+        onClick={_ => {
+          Console.log("join btn")
+          switch channelRef.current {
+          | Value(ch) =>
+            ch->Supabase.Realtime.sendBroadcast(~event="join", ~payload=username)->ignore
+          | _ => ()
+          }
+        }}
+        css=""
+        className="basis-1/4 h-full cursor-pointer"
+      >
+        {React.string("join")}
+      </Button>
+      <p className="basis-1/4 text-center text-sm "> {React.string(gamename)} </p>
+      <p className="basis-1/4 text-center text-sm ">
+        {React.string(`${Int.toString(Array.length(players))} players`)}
+      </p>
+      <Button
+        onClick={_ => {
+          Console.log("leave btn2")
+          switch channelRef.current {
+          | Value(ch) =>
+            ch->Supabase.Realtime.sendBroadcast(~event="leave", ~payload=username)->ignore
+          | _ => ()
+          }
+        }}
+        css=""
+        className="basis-1/4 h-full cursor-pointer"
+      >
+        {React.string("leave")}
+      </Button>
+    </div>
   </li>
 }
