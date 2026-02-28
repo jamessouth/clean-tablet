@@ -52,14 +52,36 @@ let make = (~client, ~game: Supabase.Game.game, ~username) => {
     )
   }, [client])
 
+  // parent
+  // display: flex;
+  //   flex-wrap: wrap;
+  //   gap: 12px;
+  //   padding: 20px;
+  //   background: #a4c8bb;
+  //   border-radius: 8px;
+
+  // child
+  // flex-grow: 1;
+  //   flex-basis: auto;
+  //   text-align: center;
+  //   padding: 10px 20px;
+  //   background: #16213e;
+  //   color: #e94560;
+  //   border: 2px solid #e94560;
+  //   border-radius: 50px;
+  //   font-family: 'Segoe UI', sans-serif;
+  //   font-weight: bold;
+  //   font-size: 1.1rem;
+  //   max-width: 300px;
+
   <li
     className={"relative bg-bottom bg-no-repeat h-[200px] text-dark-800 mb-12 lg:max-w-lg lg:w-full " ++
     "game" ++
     Int.toString(Int.mod(id, 10))}
   >
-    <div className="flex">
+    <div className="flex w-5/6 h-42 justify-around flex-wrap m-auto">
       {Array.mapWithIndex(players, (pl, i) => {
-        <p key={Int.toString(i)}> {React.string(pl)} </p>
+        <p className="" key={Int.toString(i)}> {React.string(pl)} </p>
       })->React.array}
     </div>
 
