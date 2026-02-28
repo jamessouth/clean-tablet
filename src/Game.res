@@ -2,7 +2,24 @@
 let make = (~client, ~game: Supabase.Game.game, ~username) => {
   let {id} = game
   let gamename = "game no. " ++ Int.toString(id)
-  let (players, setPlayers) = React.useState(_ => [])
+  let (players, setPlayers) = React.useState(_ => [
+    "bill",
+    "elizabeth",
+    "andrew",
+    "steve",
+    "killroy",
+    "adam",
+    "dave",
+    "longstocking",
+    "rod",
+    "paddy",
+    "lisa",
+    "william",
+    "ulysses",
+    "tom",
+    "donnie",
+    "charles",
+  ])
   let noPlrs = Array.length(players)
 
   let (_status, setStatus) = React.useState(_ => None)
@@ -52,14 +69,6 @@ let make = (~client, ~game: Supabase.Game.game, ~username) => {
     )
   }, [client])
 
-  // parent
-  // display: flex;
-  //   flex-wrap: wrap;
-  //   gap: 12px;
-  //   padding: 20px;
-  //   background: #a4c8bb;
-  //   border-radius: 8px;
-
   // child
   // flex-grow: 1;
   //   flex-basis: auto;
@@ -75,13 +84,18 @@ let make = (~client, ~game: Supabase.Game.game, ~username) => {
   //   max-width: 300px;
 
   <li
-    className={"relative bg-bottom bg-no-repeat h-[200px] text-dark-800 mb-12 lg:max-w-lg lg:w-full " ++
+    className={"relative bg-bottom bg-no-repeat h-[200px] mb-12 lg:max-w-lg lg:w-full " ++
     "game" ++
     Int.toString(Int.mod(id, 10))}
   >
-    <div className="flex w-5/6 h-42 justify-around flex-wrap m-auto">
+    <div className="flex w-5/6 h-42 flex-wrap m-auto">
       {Array.mapWithIndex(players, (pl, i) => {
-        <p className="" key={Int.toString(i)}> {React.string(pl)} </p>
+        <p
+          className="grow font-anon text-shadow-[0_0_4px_rgba(245,245,244,1)] basis-auto text-stone-800 text-center border p-1 border-stone-800"
+          key={Int.toString(i)}
+        >
+          {React.string(pl)}
+        </p>
       })->React.array}
     </div>
 
