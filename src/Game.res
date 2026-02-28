@@ -1,8 +1,9 @@
 @react.component
 let make = (~client, ~game: Supabase.Game.game, ~username) => {
   let {id} = game
-  let gamename = "Game no. " ++ Int.toString(id)
+  let gamename = "game no. " ++ Int.toString(id)
   let (players, setPlayers) = React.useState(_ => [])
+  let noPlrs = Array.length(players)
 
   let (_status, setStatus) = React.useState(_ => None)
   Console.log2("game", gamename)
@@ -56,16 +57,16 @@ let make = (~client, ~game: Supabase.Game.game, ~username) => {
     "game" ++
     Int.toString(Int.mod(id, 10))}
   >
-    <ul className="flex">
+    <div className="flex">
       {Array.mapWithIndex(players, (pl, i) => {
-        <li key={Int.toString(i)}> {React.string(pl)} </li>
+        <p key={Int.toString(i)}> {React.string(pl)} </p>
       })->React.array}
-    </ul>
+    </div>
 
     // let btnStyle = " cursor-pointer text-base   w-1/2     disabled:(cursor-not-allowed contrast-25)"
 
     <div
-      className="flex absolute bottom-0 h-8 font-bold text-stone-100 font-anon bg-stone-800/55 w-full items-center"
+      className="flex absolute bottom-0 h-8 font-bold text-stone-100 font-anon bg-stone-800/50 w-full items-center"
     >
       <Button
         onClick={_ => {
@@ -77,13 +78,21 @@ let make = (~client, ~game: Supabase.Game.game, ~username) => {
           }
         }}
         css=""
-        className="basis-1/4 h-full cursor-pointer"
+        className="basis-[24%] h-full bg-stone-800/58 cursor-pointer"
       >
         {React.string("join")}
       </Button>
-      <p className="basis-1/4 text-center text-sm "> {React.string(gamename)} </p>
-      <p className="basis-1/4 text-center text-sm ">
-        {React.string(`${Int.toString(Array.length(players))} players`)}
+      <p className="basis-[26%] text-center px-[2px] text-xs sm:text-sm">
+        {React.string(gamename)}
+      </p>
+      <p className="basis-[26%] text-center border-l border-stone-800 text-xs sm:text-sm">
+        {React.string(
+          `${Int.toString(noPlrs)} player` ++
+          switch noPlrs {
+          | 1 => ""
+          | _ => "s"
+          },
+        )}
       </p>
       <Button
         onClick={_ => {
@@ -95,7 +104,7 @@ let make = (~client, ~game: Supabase.Game.game, ~username) => {
           }
         }}
         css=""
-        className="basis-1/4 h-full cursor-pointer"
+        className="basis-[24%] h-full bg-stone-800/58 cursor-pointer"
       >
         {React.string("leave")}
       </Button>
