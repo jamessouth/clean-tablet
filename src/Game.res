@@ -69,20 +69,6 @@ let make = (~client, ~game: Supabase.Game.game, ~username) => {
     )
   }, [client])
 
-  // child
-  // flex-grow: 1;
-  //   flex-basis: auto;
-  //   text-align: center;
-  //   padding: 10px 20px;
-  //   background: #16213e;
-  //   color: #e94560;
-  //   border: 2px solid #e94560;
-  //   border-radius: 50px;
-  //   font-family: 'Segoe UI', sans-serif;
-  //   font-weight: bold;
-  //   font-size: 1.1rem;
-  //   max-width: 300px;
-
   <li
     className={"relative bg-bottom bg-no-repeat h-[200px] mb-12 lg:max-w-lg lg:w-full " ++
     "game" ++
@@ -91,7 +77,7 @@ let make = (~client, ~game: Supabase.Game.game, ~username) => {
     <div className="flex w-5/6 h-42 flex-wrap m-auto">
       {Array.mapWithIndex(players, (pl, i) => {
         <p
-          className="grow font-anon text-shadow-[0_0_4px_rgba(245,245,244,1)] basis-auto text-stone-800 text-center border p-1 border-stone-800"
+          className="grow font-fred text-lg tracking-wider text-shadow-[0_-2px_4px_rgba(245,245,244,1),0_2px_4px_rgba(245,245,244,1)] text-stone-800 text-center py-0.5 px-1.5"
           key={Int.toString(i)}
         >
           {React.string(pl)}

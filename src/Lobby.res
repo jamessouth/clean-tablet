@@ -53,9 +53,9 @@ let make = (~username, ~client) => {
       | Loading => <Loading color="stone-800" label="games..." />
       | Error(err) => <SupaErr err />
       | Success(games) =>
-        <ul
-          className="m-12 newgmimg:mt-14 w-11/12 <md:(flex max-w-lg flex-col) md:(grid grid-cols-2 gap-8) lg:(gap-10 justify-items-center) xl:(grid-cols-3 gap-12 max-w-1688px)"
-        >
+        // md:grid grid-cols-2 gap-8) lg:(gap-10 justify-items-center) xl:(grid-cols-3 gap-12 max-w-1688px)
+
+        <ul className="m-14 w-11/12 md:flex md:max-w-lg md:flex-col ">
           {games
           ->Array.map(game => {
             <Game key={Int.toString(game.id)} client game username />
