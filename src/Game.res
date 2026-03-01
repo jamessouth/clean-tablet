@@ -70,11 +70,11 @@ let make = (~client, ~game: Supabase.Game.game, ~username) => {
   }, [client])
 
   <li
-    className={"bg-bottom bg-no-repeat flex flex-col justify-end items-center h-50 mb-12 lg:max-w-lg lg:w-full " ++
+    className={"bg-bottom bg-no-repeat flex flex-col justify-end items-center h-50 mb-12 mx-auto max-w-128 " ++
     "game" ++
     Int.toString(Int.mod(id, 10))}
   >
-    <div className="flex w-5/6 flex-wrap ">
+    <div className="flex w-5/6 flex-wrap max-w-75">
       {Array.mapWithIndex(players, (pl, i) => {
         <p
           className="grow font-arch text-lg tracking-wider text-stone-800 text-center px-1.5"
