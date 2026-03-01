@@ -48,14 +48,14 @@ let make = (~username, ~client) => {
     >
       <p className="leading-none text-stone-800 text-2xl"> {React.string("⬅")} </p>
     </Button>
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col mt-14 items-center">
       {switch lobbystate {
       | Loading => <Loading color="stone-800" label="games..." />
       | Error(err) => <SupaErr err />
       | Success(games) =>
         // md:grid grid-cols-2 gap-8) lg:(gap-10 justify-items-center) xl:(grid-cols-3 gap-12 max-w-1688px)
 
-        <ul className="m-14 w-11/12 md:flex md:max-w-lg md:flex-col ">
+        <ul className="mb-14 w-11/12 md:flex md:max-w-lg md:flex-col ">
           {games
           ->Array.map(game => {
             <Game key={Int.toString(game.id)} client game username />

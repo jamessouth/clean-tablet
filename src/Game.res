@@ -70,14 +70,14 @@ let make = (~client, ~game: Supabase.Game.game, ~username) => {
   }, [client])
 
   <li
-    className={"relative bg-bottom bg-no-repeat h-[200px] mb-12 lg:max-w-lg lg:w-full " ++
+    className={"bg-bottom bg-no-repeat flex flex-col justify-end items-center h-50 mb-12 lg:max-w-lg lg:w-full " ++
     "game" ++
     Int.toString(Int.mod(id, 10))}
   >
-    <div className="flex w-5/6 h-42 flex-wrap m-auto">
+    <div className="flex w-5/6 flex-wrap ">
       {Array.mapWithIndex(players, (pl, i) => {
         <p
-          className="grow font-fred text-lg tracking-wider text-shadow-[0_-2px_4px_rgba(245,245,244,1),0_2px_4px_rgba(245,245,244,1)] text-stone-800 text-center py-0.5 px-1.5"
+          className="grow font-arch text-lg tracking-wider text-stone-800 text-center px-1.5"
           key={Int.toString(i)}
         >
           {React.string(pl)}
@@ -88,7 +88,7 @@ let make = (~client, ~game: Supabase.Game.game, ~username) => {
     // let btnStyle = " cursor-pointer text-base   w-1/2     disabled:(cursor-not-allowed contrast-25)"
 
     <div
-      className="flex absolute bottom-0 h-8 font-bold text-stone-100 font-anon bg-stone-800/50 w-full items-center"
+      className="flex h-8 font-bold text-stone-100 font-anon bg-stone-800/50 w-full items-center"
     >
       <Button
         onClick={_ => {

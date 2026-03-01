@@ -1,6 +1,6 @@
 @react.component
 let make = (~mgt="mt-17", ~username=None, ~head=true, ~color="stone-100") => {
-  <header className={`mb-10 ${mgt} newgmimg:mb-12`}>
+  <header className={`mb-10 ${mgt} `}>
     {switch username {
     | None => React.null
     | Some(u) =>
