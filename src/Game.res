@@ -5,12 +5,14 @@ let make = (~client, ~game: Supabase.Game.game, ~uname) => {
   let {id} = game
   let gamename = "game no. " ++ Int.toString(id)
   let (players, setPlayers) = React.useState(_ => [])
+  let (gamestate, setGameState) = React.useState(_ => Supabase.Global.Loading)
   let noPlrs = Array.length(players)
   let disabledJoin = noPlrs >= maxPlayers || players->Array.includes(uname)
 
   let (_status, setStatus) = React.useState(_ => None)
   Console.log2("game", gamename)
   let channelRef = React.useRef(Nullable.null)
+
   React.useEffect(() => {
     let channel = client->Supabase.Client.channel(
       "Chan " ++ gamename,
@@ -32,9 +34,12 @@ let make = (~client, ~game: Supabase.Game.game, ~uname) => {
     )
     ->Supabase.Realtime.subscribeWithCallback((newStatus, err) => {
       Console.log4("rtsub cb", gamename, newStatus, err)
+      //   switch err {
+      //         | Value(err) => <SupaErr err />
+      //         | _ => %todo
+      //         }
+      setGameState(_ => Success(""))
 
-      // In Strict Mode, this might fire for the first 'mount' even after unmount
-      // Checking if channelRef is still set prevents setting state on unmounted components
       switch channelRef.current {
       | Value(_) => setStatus(_ => Some(newStatus))
       | _ => ()
@@ -55,63 +60,78 @@ let make = (~client, ~game: Supabase.Game.game, ~uname) => {
     )
   }, [client])
 
-  <li
-    className={"bg-bottom bg-no-repeat flex flex-col justify-end items-center h-50 mb-12 mx-auto max-w-128 " ++
-    "game" ++
-    Int.toString(Int.mod(id, 10))}
-  >
-    <div className="flex w-7/8 flex-wrap max-w-75">
-      {Array.mapWithIndex(players, (pl, i) => {
-        <p
-          className="grow font-arch text-lg tracking-wider text-stone-800 text-center px-1.5"
-          key={Int.toString(i)}
+  let handleSend = async () => {
+    Console.log("join btn")
+    switch channelRef.current {
+    | Value(ch) =>
+      switch await ch->Supabase.Realtime.sendBroadcast(~event="join", ~payload=uname) {
+      | #ok => Console.log("ok")
+      | #timed_out => Console.log("time out")
+      | #error => setGameState(_ => Error(Realtime))
+      }
+    | _ => ()
+    }
+  }
+
+  {
+    switch gamestate {
+    | Loading => <Loading color="stone-800" label="game..." />
+    | Error(err) => <SupaErr err />
+    | Success(_) =>
+      <li
+        className={"bg-bottom bg-no-repeat flex flex-col justify-end items-center h-50 mb-12 mx-auto max-w-128 " ++
+        "game" ++
+        Int.toString(Int.mod(id, 10))}
+      >
+        <div className="flex w-7/8 flex-wrap max-w-75">
+          {Array.mapWithIndex(players, (pl, i) => {
+            <p
+              className="grow font-arch text-lg tracking-wider text-stone-800 text-center px-1.5"
+              key={Int.toString(i)}
+            >
+              {React.string(pl)}
+            </p>
+          })->React.array}
+        </div>
+        <div
+          className="flex h-8 font-bold text-stone-100 font-anon bg-stone-800/50 w-full items-center"
         >
-          {React.string(pl)}
-        </p>
-      })->React.array}
-    </div>
-    <div
-      className="flex h-8 font-bold text-stone-100 font-anon bg-stone-800/50 w-full items-center"
-    >
-      <Button
-        onClick={_ => {
-          Console.log("join btn")
-          switch channelRef.current {
-          | Value(ch) => ch->Supabase.Realtime.sendBroadcast(~event="join", ~payload=uname)->ignore
-          | _ => ()
-          }
-        }}
-        css=""
-        disabled=disabledJoin
-        className="basis-[24%] disabled:cursor-not-allowed disabled:text-stone-500 h-full bg-stone-800/58 cursor-pointer"
-      >
-        {React.string("join")}
-      </Button>
-      <p className="basis-[26%] text-center px-[2px] text-xs sm:text-sm">
-        {React.string(gamename)}
-      </p>
-      <p className="basis-[26%] text-center border-l border-stone-800 text-xs sm:text-sm">
-        {React.string(
-          `${Int.toString(noPlrs)} player` ++
-          switch noPlrs {
-          | 1 => ""
-          | _ => "s"
-          },
-        )}
-      </p>
-      <Button
-        onClick={_ => {
-          Console.log("leave btn2")
-          switch channelRef.current {
-          | Value(ch) => ch->Supabase.Realtime.sendBroadcast(~event="leave", ~payload=uname)->ignore
-          | _ => ()
-          }
-        }}
-        css=""
-        className="basis-[24%] h-full bg-stone-800/58 cursor-pointer"
-      >
-        {React.string("leave")}
-      </Button>
-    </div>
-  </li>
+          <Button
+            onClick={_ => {handleSend()->ignore}}
+            css=""
+            disabled=disabledJoin
+            className="basis-[24%] disabled:cursor-not-allowed disabled:text-stone-500 h-full bg-stone-800/58 cursor-pointer"
+          >
+            {React.string("join")}
+          </Button>
+          <p className="basis-[26%] text-center px-[2px] text-xs sm:text-sm">
+            {React.string(gamename)}
+          </p>
+          <p className="basis-[26%] text-center border-l border-stone-800 text-xs sm:text-sm">
+            {React.string(
+              `${Int.toString(noPlrs)} player` ++
+              switch noPlrs {
+              | 1 => ""
+              | _ => "s"
+              },
+            )}
+          </p>
+          <Button
+            onClick={_ => {
+              Console.log("leave btn2")
+              switch channelRef.current {
+              | Value(ch) =>
+                ch->Supabase.Realtime.sendBroadcast(~event="leave", ~payload=uname)->ignore
+              | _ => ()
+              }
+            }}
+            css=""
+            className="basis-[24%] h-full bg-stone-800/58 cursor-pointer"
+          >
+            {React.string("leave")}
+          </Button>
+        </div>
+      </li>
+    }
+  }
 }

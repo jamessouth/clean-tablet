@@ -351,6 +351,7 @@ module SupaError = {
   type t =
     | Auth(Auth.error)
     | Db(DB.error, option<int>, option<string>)
+    | Realtime
 
   let authError = Auth({
     name: "AuthError",
@@ -373,6 +374,7 @@ module SupaError = {
 
   let getError = (e: t) => {
     (switch e {
+    | Realtime => "Name: Realtime Error)^*Message: invalid payload"
     | Auth(err) =>
       let code = switch Nullable.toOption(err.code) {
       | Some(c) => c
