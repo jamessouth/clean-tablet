@@ -68,6 +68,7 @@ let make = () => {
 
   let (hasAuth, setHasAuth) = React.useState(_ => None)
   let (username, setUsername) = React.useState(_ => None)
+  let uname = Option.getOr(username, "")
 
   let getName = async id => {
     Console.log("app func")
@@ -368,7 +369,7 @@ let make = () => {
 
       | (Lobby, Some(_)) =>
         Web.document->Web.body->Web.setClassName("lobbymob lobbytab lobbybig")
-        <Lobby username client />
+        <Lobby uname client />
 
       | (Play(_), None) =>
         Route.replace(Home)

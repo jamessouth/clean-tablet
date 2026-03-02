@@ -1,26 +1,12 @@
+let maxPlayers = 16
+
 @react.component
-let make = (~client, ~game: Supabase.Game.game, ~username) => {
+let make = (~client, ~game: Supabase.Game.game, ~uname) => {
   let {id} = game
   let gamename = "game no. " ++ Int.toString(id)
-  let (players, setPlayers) = React.useState(_ => [
-    "bill",
-    "elizabeth",
-    "andrew",
-    "steve",
-    "killroy",
-    "adam",
-    "dave",
-    "longstocking",
-    "rod",
-    "paddy",
-    "lisa",
-    "william",
-    "ulysses",
-    "tom",
-    "donnie",
-    "charles",
-  ])
+  let (players, setPlayers) = React.useState(_ => [])
   let noPlrs = Array.length(players)
+  let disabledJoin = noPlrs >= maxPlayers || players->Array.includes(uname)
 
   let (_status, setStatus) = React.useState(_ => None)
   Console.log2("game", gamename)
@@ -36,10 +22,10 @@ let make = (~client, ~game: Supabase.Game.game, ~username) => {
       },
     )
     channelRef.current = Nullable.make(channel)
-    // (prev => prev->Array.concat([res.payload])->Set.fromArray->Set.toArray)
+
     channel
     ->Supabase.Realtime.onBroadcast({"event": "join"}, res =>
-      setPlayers(prev => prev->Array.concat([res.payload]))
+      setPlayers(prev => prev->Array.concat([res.payload])->Set.fromArray->Set.toArray)
     )
     ->Supabase.Realtime.onBroadcast({"event": "leave"}, res =>
       setPlayers(prev => prev->Array.filter(x => x !== res.payload))
@@ -74,7 +60,7 @@ let make = (~client, ~game: Supabase.Game.game, ~username) => {
     "game" ++
     Int.toString(Int.mod(id, 10))}
   >
-    <div className="flex w-5/6 flex-wrap max-w-75">
+    <div className="flex w-7/8 flex-wrap max-w-75">
       {Array.mapWithIndex(players, (pl, i) => {
         <p
           className="grow font-arch text-lg tracking-wider text-stone-800 text-center px-1.5"
@@ -84,9 +70,6 @@ let make = (~client, ~game: Supabase.Game.game, ~username) => {
         </p>
       })->React.array}
     </div>
-
-    // let btnStyle = " cursor-pointer text-base   w-1/2     disabled:(cursor-not-allowed contrast-25)"
-
     <div
       className="flex h-8 font-bold text-stone-100 font-anon bg-stone-800/50 w-full items-center"
     >
@@ -94,13 +77,13 @@ let make = (~client, ~game: Supabase.Game.game, ~username) => {
         onClick={_ => {
           Console.log("join btn")
           switch channelRef.current {
-          | Value(ch) =>
-            ch->Supabase.Realtime.sendBroadcast(~event="join", ~payload=username)->ignore
+          | Value(ch) => ch->Supabase.Realtime.sendBroadcast(~event="join", ~payload=uname)->ignore
           | _ => ()
           }
         }}
         css=""
-        className="basis-[24%] h-full bg-stone-800/58 cursor-pointer"
+        disabled=disabledJoin
+        className="basis-[24%] disabled:cursor-not-allowed disabled:text-stone-500 h-full bg-stone-800/58 cursor-pointer"
       >
         {React.string("join")}
       </Button>
@@ -120,8 +103,7 @@ let make = (~client, ~game: Supabase.Game.game, ~username) => {
         onClick={_ => {
           Console.log("leave btn2")
           switch channelRef.current {
-          | Value(ch) =>
-            ch->Supabase.Realtime.sendBroadcast(~event="leave", ~payload=username)->ignore
+          | Value(ch) => ch->Supabase.Realtime.sendBroadcast(~event="leave", ~payload=uname)->ignore
           | _ => ()
           }
         }}

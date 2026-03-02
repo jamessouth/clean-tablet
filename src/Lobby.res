@@ -1,7 +1,7 @@
 %%raw("import './css/lobby.css'")
 
 @react.component
-let make = (~username, ~client) => {
+let make = (~uname, ~client) => {
   let (lobbystate, setLobbyState) = React.useState(_ => Supabase.Global.Loading)
 
   React.useEffect(() => {
@@ -53,12 +53,10 @@ let make = (~username, ~client) => {
       | Loading => <Loading color="stone-800" label="games..." />
       | Error(err) => <SupaErr err />
       | Success(games) =>
-        // md:grid grid-cols-2 gap-8) lg:(gap-10 justify-items-center) xl:(grid-cols-3 gap-12 max-w-1688px)
-
         <ul className="w-11/12 mx-auto">
           {games
           ->Array.map(game => {
-            <Game key={Int.toString(game.id)} client game username />
+            <Game key={Int.toString(game.id)} client game uname />
           })
           ->React.array}
         </ul>
